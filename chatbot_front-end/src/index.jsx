@@ -10,5 +10,5 @@ render(
   <Provider store={store}>
     <RootLayout />
   </Provider>,
-  document.getElementById("root")
+  document.getElementById("root"),
 );
