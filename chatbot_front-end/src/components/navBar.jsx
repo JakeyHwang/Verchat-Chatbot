@@ -1,9 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-
+// this is the functional component for the navigation bar
 const Navbar = () => {
+  // use state for navbar menu toggle
   const [menu, setMenu] = useState(false);
+  // use state for settings menu toggle
   const [settings, setSettings] = useState(false);
 
   return (

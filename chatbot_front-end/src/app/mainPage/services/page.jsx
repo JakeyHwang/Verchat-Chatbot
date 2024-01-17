@@ -2,7 +2,9 @@ import React from "react";
 import Navbar from "@/components/navBar";
 import ServicesButton from "@/components/servicesButton";
 
+// functional component for the services page
 const page = () => {
+  // name of buttons to be used as props
   const items = ["ChatBot", "Chatbot History", "Upload Document"];
   return (
     <>

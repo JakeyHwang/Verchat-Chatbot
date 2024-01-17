@@ -1,6 +1,8 @@
 import React from "react";
 import Navbar from "@/components/navBar";
 
+// functional component for the "contact us" page.
+// will probably not require this for our project
 const page = () => {
   return (
     <>

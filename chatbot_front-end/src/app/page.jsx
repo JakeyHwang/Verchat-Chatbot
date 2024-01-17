@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/navBar";
 import Link from "next/link";
 
+// function component for log in page
+// currently does not actually check for any username/password
+// input. also probably not gonna be used since we dont need login
 const page = () => {
   const router = useRouter();
 
