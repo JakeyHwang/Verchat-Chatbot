@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "@/components/navBar";
-import ChatButton from "@/components/newchat";
+import ChatButton from "@/components/newchatbtn";
 
 // functional component for the homepage
 const page = () => {
