@@ -1,14 +1,13 @@
 import React from "react";
 import Navbar from "@/components/navBar";
-import ChatButton from "@/components/newchatbtn";
+import NewChat from "@/components/chat";
 
 // functional component for the homepage
 const page = () => {
   return (
     <>
       <Navbar />
-      <h1>This is the main page</h1>
-      <ChatButton />
+      <NewChat />
     </>
   );
 };
