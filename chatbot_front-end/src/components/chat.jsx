@@ -37,12 +37,12 @@ const handleNewChat = async () => {
 
 const WlcMsg = () => {
     return (
-        <div id="allmsg" className='grid grid-rows-4'>
-            <div className="fixed top-2 left-0 m-12">
-            <div className="bg-[#dcc1ff] rounded-lg px-4 py-1">
+        <div id="allmsg" className='grid grid-cols-2 gap-y-4 mx-2'>
+            <div className="bg-[#dcc1ff] rounded-lg px-2 py-1 col-start-1 col-end-2 mb-3">
                 <h1>Hi, how may I help you today?</h1>
             </div>
-        </div>
+            <div className="mb-3">
+            </div>
         </div>
     );
 }
@@ -51,10 +51,10 @@ const sendMsg = (msg) => {
     console.log('Sending message:', msg);
     // Add logic for sending the message here
     document.getElementById('allmsg').innerHTML +=
-        `<div class="fixed top-12 right-0 m-12 send-msg">
-            <div class="bg-[#dcc1ff] rounded-lg px-4 py-1">
-                <h1>${msg}</h1>
-            </div>
+        `<div className="mb-3">
+        </div>
+        <div class="send-msg bg-[#dcc1ff] rounded-lg px-2 py-1 col-end-3 col-span-1 mb-3">
+            <h1>${msg}</h1>
         </div>`
 }
 
@@ -71,8 +71,10 @@ const UploadDocument = () => {
 const NewChat = () => {
     return (
         <>
+            <div>
             <WlcMsg />
             <ChatBar handleNewChat={handleNewChat} sendMsg={sendMsg} />
+            </div>
         </>
     );
 }

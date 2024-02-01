@@ -10,7 +10,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-blue-400 border-b-3 flex flex-row justify-between items-center text-2xl font-bold sticky top-0 max-sm:flex-col">
+      <nav className="bg-blue-400 border-b-3 flex flex-row justify-between items-center text-2xl font-bold sticky top-0 max-sm:flex-col mb-3">
         <div className="flex flex-col">
           <Link href="/mainPage" className="justify-start m-2">
             Verbot
