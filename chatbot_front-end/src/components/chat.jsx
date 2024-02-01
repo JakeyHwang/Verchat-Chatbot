@@ -58,6 +58,16 @@ const sendMsg = (msg) => {
         </div>`
 }
 
+// Create a upload document button component
+const UploadDocument = () => {
+    return (
+        <div className="fixed bottom-0 left-0 m-12 w-full">
+            <input id="upload" type="file" />
+            <button className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1" onClick={handleSend}>Send</button>
+        </div>
+    );
+}
+
 const NewChat = () => {
     return (
         <>
