@@ -1,5 +1,6 @@
 version: "3.8"
 services:
+# docker container service for backend
   # api:
   #   build: ./chatbot_back-end
   #   container_name: chatbotbackend_C
@@ -8,12 +9,13 @@ services:
   #   volumes:
   #     - ./chatbot_back-end:/app
   #     - ./app/node_modules
+# docker container for frontend
   chatbotfrontend:
     build: 
-      context: chatbot_front-end
+      context: ./chatbot_front-end
       dockerfile: Dockerfile
     container_name: chatbotfrontend_C
-    volumes: [.:/app]
+    volumes: [./chatbot_front-end:/chatbot_front-end]
     command: npm run dev
     ports:
       - '3000:3000'
