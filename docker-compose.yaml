@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  # api:
+  #   build: ./chatbot_back-end
+  #   container_name: chatbotbackend_C
+  #   ports:
+  #     - '4000:4000'
+  #   volumes:
+  #     - ./chatbot_back-end:/app
+  #     - ./app/node_modules
+  chatbotfrontend:
+    build: 
+      context: chatbot_front-end
+      dockerfile: Dockerfile
+    container_name: chatbotfrontend_C
+    volumes: [.:/app]
+    command: npm run dev
+    ports:
+      - '3000:3000'
+    stdin_open: true
+    tty: true
+    environment:
+      NODE_ENV: development

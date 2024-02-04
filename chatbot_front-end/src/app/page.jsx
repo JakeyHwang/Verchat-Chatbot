@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import styles from "../input.css";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import Navbar from "@/components/navBar";
 import Link from "next/link";
 
@@ -9,7 +9,7 @@ import Link from "next/link";
 // currently does not actually check for any username/password
 // input. also probably not gonna be used since we dont need login
 const page = () => {
-  const router = useRouter();
+  // const router = useRouter();
 
   return (
     <div className="w-screen h-screen radial-blue flex flex-grid justify-center">
