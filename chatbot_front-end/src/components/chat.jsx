@@ -1,6 +1,17 @@
 "use client";
 import React, { useState } from 'react';
 
+const handleNewChat = async () => {
+    // Add logic for creating a new chat here
+    console.log('Creating a new chat...');
+    const sendMsgElements = document.getElementsByClassName('send-msg');
+    
+    // Remove all send messages
+    while (sendMsgElements.length > 0) {
+        sendMsgElements[0].remove();
+    }
+}
+
 const ChatBar = ({ handleNewChat, sendMsg }) => {
     const [message, setMessage] = useState('');
 
@@ -24,16 +35,6 @@ const ChatBar = ({ handleNewChat, sendMsg }) => {
     );
 }
 
-const handleNewChat = async () => {
-    // Add logic for creating a new chat here
-    console.log('Creating a new chat...');
-    const sendMsgElements = document.getElementsByClassName('send-msg');
-    
-    // Remove all send messages
-    while (sendMsgElements.length > 0) {
-        sendMsgElements[0].remove();
-    }
-}
 
 const WlcMsg = () => {
     return (
@@ -51,11 +52,11 @@ const sendMsg = (msg) => {
     console.log('Sending message:', msg);
     // Add logic for sending the message here
     document.getElementById('allmsg').innerHTML +=
-        `<div className="">
+        `<div class="">
         </div>
         <div class="send-msg bg-[#e7e5e4] rounded-lg px-2 py-1 col-end-3 col-span-1 text-wrap">
             <h1>${msg}</h1>
-        </div>`
+        </div>`;
 }
 
 // Create a upload document button component
@@ -69,14 +70,61 @@ const UploadDocument = () => {
 }
 
 const NewChat = () => {
+    const chatTitle = "Chat History";
+    const [currentChatTitle, setCurrentChatTitle] = useState(chatTitle);
+    const [chatHistory, setChatHistory] = useState([]);
+
+    const handleNewChat = () => {
+        console.log('Creating a new chat...');
+        setChatHistory([]); // Clear chat history when starting a new chat
+        setCurrentChatTitle(chatTitle); // Reset chat title to the placeholder
+    };
+
+    const handleSend = (msg) => {
+        if (chatHistory.length === 0) {
+            // Add only the first message from each conversation
+            const updatedChatHistory = [...chatHistory, { type: 'user', message: msg }];
+            setChatHistory(updatedChatHistory);
+            
+        }
+    };
+
     return (
-        <>
+        <div className="flex">
+            {/* Include the Sidebar component and pass the chatTitle prop */}
+            <Sidebar chatTitle={currentChatTitle} chatHistory={chatHistory} />
             <div>
-            <WlcMsg />
-            <ChatBar handleNewChat={handleNewChat} sendMsg={sendMsg} />
+                <WlcMsg />
+                {/* Display chat history */}
+                {chatHistory.map((chat, index) => (
+                    <div key={index} className={chat.type === 'user' ? 'user-message' : 'bot-message'}>
+                        <div className="send-msg bg-[#e7e5e4] rounded-lg px-2 py-1 col-end-3 col-span-1 text-wrap">
+                            <h1>{chat.message}</h1>
+                        </div>
+                    </div>
+                ))}
+                {/* Assuming handleNewChat and sendMsg are defined */}
+                <ChatBar handleNewChat={handleNewChat} sendMsg={(msg) => { handleSend(msg); }} />
             </div>
-        </>
+        </div>
     );
 }
 
+const Sidebar = ({ chatTitle, chatHistory }) => {
+    return (
+        
+
+        <div className="bg-blue-200 w-1/5 h-screen">
+            <h1>{chatTitle}</h1>
+            {/* Display chat history in reverse order */}
+            {chatHistory.slice(0).reverse().map((chat, index) => (
+                <div key={index} className={chat.type === 'user' ? 'bg-blue-300 p-2 rounded-md m-2 text-left' : 'bg-gray-300 p-2 rounded-md m-2 text-left'}>
+                    <h1>{chat.message}</h1>
+                </div>
+            ))}
+        </div>
+        
+    );
+}
 export default NewChat;
+
