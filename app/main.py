@@ -1,11 +1,16 @@
 from fastapi import FastAPI
 from app.Handlers import query
+# from pydantic import BaseModel
 import os
 
 
 
 app = FastAPI()
-@app.get("/")
-async def root():
-    ans = query.ask_question("test" , "who is trump")
-    return { 'data':ans}
+
+
+@app.post("/")
+def query_llm(question):
+    qid = "test"
+    ans = query.ask_question(qid , question)
+    return { 'data': ans}
+
