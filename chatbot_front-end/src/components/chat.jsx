@@ -71,6 +71,7 @@ const UploadDocument = () => {
 
 const NewChat = () => {
     const chatTitle = "Untitled Chat2";
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [currentChatTitle, setCurrentChatTitle] = useState(chatTitle);
     const [chatHistory, setChatHistory] = useState([]);
     const [chatTitles, setChatTitles] = useState([currentChatTitle]);
@@ -78,6 +79,7 @@ const NewChat = () => {
 
     const handleNewChat = () => {
         console.log('Creating a new chat...');
+        console.log(chatHistory);
         setChatTitles([...chatTitles, currentChatTitle]); // Add the current chat title to the list of chat titles
         setChatHistories({ ...chatHistories, [chatTitles.length-1]: chatHistory }); // Add the current chat history to the list of chat histories
         setChatHistory([]); // Clear chat history when starting a new chat
@@ -93,14 +95,26 @@ const NewChat = () => {
     };
 
     const handleChangeTopic = (i) => {
-        console.log(i.target.id);
+        // console.log(i.target.id);
+        // console.log(((Number(i.target.id)+1)*-1));
+        // console.log(chatHistories);
+        console.log(document.getElementById(currentIndex));
+        document.getElementById(currentIndex).disabled = false;
+        console.log(document.getElementById(currentIndex));
+        document.getElementById(currentIndex).className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 m-2 border border-blue-700 rounded';
+        console.log(chatHistories[chatTitles.length + ((Number(i.target.id)+1)*-1)]);
+        setCurrentIndex(i.target.id);
+        setCurrentChatTitle(chatTitles[chatTitles.length + ((Number(i.target.id)+1)*-1)]);
+        setChatHistory(chatHistories[chatTitles.length + ((Number(i.target.id)+1)*-1)]);
+        document.getElementById(currentIndex).disabled = true;
+        document.getElementById(currentIndex).className = 'text-white bg-[#4B5563] dark:bg-[#4B5563] cursor-not-allowed font-bold px-2 m-2 text-center border border-[#111827] rounded';
     }
 
     return (
         <div className="flex">
             {/* Include the Sidebar component and pass the chatTitle prop */}
             <Sidebar chatTitles={chatTitles} changeTopic={(i) => {handleChangeTopic(i)}} />
-            <div className='grid grid-cols-2 gap-y-4 mx-2'>
+            <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                 <WlcMsg />
                 {/* Display chat history */}
                 {chatHistory.map((chat, index) => (
@@ -119,7 +133,6 @@ const NewChat = () => {
 
 const Sidebar = ({chatTitles, changeTopic}) => {
     const handleNewTopic = (i) => {
-        console.log(chatTitles[((i.target.id)*-1-1)]);
         changeTopic(i);
     }
     return (
