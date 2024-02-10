@@ -1,14 +1,14 @@
 version: "3.8"
 services:
 # docker container service for backend
-  # api:
-  #   build: ./chatbot_back-end
-  #   container_name: chatbotbackend_C
-  #   ports:
-  #     - '4000:4000'
-  #   volumes:
-  #     - ./chatbot_back-end:/app
-  #     - ./app/node_modules
+  api:
+    build: ./chatbot_back-end
+    container_name: chatbotbackend_C
+    ports:
+      - '4000:4000'
+    volumes:
+      - ./chatbot_back-end:/app
+      - ./app/node_modules
 # docker container for frontend
   chatbotfrontend:
     build: 
