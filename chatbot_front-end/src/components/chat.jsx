@@ -81,7 +81,7 @@ const NewChat = () => {
         console.log('Creating a new chat...');
         console.log(chatHistory);
         setChatTitles([...chatTitles, currentChatTitle]); // Add the current chat title to the list of chat titles
-        setChatHistories({ ...chatHistories, [chatTitles.length-1]: chatHistory }); // Add the current chat history to the list of chat histories
+        setChatHistories({ ...chatHistories, [chatTitles.length-currentIndex-1]: chatHistory }); // Add the current chat history to the list of chat histories
         setChatHistory([]); // Clear chat history when starting a new chat
         setCurrentChatTitle(chatTitle); // Reset chat title to the placeholder
     };
@@ -95,25 +95,18 @@ const NewChat = () => {
     };
 
     const handleChangeTopic = (i) => {
-        // console.log(i.target.id);
-        // console.log(((Number(i.target.id)+1)*-1));
-        // console.log(chatHistories);
-        console.log(document.getElementById(currentIndex));
-        document.getElementById(currentIndex).disabled = false;
-        console.log(document.getElementById(currentIndex));
-        document.getElementById(currentIndex).className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 m-2 border border-blue-700 rounded';
         console.log(chatHistories[chatTitles.length + ((Number(i.target.id)+1)*-1)]);
+        setChatHistories({ ...chatHistories, [chatTitles.length-currentIndex-1]: chatHistory })
         setCurrentIndex(i.target.id);
         setCurrentChatTitle(chatTitles[chatTitles.length + ((Number(i.target.id)+1)*-1)]);
         setChatHistory(chatHistories[chatTitles.length + ((Number(i.target.id)+1)*-1)]);
-        document.getElementById(currentIndex).disabled = true;
-        document.getElementById(currentIndex).className = 'text-white bg-[#4B5563] dark:bg-[#4B5563] cursor-not-allowed font-bold px-2 m-2 text-center border border-[#111827] rounded';
+        console.log(chatHistories);
     }
 
     return (
         <div className="flex">
             {/* Include the Sidebar component and pass the chatTitle prop */}
-            <Sidebar chatTitles={chatTitles} changeTopic={(i) => {handleChangeTopic(i)}} />
+            <Sidebar chatTitles={chatTitles} changeTopic={(i) => {handleChangeTopic(i)}} currentIndex={currentIndex} />
             <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                 <WlcMsg />
                 {/* Display chat history */}
@@ -131,7 +124,7 @@ const NewChat = () => {
     );
 }
 
-const Sidebar = ({chatTitles, changeTopic}) => {
+const Sidebar = ({chatTitles, changeTopic, currentIndex}) => {
     const handleNewTopic = (i) => {
         changeTopic(i);
     }
@@ -141,7 +134,7 @@ const Sidebar = ({chatTitles, changeTopic}) => {
             {/* Display chat history in reverse order */}
             {chatTitles.slice(0).reverse().map((title, index) => (
                 <div className='flex flex-col items-center justify-center'>
-                    <button id={index} className={index !== 0 ? `bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 m-2 border border-blue-700 rounded` : 'text-white bg-[#4B5563] dark:bg-[#4B5563] cursor-not-allowed font-bold px-2 m-2 text-center border border-[#111827] rounded'} disabled={index === 0} onClick={handleNewTopic}>{title}</button>
+                    <button id={index} className={index != currentIndex ? `bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 m-2 border border-blue-700 rounded` : 'text-white bg-[#4B5563] dark:bg-[#4B5563] cursor-not-allowed font-bold px-2 m-2 text-center border border-[#111827] rounded'} disabled={index == currentIndex} onClick={handleNewTopic}>{title}</button>
                 </div>
             ))}
         </div>
