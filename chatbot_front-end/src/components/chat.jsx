@@ -107,6 +107,7 @@ const NewChat = () => {
         <div className="flex">
             {/* Include the Sidebar component and pass the chatTitle prop */}
             <Sidebar chatTitles={chatTitles} changeTopic={(i) => {handleChangeTopic(i)}} currentIndex={currentIndex} />
+            <div className="flex-auto">
             <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                 <WlcMsg />
                 {/* Display chat history */}
@@ -119,6 +120,7 @@ const NewChat = () => {
                 ))}
                 {/* Assuming handleNewChat and sendMsg are defined */}
                 <ChatBar handleNewChat={handleNewChat} sendMsg={(msg) => { handleSend(msg); }} />
+            </div>
             </div>
         </div>
     );
