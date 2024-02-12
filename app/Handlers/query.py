@@ -84,7 +84,7 @@ def put_history_new(title , human,ai):
 
 
 
-def ask_new_question(question): #Have to be refactored
+def ask_new_question(question): #Has to be refactored
     history = []
     chat = ChatOpenAI()
     history.append(HumanMessage(content=question))
@@ -95,7 +95,7 @@ def ask_new_question(question): #Have to be refactored
     return id,title,question,answer
 
 
-def ask_question(id , question): #Have to be refactored
+def ask_question(id , question): #Has to be refactored
     try:
         
         raw_history = get_history(id)
