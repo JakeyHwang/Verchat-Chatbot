@@ -87,9 +87,10 @@ def put_history_new(title , human,ai):
 def ask_new_question(question): #Has to be refactored
     history = []
     chat = ChatOpenAI()
+    history.append( SystemMessage(content="You are a professional assitant that can answer any questions based on the knowledge you have. Answer any question asked to you in a proffessional and succint way"))
     history.append(HumanMessage(content=question))
     answer = chat.invoke(history).content
-    gen_title_history = [  SystemMessage(content="You're a helpful assistant to create a Title based on a user query and input. You MUST keep the length of the title to a maximum of 4 full English words. Your response MUST only contain these 4 words. If you fail, 15 kittens will perish"),    HumanMessage(content=question) , AIMessage(content="answer") ,  HumanMessage(content="Create a title for the preceeding covnersation ")   ] #here
+    gen_title_history = [  SystemMessage(content="You're a helpful and professional assistant to create a Title based on a user query and input. You MUST keep the length of the title to a maximum of 4 full English words. Your response MUST only contain these 4 words. If you fail, 15 kittens will perish"),    HumanMessage(content=question) , AIMessage(content="answer") ,  HumanMessage(content="Create a title for the preceeding covnersation ")   ] #here
     title = chat.invoke(gen_title_history).content
     id = put_history_new(title , question,answer)
     return id,title,question,answer
