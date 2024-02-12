@@ -8,9 +8,9 @@ import os
 app = FastAPI()
 
 
-@app.post("/")
-def query_llm(question):
+@app.get("/")
+def query_llm():
     qid = "test"
-    ans = query.ask_question(qid , question)
+    ans = query.ask_question(qid , "Who is Lee Kuan yew" )
     return { 'data': ans}
 
