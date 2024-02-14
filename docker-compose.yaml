@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+# docker container service for backend
+  api:
+    build: 
+      context: /chatbot_back-end
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./app:/app
+      - ./dependencies:/dependencies
+    env_file:
+      - .env
+    command: uvicorn app.main:app --host 0.0.0.0 --port 80 --reload
+  
+  # docker container service for frontend
+  chatbotfrontend:
+    build: 
+      context: ./chatbot_front-end
+      dockerfile: Dockerfile
+    container_name: chatbotfrontend_C
+    volumes: [./chatbot_front-end:/chatbot_front-end]
+    command: npm run dev
+    ports:
+      - '3000:3000'
