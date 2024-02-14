@@ -11,8 +11,14 @@ app = FastAPI()
 # API for collecting all chat titles upon logging in
 @app.get("/")
 def start_up():
-    titles = query.get_all_titles()
-    return {'titles':titles}
+    datum = query.get_all_titles()
+    title = []
+    id = []
+    for data in datum:
+        title.append(data[1])
+        id.append(data[0])
+    
+    return {'title':title, 'id': id}
 
 
 

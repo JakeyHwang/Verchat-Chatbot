@@ -2,7 +2,7 @@ version: '3.8'
 services:
   fastapi-app:
     build: 
-      context: .
+      context: /chatbot_back-end
       dockerfile: Dockerfile
     ports:
       - "80:80"
