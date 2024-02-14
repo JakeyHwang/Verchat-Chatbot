@@ -6,7 +6,7 @@ import Navbar from "@/components/navBar";
 const page = () => {
   return (
     <>
-      <Navbar />
+      
       <h2>About us page</h2>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
