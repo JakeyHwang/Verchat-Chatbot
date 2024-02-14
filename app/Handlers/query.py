@@ -8,14 +8,18 @@ from langchain.prompts import PromptTemplate
 import firebase_admin
 from firebase_admin import credentials , firestore
 from google.cloud.firestore import ArrayUnion
+from dotenv import load_dotenv
 import os
-os.environ["OPENAI_API_KEY"] = os.environ.get("openai_api_key")
+
+load_dotenv()
+
+os.environ["OPENAI_API_KEY"] = os.getenv("openai_api_key")
 
 
 def get_all_titles():#Provides all Titles and ID
     try:
-        cred = credentials.Certificate("./firebase_keys.json")
-        app = firebase_admin.initialize_app(cred)
+        cred = credentials.Certificate("../firebase_keys.json")
+        app = firebase_admin.initialize_app(credential=cred)
         db = firestore.client()
         documents_data = []
         collection_name = "Verchat"
@@ -38,8 +42,8 @@ def get_all_titles():#Provides all Titles and ID
 
 def put_history(id,human,ai):
     try :
-        cred = credentials.Certificate("./firebase_keys.json")
-        app = firebase_admin.initialize_app(cred)
+        cred = credentials.Certificate("../firebase_keys.json")
+        app = firebase_admin.initialize_app(credential=cred)
         db = firestore.client()
         doc_ref = db.collection("Verchat").document(id)
         doc = doc_ref.get()
@@ -53,8 +57,8 @@ def put_history(id,human,ai):
         return E
     
 def get_history(id):
-    cred = credentials.Certificate("./firebase_keys.json")
-    app = firebase_admin.initialize_app(cred)
+    cred = credentials.Certificate("../firebase_keys.json")
+    app = firebase_admin.initialize_app(credential=cred)
     db = firestore.client()
     collection_name = "Verchat"
     doc_ref = db.collection(collection_name).document(id)
@@ -71,13 +75,13 @@ def get_history(id):
 
 def put_history_new(title , human,ai):
     try :
-        cred = credentials.Certificate("./firebase_keys.json")
-        app = firebase_admin.initialize_app(cred)
+        cred = credentials.Certificate("../firebase_keys.json")
+        app = firebase_admin.initialize_app(credential=cred)
         db = firestore.client()
         memory_dict = [{'Human':human , "AI":ai}]
         doc_ref = db.collection("Verchat").add({  'title' : title , 'memory': memory_dict   })
         return doc_ref.id
-        firebase_admin.delete_app(app)
+        # firebase_admin.delete_app(app)
     except Exception as E:
         firebase_admin.delete_app(app)
         return E
@@ -86,7 +90,7 @@ def put_history_new(title , human,ai):
 
 def ask_new_question(question): #Has to be refactored
     history = []
-    chat = ChatOpenAI()
+    chat = ChatOpenAI(api_key=os.environ["OPENAI_API_KEY"])
     history.append( SystemMessage(content="You are a professional assitant that can answer any questions based on the knowledge you have. Answer any question asked to you in a proffessional and succint way"))
     history.append(HumanMessage(content=question))
     answer = chat.invoke(history).content
@@ -109,7 +113,7 @@ def ask_question(id , question): #Has to be refactored
             history.append(AIMessage(content=i[1]) )
         history.append(HumanMessage(content=question) )
         
-        chat = ChatOpenAI()
+        chat = ChatOpenAI(api_key=os.environ["OPENAI_API_KEY"])
         answer = chat.invoke(history).content
         put_history(id,question , answer)
         return id , question , answer
