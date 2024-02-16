@@ -132,6 +132,7 @@ const Sidebar = ({chatTitles, changeTopic, currentIndex}) => {
     }
     return (
         <div id="histlog" className="bg-blue-200 w-1/5 h-screen">
+            <img src="./verchat_logo.png" alt="Sidebar Image"/>
             <h1 className='text-center'>Chat History</h1>
             {/* Display chat history in reverse order */}
             {chatTitles.slice(0).reverse().map((title, index) => (
