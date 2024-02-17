@@ -16,12 +16,15 @@ const ChatBar = ({ handleNewChat, sendMsg }) => {
     const [message, setMessage] = useState('');
 
     const handleChange = (e) => {
+        console.log(e);
         setMessage(e.target.value);
     }
 
     const handleSend = () => {
-        sendMsg(message);
-        setMessage('');
+        if (message.trim()) {
+            sendMsg(message);
+            setMessage('');  
+        }
     }
 
     return (
@@ -29,8 +32,10 @@ const ChatBar = ({ handleNewChat, sendMsg }) => {
             <button className="left-0 bg-[#7dd3fc] rounded-lg px-4 py-1 mx-2" onClick={handleNewChat}>
                 New Chat
             </button>
-            <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} />
-            <button className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1" onClick={handleSend}>Send</button>
+            <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
+            <button className={`mx-2 right-5 text-white rounded-lg px-4 py-1 ${!message.trim() ? 'bg-red-300 focus:outline-none' : 'bg-[#7dd3fc]'}`} onClick={handleSend} disabled={!message.trim()}>
+                Send
+            </button>
         </div>
     );
 }
@@ -132,7 +137,7 @@ const Sidebar = ({chatTitles, changeTopic, currentIndex}) => {
     }
     return (
         <div id="histlog" className="bg-blue-200 w-1/5 h-screen">
-            <img src="./verchat_logo.png" alt="Sidebar Image"/>
+            <img src="verchat_logo.png" alt="Sidebar Image"/>
             <h1 className='text-center'>Chat History</h1>
             {/* Display chat history in reverse order */}
             {chatTitles.slice(0).reverse().map((title, index) => (
