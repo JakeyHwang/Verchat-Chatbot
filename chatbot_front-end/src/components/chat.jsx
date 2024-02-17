@@ -4,12 +4,15 @@ const ChatBar = ({ sendMsg }) => {
     const [message, setMessage] = useState('');
 
     const handleChange = (e) => {
+        console.log(e);
         setMessage(e.target.value);
     }
 
     const handleSend = () => {
-        sendMsg(message);
-        setMessage('');
+        if (message.trim()) {
+            sendMsg(message);
+            setMessage('');  
+        }
     }
 
     return (
