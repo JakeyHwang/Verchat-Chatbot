@@ -132,10 +132,11 @@ const Sidebar = ({chatTitles, changeTopic, currentIndex}) => {
     }
     return (
         <div id="histlog" className="bg-blue-200 w-1/5 h-screen">
+            <img src="./verchat_logo.png" alt="Sidebar Image"/>
             <h1 className='text-center'>Chat History</h1>
             {/* Display chat history in reverse order */}
             {chatTitles.slice(0).reverse().map((title, index) => (
-                <div className='flex flex-col items-center justify-center'>
+                <div key={index} className='flex flex-col items-center justify-center'>
                     <button id={index} className={index != currentIndex ? `bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 m-2 border border-blue-700 rounded` : 'text-white bg-[#4B5563] dark:bg-[#4B5563] cursor-not-allowed font-bold px-2 m-2 text-center border border-[#111827] rounded'} disabled={index == currentIndex} onClick={handleNewTopic}>{title}</button>
                 </div>
             ))}

@@ -6,7 +6,7 @@ import NewChat from "@/components/chat";
 const page = () => {
   return (
     <>
-      <Navbar />
+      
       <NewChat />
     </>
   );
