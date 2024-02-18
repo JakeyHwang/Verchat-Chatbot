@@ -16,12 +16,11 @@ const ChatBar = ({ sendMsg }) => {
     }
 
     return (
-        <div className="fixed bottom-0 left-8 m-12 w-full">
+        <div className="fixed bottom-0 left-8 m-12 w-full flex">
             {/* <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} />
             <button className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1" onClick={handleSend}>Send</button> */}
-            <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
-            <button className={`mx-2 right-5 text-white rounded-lg px-4 py-1 ${!message.trim() ? 'bg-red-300 focus:outline-none' : 'bg-[#7dd3fc]'}`} onClick={handleSend} disabled={!message.trim()}>
-                Send
+            <input id="chat" type="text" placeholder="Ask me anything..." className='border border-black bg-[#fffff] rounded-full px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
+            <button className={`mx-2 right-5 text-white rounded-full px-4 py-4 ${!message.trim() ? 'bg-[#4f65e5] focus:outline-none' : 'bg-[#7dd3fc]'}`} onClick={handleSend} disabled={!message.trim()}>
             </button>
         </div>
     );
@@ -58,7 +57,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
 const WlcMsg = () => {
     return (
             <div className="">
-                <h1 className='bg-[#dcc1ff] rounded-lg px-2 py-1 col-start-1 col-end-2'>Hi, how may I help you today?</h1>
+                <h1 className='bg-[#d7e3fb] rounded-lg px-2 py-1 col-start-1 col-end-2'>Hi, how may I help you today?</h1>
             </div>     
     );
 }
@@ -102,7 +101,7 @@ const NewChat = () => {
                 <div className="flex flex-col-reverse">
                 {chatHistory.slice(0).reverse().map((chat, index) => (
                 <div key={index} className={chat.type === 'user' ? 'user-message' : 'bot-message'}>
-                <div className={`bg-gray-300 rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'ml-auto' : 'mr-auto'}`}>
+                <div className={`bg-[#e4e4e4] rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'ml-auto' : 'mr-auto'}`} >
                 <h1>{chat.message}</h1>
             </div>
             </div>
