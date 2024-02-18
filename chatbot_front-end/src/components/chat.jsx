@@ -17,7 +17,7 @@ const ChatBar = ({ sendMsg }) => {
     }
 
     return (
-        <div className="fixed bottom-0 left-8 m-12 w-full flex">
+        <div className="fixed bottom-0 m-12 w-full flex">
             {/* <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} />
             <button className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1" onClick={handleSend}>Send</button> */}
             <input id="chat" type="text" placeholder="Ask me anything..." className='border border-black bg-[#fffff] rounded-full px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
@@ -99,6 +99,8 @@ const NewChat = () => {
             <div className="flex-auto">
                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                     <WlcMsg />
+                    <div></div>
+                    <div></div>
                    {/* Display chat history */}
                 <div className="flex flex-col-reverse">
                 {chatHistory.slice(0).reverse().map((chat, index) => (
