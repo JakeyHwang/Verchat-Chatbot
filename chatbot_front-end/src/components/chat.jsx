@@ -35,7 +35,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
         <div id="histlog" className="bg-[#d7e3fb] w-1/5 h-screen flex flex-col">
             {/*Verchat Logo*/}
             <div className="flex justify-center">
-                <img src="./verchat_logo.jpg" alt="Sidebar Image" />
+                <img src="./verchat_logo.png" alt="Sidebar Image" />
             </div>
             {/* New Chat button */}
             <div className="flex justify-center">
