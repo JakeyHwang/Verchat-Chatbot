@@ -16,7 +16,7 @@ const ChatBar = ({ sendMsg }) => {
     }
 
     return (
-        <div className="fixed bottom-0 left-0 m-12 w-full">
+        <div className="fixed bottom-0 left-3 m-12 w-full">
             <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} />
             <button className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1" onClick={handleSend}>Send</button>
         </div>
@@ -53,13 +53,9 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
 
 const WlcMsg = () => {
     return (
-        // <div id="allmsg" className=''>
             <div className="">
                 <h1 className='bg-[#dcc1ff] rounded-lg px-2 py-1 col-start-1 col-end-2'>Hi, how may I help you today?</h1>
-            </div>
-            /* <div className="">
-            </div>
-        </div> */
+            </div>     
     );
 }
 
@@ -98,14 +94,18 @@ const NewChat = () => {
             <div className="flex-auto">
                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                     <WlcMsg />
-                    {/* Display chat history */}
-                    {chatHistory.map((chat, index) => (
-                        <div key={index} className={chat.type === 'user' ? 'user-message' : 'bot-message'}>
-                            <div className="send-msg bg-[#e7e5e4] rounded-lg px-2 py-1 col-end-3 col-span-1 text-wrap">
-                                <h1>{chat.message}</h1>
-                            </div>
-                        </div>
-                    ))}
+                   {/* Display chat history */}
+                <div className="flex flex-col-reverse">
+                {chatHistory.slice(0).reverse().map((chat, index) => (
+                <div key={index} className={chat.type === 'user' ? 'user-message' : 'bot-message'}>
+                <div className={`bg-gray-300 rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'ml-auto' : 'mr-auto'}`}>
+                <h1>{chat.message}</h1>
+            </div>
+            </div>
+            ))}
+        </div>
+
+
                     {/* Assuming sendMsg is defined */}
                     <ChatBar sendMsg={(msg) => { handleSend(msg); }} />
                 </div>
