@@ -10,9 +10,9 @@ services:
     # [./chatbot_back-end:/chatbot_back-end]
       - ./app:/app
       - ./dependencies:/dependencies
-    command: uvicorn app.main:app --host 0.0.0.0 --port 80 --reload
+    command: uvicorn app.main:app --host 127.1.1.1 --port 4000 --reload
     ports:
-      - "80:80"
+      - "4000:4000"
     env_file:
       - .env
 

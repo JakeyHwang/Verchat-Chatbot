@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from 'react';
+import Image from "next/image";
+import vertexLogo from '../public/verchat_logo.png'
 
 const ChatBar = ({ sendMsg }) => {
     const [message, setMessage] = useState('');
@@ -36,8 +38,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
         <div id="histlog" className="bg-[#d7e3fb] w-1/5 h-screen flex flex-col">
             {/*Verchat Logo*/}
             <div className="flex justify-center">
-                {/* <img src={logo} alt="Sidebar Image" /> */}
-
+            <Image width={200} height={115} src={vertexLogo} alt="ChatSideBar Image" />
             </div>
             {/* New Chat button */}
             <div className="flex justify-center">

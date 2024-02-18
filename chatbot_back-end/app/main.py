@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from .Handlers import query
 # from pydantic import BaseModel
 import os
@@ -8,6 +9,13 @@ import json
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # API for collecting all chat titles upon logging in
 @app.get("/")
 def start_up():
