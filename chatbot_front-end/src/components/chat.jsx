@@ -16,9 +16,13 @@ const ChatBar = ({ sendMsg }) => {
     }
 
     return (
-        <div className="fixed bottom-0 left-3 m-12 w-full">
-            <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} />
-            <button className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1" onClick={handleSend}>Send</button>
+        <div className="fixed bottom-0 left-8 m-12 w-full">
+            {/* <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} />
+            <button className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1" onClick={handleSend}>Send</button> */}
+            <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
+            <button className={`mx-2 right-5 text-white rounded-lg px-4 py-1 ${!message.trim() ? 'bg-red-300 focus:outline-none' : 'bg-[#7dd3fc]'}`} onClick={handleSend} disabled={!message.trim()}>
+                Send
+            </button>
         </div>
     );
 }
@@ -115,3 +119,22 @@ const NewChat = () => {
 }
 
 export default NewChat;
+
+// const handleSend = () => {
+//         if (message.trim()) {
+//             sendMsg(message);
+//             setMessage('');  
+//         }
+//     }
+
+//     return (
+//         <div className="fixed bottom-0 left-0 m-12 w-full">
+//             <button className="left-0 bg-[#7dd3fc] rounded-lg px-4 py-1 mx-2" onClick={handleNewChat}>
+//                 New Chat
+//             </button>
+//             <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
+//             <button className={`mx-2 right-5 text-white rounded-lg px-4 py-1 ${!message.trim() ? 'bg-red-300 focus:outline-none' : 'bg-[#7dd3fc]'}`} onClick={handleSend} disabled={!message.trim()}>
+//                 Send
+//             </button>
+//         </div>
+//     );
