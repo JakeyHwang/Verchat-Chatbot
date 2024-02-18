@@ -18,7 +18,7 @@ os.environ["OPENAI_API_KEY"] = os.getenv("openai_api_key")
 
 def get_all_titles():#Provides all Titles and ID
     try:
-        cred = credentials.Certificate("../firebase_keys.json")
+        cred = credentials.Certificate("./firebase_keys.json")
         app = firebase_admin.initialize_app(credential=cred)
         db = firestore.client()
         documents_data = []
@@ -42,7 +42,7 @@ def get_all_titles():#Provides all Titles and ID
 
 def put_history(id,human,ai):
     try :
-        cred = credentials.Certificate("../firebase_keys.json")
+        cred = credentials.Certificate("./firebase_keys.json")
         app = firebase_admin.initialize_app(credential=cred)
         db = firestore.client()
         doc_ref = db.collection("Verchat").document(id)
@@ -57,7 +57,7 @@ def put_history(id,human,ai):
         return E
     
 def get_history(id):
-    cred = credentials.Certificate("../firebase_keys.json")
+    cred = credentials.Certificate("./firebase_keys.json")
     app = firebase_admin.initialize_app(credential=cred)
     db = firestore.client()
     collection_name = "Verchat"
@@ -75,7 +75,7 @@ def get_history(id):
 
 def put_history_new(title , human,ai):
     try :
-        cred = credentials.Certificate("../firebase_keys.json")
+        cred = credentials.Certificate("./firebase_keys.json")
         app = firebase_admin.initialize_app(credential=cred)
         db = firestore.client()
         memory_dict = [{'Human':human , "AI":ai}]
