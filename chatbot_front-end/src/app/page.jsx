@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import Navbar from "@/components/navBar";
 import NewChat from "@/components/chat";
 import styles from "../input.css";
-import Logo from "@/components/logo";
 
 
 
@@ -22,13 +21,18 @@ const page = () => {
   }, [])
 
   async function fetchChatTitles() {
-    let path = '/'
-    console.log(process.env.NEXT_PUBLIC_API_URL + path)
-    const res = await fetch(process.env.NEXT_PUBLIC_API_URL + path)
-    const json = await res.json()
-    setChatTitle(json)
-    console.log(chatTitle)
-    console.log(res)
+    let f_path = process.env.NEXT_PUBLIC_API_URL
+    let b_path = '/'
+    // let res = await fetch(process.env.NEXT_PUBLIC_API_URL + path)
+    // const json = await res.json()
+    let res;
+    fetch(`${f_path+b_path}`)
+    .then((response) => response.json())
+    .then((data) => (res = data))
+    .then(() => console.log(res));
+    setChatTitle(res)
+
+    return res;
   }
 
   return (
