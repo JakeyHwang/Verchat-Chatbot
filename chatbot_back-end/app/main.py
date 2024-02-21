@@ -68,5 +68,5 @@ def create_new_chat(qn:str):
     else:
         return {'error': 'data not found'}
 
-{"id": "kAwXTGrCZMj2oZzAFEJQ",
- "qn": "Is Apple a good company? Tell me 3 benefits."}
+{"id": "mCwXP0RwWY3yqsGKgtR2",
+ "qn": "How long has this company been around"}

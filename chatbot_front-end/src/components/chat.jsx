@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from "next/image";
 import vertexLogo from '../public/verchat_logo.png'
+import { createSearchParamsBailoutProxy } from 'next/dist/client/components/searchparams-bailout-proxy';
 
 const ChatBar = ({ sendMsg }) => {
     const [message, setMessage] = useState('');
@@ -65,17 +66,33 @@ const WlcMsg = () => {
     );
 }
 
-const NewChat = () => {
-    const chatTitle = "Untitled Chat2";
+const NewChat = ({chatData}) => {
+    const chatTitle = "New chat";
     const [currentIndex, setCurrentIndex] = useState(0);
     const [currentChatTitle, setCurrentChatTitle] = useState(chatTitle);
     const [chatHistory, setChatHistory] = useState([]);
     const [chatTitles, setChatTitles] = useState([currentChatTitle]);
     const [chatHistories, setChatHistories] = useState({});
+    const [isLoading, setLoading] = useState(true)
+
+    // running API call only once upon page load
+    useEffect(() => {
+        let f_path = process.env.NEXT_PUBLIC_API_URL
+        let b_path = '/'
+        fetch(`${f_path+b_path}`)
+            .then((res)=>res.json())
+            .then((data)=>{
+                setChatTitles(data["title"])
+                setLoading(false)
+            })
+    }, [])
+
+    if (isLoading) return <p>Loading...</p>
+
 
     const handleNewChat = () => {
-        console.log('Creating a new chat...');
-        console.log(chatHistory);
+        // console.log('Creating a new chat...');
+        // console.log(chatHistory);
         setChatTitles([...chatTitles, currentChatTitle]); // Add the current chat title to the list of chat titles
         setChatHistories({ ...chatHistories, [chatTitles.length - currentIndex - 1]: chatHistory }); // Add the current chat history to the list of chat histories
         setChatHistory([]); // Clear chat history when starting a new chat
@@ -85,6 +102,8 @@ const NewChat = () => {
     const handleSend = (msg) => {
         const updatedChatHistory = [...chatHistory, { type: 'user', message: msg }];
         setChatHistory(updatedChatHistory);
+        // API call here to send message
+        // will require chat id and message
     };
 
     const handleChangeTopic = (i) => {
