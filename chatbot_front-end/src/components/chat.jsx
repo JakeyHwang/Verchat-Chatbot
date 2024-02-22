@@ -60,7 +60,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
 
 const WlcMsg = () => {
     return (
-            <div className="">
+            <div style={{ paddingTop: '20px' }}>
                 <h1 className='bg-[#d7e3fb] rounded-lg px-2 py-1 col-start-1 col-end-2'>Hi, how may I help you today?</h1>
             </div>     
     );
@@ -76,7 +76,7 @@ const NewChat = ({chatData}) => {
     const [isLoading, setLoading] = useState(true)
 
     // running API call only once upon page load
-    useEffect(() => {
+    /*useEffect(() => {
         let f_path = process.env.NEXT_PUBLIC_API_URL
         let b_path = '/'
         fetch(`${f_path+b_path}`)
@@ -87,7 +87,7 @@ const NewChat = ({chatData}) => {
             })
     }, [])
 
-    if (isLoading) return <p>Loading...</p>
+    if (isLoading) return <p>Loading...</p>*/
 
 
     const handleNewChat = () => {
@@ -118,7 +118,7 @@ const NewChat = ({chatData}) => {
             <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} />
             <div className="flex-auto">
                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
-                    <WlcMsg />
+                    <WlcMsg/>
                     <div></div>
                     <div></div>
                    {/* Display chat history */}
