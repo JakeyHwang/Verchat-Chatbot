@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Header
+from typing import Annotated
 from fastapi.middleware.cors import CORSMiddleware
 from .Handlers import query
 # from pydantic import BaseModel
@@ -15,6 +16,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 # API for collecting all chat titles upon logging in
 @app.get("/")
@@ -33,15 +35,17 @@ def start_up():
 
 
 
+
 # API for collecting chat history
 # requires chat ID
-@app.post("/{id}")
+@app.get("/{id}")
 def get_history_data(id:str):
     data = query.get_history(id)
     if(data != None):
         return {'data': data}
     else:
         return {'error': 'data not found'}
+
 
 # API endpoint for asking question
 # requires a JSON object in string format as input
