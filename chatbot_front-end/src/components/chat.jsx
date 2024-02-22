@@ -48,6 +48,10 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
                 </button>
             </div>
             <h1 className='text-center'>Chat History</h1>
+            {/* Search Bar */}
+            <div className="flex justify-center">
+                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-full px-2 py-1 mt-2" />
+            </div>
             {/* Display chat history in reverse order */}
             {chatTitles.slice(0).reverse().map((title, index) => (
                 <div key={index} className='flex flex-col items-center justify-center'>
