@@ -77,9 +77,21 @@ const ChatBar = ({ sendMsg }) => {
     );
 }
 
-const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
+const Sidebar = ({ chatTitles, changeTopic, filterTitles, currentIndex, handleNewChat }) => {
     const handleNewTopic = (i) => {
         changeTopic(i);
+    }
+
+    const filterTitle = (e) => {
+        // const value = ;
+        console.log(e.target.value)
+        filterTitle(e.target.value);
+        // const filteredTitles = Object.entries(chatTitles).filter((title) => title[0].toLowerCase().includes(value));
+        // const filteredChatTitles = {};
+        // filteredTitles.forEach((title) => {
+        //     filteredChatTitles[title[0]] = title[1];
+        // });
+        // setChatTitles(filteredChatTitles);
     }
 
     const arr = []
@@ -91,7 +103,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
         <div id="histlog" className="bg-[#d7e3fb] w-1/5 h-screen flex flex-col">
             {/*Verchat Logo*/}
             <div className="flex justify-center">
-            <Image width={200} height={115} src={vertexLogo} alt="ChatSideBar Image" />
+            <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '210px', height:'70px',  marginTop: '10px', marginBottom:'25px'}}  className="rounded-lg" />
             </div>
             {/* New Chat button */}
             <div className="flex justify-center">
@@ -102,7 +114,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
             <h1 className='text-center'>Chat History</h1>
             {/* Search Bar */}
             <div className="flex justify-center">
-                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-full px-2 py-1 mt-2" />
+                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-full px-2 py-1 mt-2" onChange={(e) => filterTitle(e)} />
             </div>
             {/* Display chat history in reverse order .slice(0).reverse() */}
             {arr.map((title, index) => (
@@ -181,9 +193,21 @@ const NewChat = ({chatData}) => {
             // if (isHistoryLoading) return <p>Loading chat history...</p>
     }
 
+    const filterTitles = (e) => {
+        console.log(2)
+        console.log(e)
+        value = e
+        const filteredTitles = Object.entries(chatTitles).filter((title) => title[0].toLowerCase().includes(value));
+        const filteredChatTitles = {};
+        filteredTitles.forEach((title) => {
+            filteredChatTitles[title[0]] = title[1];
+        });
+        setChatTitles(filteredChatTitles);
+    }
+
     return (
         <div className="flex">
-            <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} />
+            <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} filterTitle={(e) => {filterTitles(e)} } currentIndex={currentIndex} handleNewChat={handleNewChat} />
             <div className="flex-auto">
                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                     <WlcMsg/>
