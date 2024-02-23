@@ -132,17 +132,18 @@ const NewChat = ({chatData}) => {
     const [isChatLoading, setChatLoading] = useState(true)
     const [isHistoryLoading, setHistoryLoading] = useState(true)
 
-    let f_path = process.env.NEXT_PUBLIC_API_URL
-    let t_data = {}
-    let h_data = []
+    
 
     // running API call only once upon page load
-    useEffect(() => {
-        getStartUpData(f_path,t_data, setCurrentIndex, setChatTitles, setChatLoading, h_data)
-        // getHistoryData(f_path,'51mMlSZMDsbNuZUXg10T',h_data, setChatHistory,chatHistory)
-    }, [])
+    // useEffect(() => {
+    //     let f_path = process.env.NEXT_PUBLIC_API_URL
+    //     let t_data = {}
+    //     let h_data = []
+    //     getStartUpData(f_path,t_data, setCurrentIndex, setChatTitles, setChatLoading, h_data)
+    //     // getHistoryData(f_path,'51mMlSZMDsbNuZUXg10T',h_data, setChatHistory,chatHistory)
+    // }, [])
 
-    if (isChatLoading) return <p>Loading...</p>
+    // if (isChatLoading) return <p>Loading...</p>
 
 
     const handleNewChat = () => {
