@@ -51,12 +51,15 @@ def get_history_data(id:str):
 # requires a JSON object in string format as input
 # {"id": "<chatid>",
 # "qn": "<yourquestion>"}
-@app.post("/chatbot/question/{data}")
-def query_llm(data:str):
-    data = json.loads(data)
-    if (data!=None):
-        id = data['id']
-        qn = data['qn']
+@app.post("/chatbot/question/{id}/{qn}")
+def query_llm(id:str, qn:str):
+    # print(data)
+    # data = json.loads(data)
+    # print(data)
+    # if (data!=None):
+        # id = data['id']
+        # qn = data['qn']
+    if(id != None and qn != None):
         ans = query.ask_question(id , qn)
         return { 'data': ans}
     else:

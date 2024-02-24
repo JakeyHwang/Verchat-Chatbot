@@ -6,7 +6,8 @@ import { createSearchParamsBailoutProxy } from 'next/dist/client/components/sear
 import { output } from '../../next.config';
 
 // populates chatTitles and first chat title history using data from API call
-const getChatTitles = (t_data, setChatTitles, chatTitle="", setTitleArray)=>{
+const getChatTitles = (setChatTitles, setTitleArray, chatTitle="")=>{
+    let t_data = {}
     let output = ''
 
     fetch("http://127.1.1.1:4000/", { method: 'GET' })
@@ -87,8 +88,10 @@ const Sidebar = ({ chatTitles, changeTopic, filterTitles, currentIndex, handleNe
 
     const filterTitle = (e) => {
         // const value = ;
-        console.log(e.target.value)
-        filterTitle(e.target.value);
+        // console.log(e)
+        let kw = e.target.value
+        console.log(kw)
+        filterTitle(kw);
         // const filteredTitles = Object.entries(chatTitles).filter((title) => title[0].toLowerCase().includes(value));
         // const filteredChatTitles = {};
         // filteredTitles.forEach((title) => {
@@ -117,7 +120,7 @@ const Sidebar = ({ chatTitles, changeTopic, filterTitles, currentIndex, handleNe
             <h1 className='text-center'>Chat History</h1>
             {/* Search Bar */}
             <div className="flex justify-center">
-                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-full px-2 py-1 mt-2" onChange={(e) => filterTitle(e)} />
+                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-full px-2 py-1 mt-2" style={{ width:'90%' }} onChange={(e) => filterTitle(e)} />
             </div>
             {/* Display chat history in reverse order .slice(0).reverse() */}
             {arr.map((title, index) => (
@@ -138,7 +141,7 @@ const WlcMsg = () => {
 }
 
 const NewChat = ({chatData}) => {
-    const chatTitle = "New chat";
+    const chatTitle = "Untitled Chat";
     const [currentIndex, setCurrentIndex] = useState('');
     const [currentChatTitle, setCurrentChatTitle] = useState(chatTitle);
     const [chatHistory, setChatHistory] = useState([]);
@@ -149,7 +152,7 @@ const NewChat = ({chatData}) => {
     const [isHistoryLoading, setHistoryLoading] = useState(true)
 
     const handleNewChat = () => {
-        setChatTitles({...chatTitles, [chatTitle]:"123"}); // Add the current chat title to the list of chat titles
+        setChatTitles({ [chatTitle]: "123", ...chatTitles }); // Add the current chat title to the list of chat titles
         // setChatHistories({ ...chatHistories, [chatTitles.length - currentIndex - 1]: chatHistory }); // Add the current chat history to the list of chat histories
         setChatHistory([]); // Clear chat history when starting a new chat
         setCurrentChatTitle(chatTitle); // Reset chat title to the placeholder
@@ -161,11 +164,10 @@ const NewChat = ({chatData}) => {
     // running API call only once upon page load
     // useEffect(() => {
     //     let f_path = process.env.NEXT_PUBLIC_API_URL
-        let t_data = {}
     if (currentIndex === '') {
-        getChatTitles(t_data, setChatTitles, chatTitle, setTitleArray)
+        getChatTitles(setChatTitles, setTitleArray, chatTitle)
         setCurrentChatTitle(chatTitle);
-        setCurrentIndex(titleArray.indexOf(chatTitle));
+        setCurrentIndex(0);
     }
     //     // getHistoryData(f_path,'51mMlSZMDsbNuZUXg10T',h_data, setChatHistory,chatHistory)
     // }, [])
@@ -173,6 +175,8 @@ const NewChat = ({chatData}) => {
     // if (isChatLoading) return <p>Loading...</p>
 
     const handleSend = (msg) => {
+        console.log(currentChatTitle)
+        console.log(chatTitle)
         if (currentChatTitle === chatTitle) {
             // API call to create new chat
             // function needs to detect that the chat is empty and new before API is called
@@ -183,14 +187,30 @@ const NewChat = ({chatData}) => {
                 })
                 .then((data) => {
                     console.log(data)
-                    console.log(data['data'])
-                    console.log(data['data'][0])
-                    console.log(data['data'][1])
-                    let user = {'type':'user','message':`${data['data'][0]}`}
-                    let bot = {'type':'bot', 'message':`${data['data'][1]}`}
+                    let user = {'type':'user','message':`${data.question}`}
+                    let bot = {'type':'bot', 'message':`${data.answer}`}
+                    setChatHistory([...chatHistory, user, bot])
+                    getChatTitles(setChatTitles, setTitleArray)
+                    setCurrentChatTitle(data.title)
+                })
+        }
+        else {
+            // let param = {"id":chatTitles[currentChatTitle], "qn":msg}
+            // param = JSON.stringify(param)
+            // fetch(`http://127.1.1.1:4000/chatbot/question/${param}`, { method: 'POST' , body: JSON. stringify(param) } )
+            fetch(`http://127.1.1.1:4000/chatbot/question/${chatTitles[currentChatTitle]}/${msg}`, { method: 'POST'} )
+                .then((res) => {
+                    console.log(res.body)
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log(data)
+                    let user = {'type':'user','message':`${data.data[1]}`}
+                    let bot = {'type':'bot', 'message':`${data.data[2]}`}
                     setChatHistory([...chatHistory, user, bot])
                 })
         }
+
         const updatedChatHistory = [...chatHistory, { type: 'user', message: msg }];
         setChatHistory(updatedChatHistory);
         // API call here to send message
@@ -208,8 +228,14 @@ const NewChat = ({chatData}) => {
         // setChatHistory(chatHistories[chatTitles.length + ((Number(i.target.id) + 1) * -1)]);
         console.log(i.target.id)
         console.log(chatTitles[i.target.id])
-        getChatHistory(chatTitles[i.target.id], setChatHistory)
+        if (i.target.id === chatTitle){
+            setChatHistory([])
+        }
+        else{
+            getChatHistory(chatTitles[i.target.id], setChatHistory)
+        }
         setCurrentIndex(titleArray.indexOf(i.target.id))
+        setCurrentChatTitle(i.target.id)
         
 
 
