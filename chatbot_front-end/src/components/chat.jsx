@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
 import Image from "next/image";
-import vertexLogo from '../public/verchat_logo.png'
+import vertexLogo from '../public/transparent_verchat_logo.png'
 import { createSearchParamsBailoutProxy } from 'next/dist/client/components/searchparams-bailout-proxy';
 import { output } from '../../next.config';
 
@@ -67,18 +67,9 @@ const ChatBar = ({ sendMsg }) => {
     }
 
     return (
-<<<<<<< Updated upstream
-        <div className="fixed bottom-0 m-12 w-full flex">
-            {/* <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} />
-            <button className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1" onClick={handleSend}>Send</button> */}
-            <input id="chat" type="text" placeholder="Ask me anything..." className='border border-black bg-[#fffff] rounded-full px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
-            <button className={`mx-2 right-5 text-white rounded-full px-4 py-4 ${!message.trim() ? 'bg-[#4f65e5] focus:outline-none' : 'bg-[#7dd3fc]'}`} onClick={handleSend} disabled={!message.trim()}>
-            </button>
-=======
         <div className="fixed bottom-0 left-4 m-12 w-full">
             <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} />
             <button className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1" onClick={handleSend}>Send</button>
->>>>>>> Stashed changes
         </div>
     );
 }
@@ -109,7 +100,7 @@ const Sidebar = ({ chatTitles, changeTopic, filterTitles, currentIndex, handleNe
         <div id="histlog" className="bg-[#d7e3fb] w-1/5 h-screen flex flex-col">
             {/*Verchat Logo*/}
             <div className="flex justify-center">
-            <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '210px', height:'70px',  marginTop: '10px', marginBottom:'25px'}}  className="rounded-lg" />
+            <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '210px', height:'70px',  marginTop: '10px', marginBottom:'25px'}}  className="rounded-lg " />
             </div>
             {/* New Chat button */}
             <div className="flex justify-center">
@@ -117,6 +108,7 @@ const Sidebar = ({ chatTitles, changeTopic, filterTitles, currentIndex, handleNe
                     New Chat
                 </button>
             </div>
+            <div><br /><br /><br /></div>
             <h1 className='text-center'>Chat History</h1>
             {/* Search Bar */}
             <div className="flex justify-center">
