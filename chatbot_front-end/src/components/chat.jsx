@@ -118,7 +118,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
             <div className="flex justify-center mx-1">
             <button className="bg-[#7dd3fc] w-full rounded-md py-2 px-4 text-left flex items-center justify-between" onClick={handleNewChat}>
                 <span>New Chat</span>
-                <img src={new_chat_icon} alt="Icon" className="h-4 w-4" /> {/* Image */}
+                <Image src={new_chat_icon} alt="Icon" className="h-4 w-4" /> {/* Image */}
             </button>
             </div>
             <div><br /></div>
