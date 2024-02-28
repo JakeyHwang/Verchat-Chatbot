@@ -71,9 +71,9 @@ const ChatBar = ({ sendMsg }) => {
     }
     //className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1"
     return (
-        <div className="fixed bottom-0 left-4 m-12 w-full">
-            <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} />
-            <button onClick={handleSend}>
+        <div className="fixed bottom-0 m-12 w-full flex">
+            <input id="chat" type="text" placeholder="Ask me anything..." className= 'border border-black bg-[#fffff] rounded-full px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
+            <button onClick={handleSend} disabled={!message.trim()}>
                 <Image src={sendIcon} style={{ width: '28px', height:'28px',  marginLeft: '10px', marginBottom:'-7px'}} />
             </button>
             
