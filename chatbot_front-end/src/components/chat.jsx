@@ -119,13 +119,17 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
             </div>
             {/* New Chat button */}
             <div className="flex justify-center mx-1">
-            <button className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300" onClick={handleNewChat}>
+            <button 
+                className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300" 
+                style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
+                onClick={handleNewChat}>
                 <span>New Chat</span>
                 <Image src={new_chat_icon} alt="Icon" className="h-4 w-4" /> {/* Image */}
             </button>
             </div>
-            <div></div>
-            <h1 className='text-left font-bold px-4 '>Chat History</h1>
+           
+           {/*<hr style={{margin: '0 8px', border: '1px solid grey'}} />*/}
+            <h1 className='text-left text-gray-600 font-medium pt-1 px-4 '>Chat History</h1>
             {/* Search Bar */}
             <div className="flex mx-1 mb-2">
                 <input type="text" placeholder="Search..." className="border border-gray-400 rounded-lg px-2 py-1 mt-2" style={{ width:'100%' }} onChange={handleChange} />
@@ -137,6 +141,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
                         <button 
                 key={chatTitles[`${title}`]} 
                 id={chatTitles[`${title}`]} 
+                style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
                 className={`
                     w-full rounded-md py-2 px-4 text-left
                     ${chatTitles[`${title}`] != currentIndex ? 'bg-[#d7e3fb] hover:bg-blue-300 text-black' : 'bg-blue-400 pointer-events-none text-white'} 
