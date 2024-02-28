@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from "next/image";
 import vertexLogo from '../public/transparent_verchat_logo.png'
 import sendIcon from '../public/paper-plane.png'
+import new_chat_icon from '../public/new_chat_icon.png'
 import { createSearchParamsBailoutProxy } from 'next/dist/client/components/searchparams-bailout-proxy';
 import { output } from '../../next.config';
 
@@ -114,16 +115,17 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
             <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '210px', height:'70px',  marginTop: '10px', marginBottom:'25px'}}  className="rounded-lg" />
             </div>
             {/* New Chat button */}
-            <div className="flex justify-center">
-                <button className="bg-[#7dd3fc] rounded-lg px-4 py-1 mx-2" onClick={handleNewChat}>
-                    New Chat
-                </button>
+            <div className="flex justify-center mx-1">
+            <button className="bg-[#7dd3fc] w-full rounded-md py-2 px-4 text-left flex items-center justify-between" onClick={handleNewChat}>
+                <span>New Chat</span>
+                <img src={new_chat_icon} alt="Icon" className="h-4 w-4" /> {/* Image */}
+            </button>
             </div>
             <div><br /></div>
-            <h1 className='text-center text-lg font-bold mb-4 '>Chat History</h1>
+            <h1 className='text-left text-lg font-bold mb-4 px-2 '>Chat History</h1>
             {/* Search Bar */}
-            <div className="flex justify-center mb-2">
-                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-full px-2 py-1 mt-2" style={{ width:'90%' }} onChange={handleChange} />
+            <div className="flex mx-1 mb-2">
+                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-lg px-2 py-1 mt-2" style={{ width:'100%' }} onChange={handleChange} />
             </div>
             {/* Display chat history in reverse order .slice(0).reverse() */}
             <div className="overflow-y-auto h-80">
@@ -133,7 +135,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
                 key={chatTitles[`${title}`]} 
                 id={chatTitles[`${title}`]} 
                 className={`
-                    w-full rounded-md py-2 px-4
+                    w-full rounded-md py-2 px-4 text-left
                     ${chatTitles[`${title}`] != currentIndex ? 'bg-[#d7e3fb] hover:bg-blue-300 text-black' : 'bg-blue-400 pointer-events-none text-white'} 
                     
                 `}
