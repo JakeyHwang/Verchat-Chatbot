@@ -49,6 +49,7 @@ const getChatHistory = (id, setChatHistory) => {
         })
         .then(()=>{
             setChatHistory(h_data)
+            
         })}
     else{
         console.log("id not defined")
@@ -107,8 +108,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
 
 
     return (
-        <div id="histlog" className="bg-[#d7e3fb] w-1/4 h-screen flex flex-col">
-
+        <div id="histlog" className="bg-[#d7e3fb] relative w-[300px] h-screen flex flex-col">
             {/*Verchat Logo*/}
             <div className="flex justify-center">
             <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '210px', height:'70px',  marginTop: '10px', marginBottom:'25px'}}  className="rounded-lg" />
@@ -222,7 +222,7 @@ const NewChat = ({chatData}) => {
                 .then((data) => {
                     console.log(data)
                     let user = {'type':'user','message':`${data.data[1]}`}
-                    let bot = {'type':'bot', 'message':`${data.data[2]}`}
+                    let bot = {'type':'bot-message', 'message':`${data.data[2]}`}
                     setChatHistory([...chatHistory, user, bot])
                 })
         }
@@ -249,19 +249,20 @@ const NewChat = ({chatData}) => {
             <div className="flex-auto">
                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                     <WlcMsg/>
-                    <div></div>
-                    <div></div>
+                </div>
+                    {/* <div className='topright'></div>
+                    <div className='bottom left'></div> */}
                    {/* Display chat history */}
                 <div className="flex flex-col">
                     {/* .slice(0).reverse() */}
                 {chatHistory.map((chat, index) => (
-                <div key={index} className={chat.type === 'user' ? 'user-message' : 'bot-message'}>
-                    <div key={index} className={`bg-[#e4e4e4] rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'ml-auto' : 'mr-auto'}`} >
+                <div key={index} className={chat.type === 'user' ? 'relative w-[500px] place-self-end pr-3' : 'relative w-[700px] place-self-start pl-3'}>
+                    <div key={index} className={`bg-[#e4e4e4] rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'ml-auto' : 'mr-auto '}`} >
                         <h1>{chat.message}</h1>
                     </div>
                 </div>
                 ))}
-            </div>
+            
                 {/* Assuming sendMsg is defined */}
                 <ChatBar sendMsg={(msg) => { handleSend(msg); }} />
             </div>
