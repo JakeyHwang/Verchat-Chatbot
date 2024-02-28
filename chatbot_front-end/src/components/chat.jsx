@@ -112,7 +112,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
 
     //h-screen flex flex-col
     return (
-        <div id="histlog" className="bg-[#d7e3fb] relative w-[300px]  min-vh-100">
+        <div id="histlog" className="bg-[#d7e3fb] relative w-[300px]  h-screen">
             {/*Verchat Logo*/}
             <div className="flex">
             <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '270px', height:'85.5px', marginBottom:'25px'}}  className="rounded-lg" />
@@ -135,7 +135,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
                 <input type="text" placeholder="Search..." className="border border-gray-400 rounded-lg px-2 py-1 mt-2" style={{ width:'100%' }} onChange={handleChange} />
             </div>
             {/* Display chat history in reverse order .slice(0).reverse() */}
-            <div className="overflow-y-auto h-80">
+            <div className="overflow-y-auto">
                 {toShow.map((title, index) => (
                     <div key={chatTitles[`${title}`]} className='font-medium mx-1'>
                         <button 
