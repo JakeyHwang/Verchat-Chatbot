@@ -110,9 +110,9 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
         changeTopic(i);
     }
 
-
+    //h-screen flex flex-col
     return (
-        <div id="histlog" className="bg-[#d7e3fb] relative w-[300px] h-screen flex flex-col">
+        <div id="histlog" className="bg-[#d7e3fb] relative w-[300px]  min-vh-100">
             {/*Verchat Logo*/}
             <div className="flex">
             <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '270px', height:'85.5px', marginBottom:'25px'}}  className="rounded-lg" />
