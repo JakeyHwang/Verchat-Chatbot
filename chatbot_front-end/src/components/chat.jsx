@@ -79,7 +79,7 @@ const ChatBar = ({ sendMsg }) => {
         <div className="fixed bottom-0 m-12 w-full flex">
             <input id="chat" type="text" placeholder="Ask me anything..." className= 'border border-black bg-[#fffff] rounded-full px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
             <button onClick={handleSend} disabled={!message.trim()}>
-                <Image src={sendIcon} style={{ width: '28px', height:'28px',  marginLeft: '10px', marginBottom:'-7px'}} />
+                <Image src={sendIcon} style={{ width: '28px', height:'28px',  marginLeft: '10px', marginBottom:'1px'}} />
             </button>
             
         </div>
@@ -121,7 +121,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
             <div className="flex justify-center mx-1">
             <button className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300" onClick={handleNewChat}>
                 <span>New Chat</span>
-                <img src={new_chat_icon.src} alt="Icon" className="h-4 w-4" />
+                <Image src={new_chat_icon} alt="Icon" className="h-4 w-4" /> {/* Image */}
             </button>
             </div>
             <div></div>
