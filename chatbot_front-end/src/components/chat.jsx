@@ -4,8 +4,11 @@ import Image from "next/image";
 import vertexLogo from '../public/transparent_verchat_logo.png'
 import sendIcon from '../public/paper-plane.png'
 import new_chat_icon from '../public/new_chat_icon.png'
+import '../public/styles.css';
 import { createSearchParamsBailoutProxy } from 'next/dist/client/components/searchparams-bailout-proxy';
 import { output } from '../../next.config';
+
+
 
 // populates chatTitles and first chat title history using data from API call
 const getChatTitles = (setChatTitles, setTitleArray, chatTitle="")=>{
@@ -111,18 +114,18 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
     return (
         <div id="histlog" className="bg-[#d7e3fb] relative w-[300px] h-screen flex flex-col">
             {/*Verchat Logo*/}
-            <div className="flex justify-center">
-            <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '210px', height:'70px',  marginTop: '10px', marginBottom:'25px'}}  className="rounded-lg" />
+            <div className="flex">
+            <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '270px', height:'85.5px', marginBottom:'25px'}}  className="rounded-lg" />
             </div>
             {/* New Chat button */}
             <div className="flex justify-center mx-1">
-            <button className="bg-[#7dd3fc] w-full rounded-md py-2 px-4 text-left flex items-center justify-between" onClick={handleNewChat}>
+            <button className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300" onClick={handleNewChat}>
                 <span>New Chat</span>
-                <img src={new_chat_icon} alt="Icon" className="h-4 w-4" /> {/* Image */}
+                <img src={new_chat_icon.src} alt="Icon" className="h-4 w-4" />
             </button>
             </div>
-            <div><br /></div>
-            <h1 className='text-left text-lg font-bold mb-4 px-2 '>Chat History</h1>
+            <div></div>
+            <h1 className='text-left font-bold px-4 '>Chat History</h1>
             {/* Search Bar */}
             <div className="flex mx-1 mb-2">
                 <input type="text" placeholder="Search..." className="border border-gray-400 rounded-lg px-2 py-1 mt-2" style={{ width:'100%' }} onChange={handleChange} />
@@ -171,6 +174,7 @@ const NewChat = ({chatData}) => {
     const [titleArray, setTitleArray] = useState([]);
     const [isChatLoading, setChatLoading] = useState(true)
     const [isHistoryLoading, setHistoryLoading] = useState(true)
+    
 
     const handleNewChat = () => {
         setChatTitles({ [chatTitle]: "123", ...chatTitles }); // Add the current chat title to the list of chat titles
@@ -246,6 +250,7 @@ const NewChat = ({chatData}) => {
     }
 
     return (
+        
         <div className="flex">
             <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} />
             <div className="flex-auto">
