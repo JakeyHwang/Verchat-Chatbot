@@ -39,6 +39,7 @@ const getChatHistory = (id, setChatHistory) => {
     // console.log(`${f_path+b_path+output}`)
     // let res = fetch(`${f_path+b_path}`)
     let h_data = []
+    if(id!== undefined){
     fetch(`http://127.1.1.1:4000/${id}`)
         .then((res)=>{return res.json()})
         .then((data)=>{
@@ -53,7 +54,10 @@ const getChatHistory = (id, setChatHistory) => {
         })
         .then(()=>{
             setChatHistory(h_data)
-        })
+        })}
+    else{
+        console.log("id not defined")
+    }
 }
 
 const ChatBar = ({ sendMsg }) => {
@@ -82,35 +86,36 @@ const ChatBar = ({ sendMsg }) => {
     );
 }
 
-const Sidebar = ({ chatTitles, changeTopic, filterTitles, currentIndex, handleNewChat }) => {
+const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
+    const [searchQuery, setSearchQuery] = useState('')
+    //array to hold original titles
+    let arr = []
+    Object.entries(chatTitles).forEach((key) => {
+        arr.push(key[0])
+    })
+    // changing filter query
+    const handleChange =(e)=>{
+        setSearchQuery(e.target.value)
+    }
+    // filter handler: currently filters based on chat title only
+    const filterTitle = (array) => {
+        return array.filter(
+            (el)=> el.toLowerCase().includes(searchQuery)
+        )
+    }
+    // creating and applying filter
+    const toShow = filterTitle(arr)
+    
     const handleNewTopic = (i) => {
         changeTopic(i);
     }
 
-    const filterTitle = (e) => {
-        // const value = ;
-        // console.log(e)
-        let kw = e.target.value
-        console.log(kw)
-        filterTitle(kw);
-        // const filteredTitles = Object.entries(chatTitles).filter((title) => title[0].toLowerCase().includes(value));
-        // const filteredChatTitles = {};
-        // filteredTitles.forEach((title) => {
-        //     filteredChatTitles[title[0]] = title[1];
-        // });
-        // setChatTitles(filteredChatTitles);
-    }
-
-    const arr = []
-    Object.entries(chatTitles).forEach((key) => {
-        arr.push(key[0])
-    })
 
     return (
         <div id="histlog" className="bg-[#d7e3fb] w-1/5 h-screen flex flex-col">
             {/*Verchat Logo*/}
             <div className="flex justify-center">
-            <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '210px', height:'70px',  marginTop: '10px', marginBottom:'25px'}}  className="rounded-lg " />
+                <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '210px', height:'70px',  marginTop: '10px', marginBottom:'25px'}}  className="rounded-lg " />
             </div>
             {/* New Chat button */}
             <div className="flex justify-center">
@@ -122,12 +127,12 @@ const Sidebar = ({ chatTitles, changeTopic, filterTitles, currentIndex, handleNe
             <h1 className='text-center'>Chat History</h1>
             {/* Search Bar */}
             <div className="flex justify-center">
-                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-full px-2 py-1 mt-2" style={{ width:'90%' }} onChange={(e) => filterTitle(e)} />
+                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-full px-2 py-1 mt-2" style={{ width:'90%' }} onChange={handleChange} />
             </div>
             {/* Display chat history in reverse order .slice(0).reverse() */}
-            {arr.map((title, index) => (
-                <div key={index} className='flex flex-col items-center justify-center'>
-                    <button id={title} className={index != currentIndex ? `bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 m-2 border border-blue-700 rounded` : 'text-white bg-[#4B5563] dark:bg-[#4B5563] cursor-not-allowed font-bold px-2 m-2 text-center border border-[#111827] rounded'} disabled={index == currentIndex} onClick={handleNewTopic}>{title}</button>
+            {toShow.map((title, index) => (
+                <div key={chatTitles[`${title}`]} className='flex flex-col items-center justify-center'>
+                    <button key={chatTitles[`${title}`]} id={chatTitles[`${title}`]} className={chatTitles[`${title}`] != currentIndex ? `bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 m-2 border border-blue-700 rounded` : 'text-white bg-[#4B5563] dark:bg-[#4B5563] cursor-not-allowed font-bold px-2 m-2 text-center border border-[#111827] rounded'} disabled={chatTitles[`${title}`] == currentIndex} onClick={handleNewTopic}>{title}</button>
                 </div>
             ))}
         </div>
@@ -164,17 +169,14 @@ const NewChat = ({chatData}) => {
     };
 
     // running API call only once upon page load
-    // useEffect(() => {
-    //     let f_path = process.env.NEXT_PUBLIC_API_URL
     if (currentIndex === '') {
         getChatTitles(setChatTitles, setTitleArray, chatTitle)
         setCurrentChatTitle(chatTitle);
         setCurrentIndex(0);
+        setChatLoading(false)
     }
-    //     // getHistoryData(f_path,'51mMlSZMDsbNuZUXg10T',h_data, setChatHistory,chatHistory)
-    // }, [])
 
-    // if (isChatLoading) return <p>Loading...</p>
+    if (isChatLoading) return <p>Loading chat...</p>
 
     const handleSend = (msg) => {
         console.log(currentChatTitle)
@@ -218,8 +220,8 @@ const NewChat = ({chatData}) => {
         // API call here to send message
         // will require chat id and message
         // console.log(chatHistories)
-        console.log(chatTitles)
-        console.log(chatHistory)
+        // console.log(chatTitles)
+        // console.log(chatHistory)
 
     };
 
@@ -228,8 +230,11 @@ const NewChat = ({chatData}) => {
         // setCurrentIndex(i.target.id);
         // setCurrentChatTitle(chatTitles[chatTitles.length + ((Number(i.target.id) + 1) * -1)]);
         // setChatHistory(chatHistories[chatTitles.length + ((Number(i.target.id) + 1) * -1)]);
+        
+        console.log("this is i.target.id")
         console.log(i.target.id)
-        console.log(chatTitles[i.target.id])
+        console.log('this is chatTitles[]')
+        console.log(chatTitles[`${i.target.id}`])
         if (i.target.id === chatTitle){
             setChatHistory([])
         }
@@ -249,21 +254,9 @@ const NewChat = ({chatData}) => {
             // if (isHistoryLoading) return <p>Loading chat history...</p>
     }
 
-    const filterTitles = (e) => {
-        console.log(2)
-        console.log(e)
-        value = e
-        const filteredTitles = Object.entries(chatTitles).filter((title) => title[0].toLowerCase().includes(value));
-        const filteredChatTitles = {};
-        filteredTitles.forEach((title) => {
-            filteredChatTitles[title[0]] = title[1];
-        });
-        setChatTitles(filteredChatTitles);
-    }
-
     return (
         <div className="flex">
-            <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} filterTitle={(e) => {filterTitles(e)} } currentIndex={currentIndex} handleNewChat={handleNewChat} />
+            <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} />
             <div className="flex-auto">
                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                     <WlcMsg/>
@@ -274,7 +267,7 @@ const NewChat = ({chatData}) => {
                     {/* .slice(0).reverse() */}
                 {chatHistory.map((chat, index) => (
                 <div key={index} className={chat.type === 'user' ? 'user-message' : 'bot-message'}>
-                    <div className={`bg-[#e4e4e4] rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'ml-auto' : 'mr-auto'}`} >
+                    <div key={index} className={`bg-[#e4e4e4] rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'ml-auto' : 'mr-auto'}`} >
                         <h1>{chat.message}</h1>
                     </div>
                 </div>

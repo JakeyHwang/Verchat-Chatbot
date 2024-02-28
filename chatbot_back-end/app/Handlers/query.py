@@ -10,16 +10,17 @@ from firebase_admin import credentials , firestore
 from google.cloud.firestore import ArrayUnion
 from dotenv import load_dotenv
 import os
+from datetime import datetime
+import pytz
 
 load_dotenv()
 
 os.environ["OPENAI_API_KEY"] = os.getenv("openai_api_key")
 
-
 def get_all_titles():#Provides all Titles and ID
     try:
         cred = credentials.Certificate("./firebase_keys.json")
-        app = firebase_admin.initialize_app(credential=cred)
+        app = firebase_admin.initialize_app(cred)
         db = firestore.client()
         documents_data = []
         collection_name = "Verchat"
@@ -28,9 +29,11 @@ def get_all_titles():#Provides all Titles and ID
         for doc in docs:
             doc_id = doc.id
             doc = doc.to_dict()
-            documents_data.append((doc_id , doc['title']))
-        firebase_admin.delete_app(app)
-        return documents_data
+            documents_data.append((doc_id , doc['title'] , doc['edited']))#New
+
+        sorted_data = sorted(documents_data, key=lambda x: x[2])#New
+        firebase_admin.delete_app(app)#New
+        return sorted_data
     except Exception as E:
         print(E)
         firebase_admin.delete_app(app)
@@ -43,12 +46,12 @@ def get_all_titles():#Provides all Titles and ID
 def put_history(id,human,ai):
     try :
         cred = credentials.Certificate("./firebase_keys.json")
-        app = firebase_admin.initialize_app(credential=cred)
+        app = firebase_admin.initialize_app(cred)
         db = firestore.client()
         doc_ref = db.collection("Verchat").document(id)
         doc = doc_ref.get()
         doc = doc.to_dict()
-        update = {'memory': ArrayUnion([{'Human':human , "AI":ai}])}
+        update = {'memory': ArrayUnion([{'Human':human , "AI":ai ,  'edited' : datetime.now(pytz.utc) }])}#New
         doc_ref.update(update)
         firebase_admin.delete_app(app)
         return 'Updated'
@@ -58,7 +61,7 @@ def put_history(id,human,ai):
     
 def get_history(id):
     cred = credentials.Certificate("./firebase_keys.json")
-    app = firebase_admin.initialize_app(credential=cred)
+    app = firebase_admin.initialize_app(cred)
     db = firestore.client()
     collection_name = "Verchat"
     doc_ref = db.collection(collection_name).document(id)
@@ -76,12 +79,13 @@ def get_history(id):
 def put_history_new(title , human,ai):
     try :
         cred = credentials.Certificate("./firebase_keys.json")
-        app = firebase_admin.initialize_app(credential=cred)
+        app = firebase_admin.initialize_app(cred)
         db = firestore.client()
         memory_dict = [{'Human':human , "AI":ai}]
-        doc_ref = db.collection("Verchat").add({  'title' : title , 'memory': memory_dict   })
-        return doc_ref.id
-        # firebase_admin.delete_app(app)
+        doc_ref = db.collection("Verchat").add({  'title' : title , 'memory': memory_dict  , 'edited' :datetime.now(pytz.utc) })#New
+        firebase_admin.delete_app(app)#New
+        return doc_ref[1].id#New
+        
     except Exception as E:
         firebase_admin.delete_app(app)
         return E
@@ -90,7 +94,7 @@ def put_history_new(title , human,ai):
 
 def ask_new_question(question): #Has to be refactored
     history = []
-    chat = ChatOpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    chat = ChatOpenAI()
     history.append( SystemMessage(content="You are a professional assitant that can answer any questions based on the knowledge you have. Answer any question asked to you in a proffessional and succint way"))
     history.append(HumanMessage(content=question))
     answer = chat.invoke(history).content
@@ -106,18 +110,24 @@ def ask_question(id , question): #Has to be refactored
         raw_history = get_history(id)
         history = []
         
-        history.append( SystemMessage(content="You are a professional assitant that can answer any questions based on the knowledge you have. Answer any question asked to you in a proffessional and succint way"))
+        history.append( SystemMessage(content="You are a professional assitant that can answer any questions based on the knowledge you have. Answer any question asked to you in a professional and succint way"))
         
         for i in raw_history:
             history.append(HumanMessage(content=i[0]))
             history.append(AIMessage(content=i[1]) )
         history.append(HumanMessage(content=question) )
-        
-        chat = ChatOpenAI(api_key=os.environ["OPENAI_API_KEY"])
+        history = history[-3:]#New
+        chat = ChatOpenAI()
         answer = chat.invoke(history).content
-        put_history(id,question , answer)
-        return id , question , answer
+        res = put_history(id,question , answer)
+        return res , answer
     except Exception as E:
         print(E)
 
 
+# print(put_history_new('title' , 'human','ai'))
+
+
+# print(put_history('01eyOqyvMv6o2bV5WQHZ','humasn','addi'))
+        
+# print(get_all_titles())
