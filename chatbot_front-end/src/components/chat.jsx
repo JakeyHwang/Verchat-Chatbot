@@ -17,12 +17,11 @@ const getChatTitles = (setChatTitles, setTitleArray, chatTitle="")=>{
             return res.json(); // Add return statement here
         })
         .then((data)=>{
-            console.log(data)
             data['title'].forEach((title,index) => {
                 t_data[`${title}`] = data['id'][index]
             });
             // t_data.reverse();
-            if (chatTitle !== ""){
+            if (chatTitle == ""){
                 t_data[chatTitle] = "";
                 setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()))}
             else{
@@ -30,9 +29,6 @@ const getChatTitles = (setChatTitles, setTitleArray, chatTitle="")=>{
             }
             setTitleArray(Object.keys(t_data).reverse())
         })
-                // .then(()=>{
-                //     getHistoryData(f_path, output,h_data)
-                // })
 }
 // populates chat History of current chat title
 const getChatHistory = (id, setChatHistory) => {
@@ -49,7 +45,6 @@ const getChatHistory = (id, setChatHistory) => {
                 let bot = {'type':'bot', 'message':`${data[1]}`}
                 h_data.push(user)
                 h_data.push(bot)
-                console.log(h_data)
             })
         })
         .then(()=>{
@@ -64,7 +59,7 @@ const ChatBar = ({ sendMsg }) => {
     const [message, setMessage] = useState('');
 
     const handleChange = (e) => {
-        console.log(e);
+        // console.log(e);
         setMessage(e.target.value);
     }
 
@@ -160,7 +155,7 @@ const NewChat = ({chatData}) => {
 
     const handleNewChat = () => {
         setChatTitles({ [chatTitle]: "123", ...chatTitles }); // Add the current chat title to the list of chat titles
-        // setChatHistories({ ...chatHistories, [chatTitles.length - currentIndex - 1]: chatHistory }); // Add the current chat history to the list of chat histories
+        // setChatHistories({ ...chatHistori1es, [chatTitles.length - currentIndex - 1]: chatHistory }); // Add the current chat history to the list of chat histories
         setChatHistory([]); // Clear chat history when starting a new chat
         setCurrentChatTitle(chatTitle); // Reset chat title to the placeholder
 
@@ -179,8 +174,8 @@ const NewChat = ({chatData}) => {
     if (isChatLoading) return <p>Loading chat...</p>
 
     const handleSend = (msg) => {
-        console.log(currentChatTitle)
-        console.log(chatTitle)
+        // console.log(currentChatTitle)
+        // console.log(chatTitle)
         if (currentChatTitle === chatTitle) {
             // API call to create new chat
             // function needs to detect that the chat is empty and new before API is called
@@ -202,7 +197,7 @@ const NewChat = ({chatData}) => {
             // let param = {"id":chatTitles[currentChatTitle], "qn":msg}
             // param = JSON.stringify(param)
             // fetch(`http://127.1.1.1:4000/chatbot/question/${param}`, { method: 'POST' , body: JSON. stringify(param) } )
-            fetch(`http://127.1.1.1:4000/chatbot/question/${chatTitles[currentChatTitle]}/${msg}`, { method: 'POST'} )
+            fetch(`http://127.1.1.1:4000/chatbot/question/${currentChatTitle}/${msg}`, { method: 'POST'} )
                 .then((res) => {
                     console.log(res.body)
                     return res.json();
@@ -217,41 +212,18 @@ const NewChat = ({chatData}) => {
 
         const updatedChatHistory = [...chatHistory, { type: 'user', message: msg }];
         setChatHistory(updatedChatHistory);
-        // API call here to send message
-        // will require chat id and message
-        // console.log(chatHistories)
-        // console.log(chatTitles)
-        // console.log(chatHistory)
-
     };
 
     const handleChangeTopic = (i) => {
-        // setChatHistories({ ...chatHistories, [chatTitles.length - currentIndex - 1]: chatHistory })
-        // setCurrentIndex(i.target.id);
-        // setCurrentChatTitle(chatTitles[chatTitles.length + ((Number(i.target.id) + 1) * -1)]);
-        // setChatHistory(chatHistories[chatTitles.length + ((Number(i.target.id) + 1) * -1)]);
-        
-        console.log("this is i.target.id")
-        console.log(i.target.id)
-        console.log('this is chatTitles[]')
-        console.log(chatTitles[`${i.target.id}`])
+
         if (i.target.id === chatTitle){
             setChatHistory([])
         }
         else{
-            getChatHistory(chatTitles[i.target.id], setChatHistory)
+            getChatHistory(i.target.id, setChatHistory)
         }
-        setCurrentIndex(titleArray.indexOf(i.target.id))
+        setCurrentIndex(i.target.id)
         setCurrentChatTitle(i.target.id)
-        
-
-
-        // API call to collect chat history of selected chat
-            // let f_path = process.env.NEXT_PUBLIC_API_URL
-            // let t_data = {}
-            // let h_data = []
-            // getHistoryData(f_path,i,h_data)
-            // if (isHistoryLoading) return <p>Loading chat history...</p>
     }
 
     return (
@@ -282,22 +254,3 @@ const NewChat = ({chatData}) => {
 }
 
 export default NewChat;
-
-// const handleSend = () => {
-//         if (message.trim()) {
-//             sendMsg(message);
-//             setMessage('');  
-//         }
-//     }
-
-//     return (
-//         <div className="fixed bottom-0 left-0 m-12 w-full">
-//             <button className="left-0 bg-[#7dd3fc] rounded-lg px-4 py-1 mx-2" onClick={handleNewChat}>
-//                 New Chat
-//             </button>
-//             <input id="chat" type="text" placeholder="Ask me anything..." className='bg-[#e5e5e5] rounded-lg px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
-//             <button className={`mx-2 right-5 text-white rounded-lg px-4 py-1 ${!message.trim() ? 'bg-red-300 focus:outline-none' : 'bg-[#7dd3fc]'}`} onClick={handleSend} disabled={!message.trim()}>
-//                 Send
-//             </button>
-//         </div>
-//     );
