@@ -107,10 +107,11 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
 
 
     return (
-        <div id="histlog" className="bg-[#d7e3fb] w-1/5 h-screen flex flex-col">
+        <div id="histlog" className="bg-[#d7e3fb] w-1/4 h-screen flex flex-col">
+
             {/*Verchat Logo*/}
             <div className="flex justify-center">
-                <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '210px', height:'70px',  marginTop: '10px', marginBottom:'25px'}}  className="rounded-lg " />
+            <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '210px', height:'70px',  marginTop: '10px', marginBottom:'25px'}}  className="rounded-lg" />
             </div>
             {/* New Chat button */}
             <div className="flex justify-center">
@@ -118,20 +119,36 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
                     New Chat
                 </button>
             </div>
-            <div><br /><br /><br /></div>
-            <h1 className='text-center'>Chat History</h1>
+            <div><br /></div>
+            <h1 className='text-center text-lg font-bold mb-4 '>Chat History</h1>
             {/* Search Bar */}
-            <div className="flex justify-center">
+            <div className="flex justify-center mb-2">
                 <input type="text" placeholder="Search..." className="border border-gray-400 rounded-full px-2 py-1 mt-2" style={{ width:'90%' }} onChange={handleChange} />
             </div>
             {/* Display chat history in reverse order .slice(0).reverse() */}
-            {toShow.map((title, index) => (
-                <div key={chatTitles[`${title}`]} className='flex flex-col items-center justify-center'>
-                    <button key={chatTitles[`${title}`]} id={chatTitles[`${title}`]} className={chatTitles[`${title}`] != currentIndex ? `bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 m-2 border border-blue-700 rounded` : 'text-white bg-[#4B5563] dark:bg-[#4B5563] cursor-not-allowed font-bold px-2 m-2 text-center border border-[#111827] rounded'} disabled={chatTitles[`${title}`] == currentIndex} onClick={handleNewTopic}>{title}</button>
-                </div>
-            ))}
+            <div className="overflow-y-auto h-80">
+                {toShow.map((title, index) => (
+                    <div key={chatTitles[`${title}`]} className='font-medium mx-1'>
+                        <button 
+                key={chatTitles[`${title}`]} 
+                id={chatTitles[`${title}`]} 
+                className={`
+                    w-full rounded-md py-2 px-4
+                    ${chatTitles[`${title}`] != currentIndex ? 'bg-[#d7e3fb] hover:bg-blue-300 text-black' : 'bg-blue-400 pointer-events-none text-white'} 
+                    
+                `}
+                disabled={chatTitles[`${title}`] == currentIndex} 
+                onClick={handleNewTopic}
+            >
+                {title}
+            </button>
+                    </div>
+                ))}
+            </div>
+
         </div>
     );
+    
 }
 
 const WlcMsg = () => {
