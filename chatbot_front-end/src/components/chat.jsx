@@ -76,7 +76,7 @@ const ChatBar = ({ sendMsg }) => {
         <div className="fixed bottom-0 m-12 w-full flex">
             <input id="chat" type="text" placeholder="Ask me anything..." className= 'border border-black bg-[#fffff] rounded-full px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
             <button onClick={handleSend} disabled={!message.trim()}>
-                <Image src={sendIcon} style={{ width: '28px', height:'28px',  marginLeft: '10px', marginBottom:'-7px'}} />
+                <Image src={sendIcon} style={{ width: '28px', height:'28px',  marginLeft: '10px', marginBottom:'1px'}} />
             </button>
             
         </div>
