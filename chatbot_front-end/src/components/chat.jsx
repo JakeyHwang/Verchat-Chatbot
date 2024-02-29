@@ -163,7 +163,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
 
 const WlcMsg = () => {
     return (
-            <div style={{ paddingTop: '20px' }}>
+            <div style={{ paddingTop: '20px' }} className='py-1'>
                 <h1 className='bg-[#d7e3fb] rounded-lg px-2 py-1 col-start-1 col-end-2'>Hi, how may I help you today?</h1>
             </div>     
     );
@@ -269,7 +269,7 @@ const NewChat = ({chatData}) => {
                     {/* .slice(0).reverse() */}
                 {chatHistory.map((chat, index) => (
                 <div key={index} className={chat.type === 'user' ? 'relative w-[500px] place-self-end pr-3' : 'relative w-[700px] place-self-start pl-3'}>
-                    <div key={index} className={`bg-[#e4e4e4] rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'ml-auto' : 'mr-auto '}`} >
+                    <div key={index} className={`rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'bg-[#e4e4e4] ml-auto' : 'bg-[#d7e3fb] mr-auto '}`} >
                         <h1>{chat.message}</h1>
                     </div>
                 </div>
