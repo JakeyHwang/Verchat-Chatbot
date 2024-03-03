@@ -64,7 +64,6 @@ const ChatBar = ({ sendMsg }) => {
     const [message, setMessage] = useState('');
 
     const handleChange = (e) => {
-        // console.log(e);
         setMessage(e.target.value);
     }
 
@@ -74,92 +73,93 @@ const ChatBar = ({ sendMsg }) => {
             setMessage('');  
         }
     }
-    //className="mx-2 right-5 bg-[#7dd3fc] rounded-lg px-4 py-1"
+
     return (
         <div className="fixed bottom-0 m-12 w-full flex">
-            <input id="chat" type="text" placeholder="Ask me anything..." className= 'border border-black bg-[#fffff] rounded-full px-4 py-1 w-3/5' value={message} onChange={handleChange} onKeyDown={(e)=>{if(e.key==='Enter'){handleSend()}}} />
+            <input
+                id="chat"
+                type="text"
+                placeholder="Ask me anything..."
+                className="border border-black bg-[#fffff] rounded-full px-4 py-1 sm:w-3/5 md:w-1/3 lg:w-4/6"
+                value={message}
+                onChange={handleChange}
+                onKeyDown={(e) => { if (e.key === 'Enter') { handleSend() } }}
+            />
             <button onClick={handleSend} disabled={!message.trim()}>
-                <Image src={sendIcon} style={{ width: '28px', height:'28px',  marginLeft: '10px', marginBottom:'1px'}} />
+                <Image src={sendIcon} style={{ width: '28px', height: '28px', marginLeft: '10px', marginBottom: '1px' }} />
             </button>
-            
         </div>
     );
 }
 
+
 const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
-    const [searchQuery, setSearchQuery] = useState('')
-    //array to hold original titles
-    let arr = []
+    const [searchQuery, setSearchQuery] = useState('');
+
+    let arr = [];
     Object.entries(chatTitles).forEach((key) => {
-        arr.push(key[0])
-    })
-    // changing filter query
-    const handleChange =(e)=>{
-        setSearchQuery(e.target.value)
+        arr.push(key[0]);
+    });
+
+    const handleChange = (e) => {
+        setSearchQuery(e.target.value);
     }
-    // filter handler: currently filters based on chat title only
+
     const filterTitle = (array) => {
-        return array.filter(
-            (el)=> el.toLowerCase().includes(searchQuery)
-        )
+        return array.filter((el) => el.toLowerCase().includes(searchQuery));
     }
-    // creating and applying filter
-    const toShow = filterTitle(arr)
-    
+
+    const toShow = filterTitle(arr);
+
     const handleNewTopic = (i) => {
         changeTopic(i);
     }
 
-    //h-screen flex flex-col
     return (
-        <div id="histlog" className="bg-[#d7e3fb] relative w-[300px]  min-vh-100">
-            {/*Verchat Logo*/}
+        <div id="histlog" className="bg-[#d7e3fb] relative w-[300px] lg:min-h-screen min-vh-100">
+            {/* Verchat Logo */}
             <div className="flex">
-            <Image src={vertexLogo} alt="ChatSideBar Image"  style={{ width: '270px', height:'85.5px', marginBottom:'25px'}}  className="rounded-lg" />
+                <Image src={vertexLogo} alt="ChatSideBar Image" style={{ width: '270px', height: '85.5px', marginBottom: '25px' }} className="rounded-lg" />
             </div>
             {/* New Chat button */}
             <div className="flex justify-center mx-1">
-            <button 
-                className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300" 
-                style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
-                onClick={handleNewChat}>
-                <span>New Chat</span>
-                <Image src={new_chat_icon} alt="Icon" className="h-4 w-4" /> {/* Image */}
-            </button>
+                <button
+                    className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300"
+                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
+                    onClick={handleNewChat}>
+                    <span>New Chat</span>
+                    <Image src={new_chat_icon} alt="Icon" className="h-4 w-4" /> {/* Image */}
+                </button>
             </div>
-           
-           {/*<hr style={{margin: '0 8px', border: '1px solid grey'}} />*/}
             <h1 className='text-left text-gray-600 font-medium pt-1 px-4 '>Chat History</h1>
             {/* Search Bar */}
             <div className="flex mx-1 mb-2">
-                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-lg px-2 py-1 mt-2" style={{ width:'100%' }} onChange={handleChange} />
+                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-lg px-2 py-1 mt-2 w-full" onChange={handleChange} />
             </div>
             {/* Display chat history in reverse order .slice(0).reverse() */}
             <div className="overflow-y-auto">
                 {toShow.map((title, index) => (
                     <div key={chatTitles[`${title}`]} className='font-medium mx-1'>
-                        <button 
-                key={chatTitles[`${title}`]} 
-                id={chatTitles[`${title}`]} 
-                style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
-                className={`
-                    w-full rounded-md py-2 px-4 text-left
-                    ${chatTitles[`${title}`] != currentIndex ? 'bg-[#d7e3fb] hover:bg-blue-300 text-black' : 'bg-blue-400 pointer-events-none text-white'} 
-                    
-                `}
-                disabled={chatTitles[`${title}`] == currentIndex} 
-                onClick={handleNewTopic}
-            >
-                {title}
-            </button>
+                        <button
+                            key={chatTitles[`${title}`]}
+                            id={chatTitles[`${title}`]}
+                            style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
+                            className={`
+                                w-full rounded-md py-2 px-4 text-left
+                                ${chatTitles[`${title}`] != currentIndex ? 'bg-[#d7e3fb] hover:bg-blue-300 text-black' : 'bg-blue-400 pointer-events-none text-white'} 
+                            `}
+                            disabled={chatTitles[`${title}`] == currentIndex}
+                            onClick={handleNewTopic}
+                        >
+                            {title}
+                        </button>
                     </div>
                 ))}
             </div>
-
         </div>
     );
-    
 }
+
 
 const WlcMsg = () => {
     return (
