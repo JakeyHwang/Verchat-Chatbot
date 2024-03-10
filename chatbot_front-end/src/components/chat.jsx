@@ -4,6 +4,7 @@ import Image from "next/image";
 import vertexLogo from '../public/transparent_verchat_logo.png'
 import sendIcon from '../public/paper-plane.png'
 import new_chat_icon from '../public/new_chat_icon.png'
+import upload_icon from '../public/submit.png'
 import '../public/styles.css';
 import { createSearchParamsBailoutProxy } from 'next/dist/client/components/searchparams-bailout-proxy';
 import { output } from '../../next.config';
@@ -163,11 +164,45 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
 
 const WlcMsg = () => {
     return (
-            <div style={{ paddingTop: '20px' }} className='py-1'>
+            <div>
                 <h1 className='bg-[#d7e3fb] rounded-lg px-2 py-1 col-start-1 col-end-2'>Hi, how may I help you today?</h1>
             </div>     
     );
 }
+
+const promptFile =(contentType, multiple) => {
+    var input = document.createElement("input");
+    input.type = "file";
+    input.multiple = multiple;
+    input.accept = contentType;
+    return new Promise(function(resolve) {
+      document.activeElement.onfocus = function() {
+        document.activeElement.onfocus = null;
+        setTimeout(resolve, 500);
+      };
+      input.onchange = function() {
+        var files = Array.from(input.files);
+        if (multiple)
+          return resolve(files);
+        resolve(files[0]);
+      };
+      input.click();
+    });
+  }
+const promptFilename = () => {
+    promptFile().then(function(file) {
+    document.querySelector("flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded").innerText = file && file.name || "no file selected";
+});}
+
+const UploadDoc = () => {
+
+        return (
+            <button onClick={promptFile} className='flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded' style={{ marginTop: '10px' }}>
+                    Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
+                    </button>
+        )
+            
+      }
 
 const NewChat = ({chatData}) => {
     const chatTitle = "Untitled Chat";
@@ -254,12 +289,33 @@ const NewChat = ({chatData}) => {
         setCurrentChatTitle(i.target.id)
     }
 
+    const handlePopup = () => {
+        document.getElementById("popup").classList.remove("hidden")
+    }
+
+    const handleClose = () => {
+        document.getElementById("popup").classList.add("hidden")
+    }
+
     return (
+        
         
         <div className="flex">
             <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} />
             <div className="flex-auto">
+
+            <div id="popup" className="hidden">
+                <h1>Pop Up</h1>
+                <button onClick={handleClose}>Close Pop Up</button>
+            </div>
+
                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
+                    <div className='col-span-2 mx-auto'>
+                        <UploadDoc/>
+                    {/* <button onClick={handlePopup} className='flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded' style={{ marginTop: '10px' }}>
+                    Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
+                    </button> */}
+                    </div>
                     <WlcMsg/>
                 </div>
                     {/* <div className='topright'></div>
