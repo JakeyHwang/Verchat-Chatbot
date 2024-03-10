@@ -76,7 +76,7 @@ const ChatBar = ({ sendMsg }) => {
     }
 
     return (
-        <div className="fixed bottom-0 m-12 w-full flex">
+        <div className="fixed bottom-0 m-2 sm:m-4 md:m-6 lg:m-12 w-full flex">
             <input
                 id="chat"
                 type="text"
@@ -117,7 +117,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
     }
 
     return (
-        <div id="histlog" className="bg-[#d7e3fb] relative w-[300px] lg:min-h-screen min-vh-100">
+        <div id="histlog" className="bg-[#d7e3fb] relative w-full lg:w-[300px] min-h-screen min-vh-100">
             {/* Verchat Logo */}
             <div className="flex">
                 <Image src={vertexLogo} alt="ChatSideBar Image" style={{ width: '270px', height: '85.5px', marginBottom: '25px' }} className="rounded-lg" />
