@@ -170,34 +170,68 @@ const WlcMsg = () => {
     );
 }
 
-const promptFile =(contentType, multiple) => {
-    var input = document.createElement("input");
-    input.type = "file";
-    input.multiple = multiple;
-    input.accept = contentType;
-    return new Promise(function(resolve) {
-      document.activeElement.onfocus = function() {
-        document.activeElement.onfocus = null;
-        setTimeout(resolve, 500);
-      };
-      input.onchange = function() {
-        var files = Array.from(input.files);
-        if (multiple)
-          return resolve(files);
-        resolve(files[0]);
-      };
-      input.click();
-    });
-  }
-const promptFilename = () => {
-    promptFile().then(function(file) {
-    document.querySelector("flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded").innerText = file && file.name || "no file selected";
-});}
+// const promptFile =(contentType, multiple) => {
+//     var input = document.createElement("input");
+//     input.type = "file";
+//     input.multiple = multiple;
+//     input.accept = contentType;
+//     return new Promise(function(resolve) {
+//       document.activeElement.onfocus = function() {
+//         document.activeElement.onfocus = null;
+//         setTimeout(resolve, 500);
+//       };
+//       input.onchange = function() {
+//         var files = Array.from(input.files);
+//         if (multiple)
+//           return resolve(files);
+//         resolve(files[0]);
+//       };
+//       input.click();
+//     });
+//   }
+
+//   const promptFile = () => {
+//     var input = document.createElement("input");
+//     input.id="file";
+//     input.type = "file";
+//     // input.accept = contentType;
+
+//     return new Promise(function(resolve) {
+//         document.activeElement.onfocus = function() {
+//             document.activeElement.onfocus = null;
+//             setTimeout(resolve, 500);
+//         };
+//         input.onchange = function() {
+//             var files = Array.from(input.files);
+//                 resolve(files[0])
+//             console.log(files);
+//         };
+//         input.click();
+//         // console.log(files);
+//     });
+// }
 
 const UploadDoc = () => {
+    const [uploadedFile, setUploadedFile] = useState(null)
+
+    const promptFile = () => {
+        var input = document.createElement("input");
+        input.id="file";
+        input.type = "file";
+        // input.accept = contentType;
+    
+        return new Promise(function(resolve) {
+            document.activeElement.onfocus = function() {
+                document.activeElement.onfocus = null;
+                setTimeout(resolve, 500);
+            };
+            document.getElementById('file').onchange = setUploadedFile(document.getElementById('file').files[0])
+        });
+    }
 
         return (
             <button onClick={promptFile} className='flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded' style={{ marginTop: '10px' }}>
+            {/* // <button onClick={promptFile} className='flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded' style={{ marginTop: '10px' }}> */}
                     Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
                     </button>
         )
@@ -210,11 +244,10 @@ const NewChat = ({chatData}) => {
     const [currentChatTitle, setCurrentChatTitle] = useState(chatTitle);
     const [chatHistory, setChatHistory] = useState([]);
     const [chatTitles, setChatTitles] = useState([currentChatTitle]);
-    // const [chatHistories, setChatHistories] = useState({});
     const [titleArray, setTitleArray] = useState([]);
     const [isChatLoading, setChatLoading] = useState(true)
     const [isHistoryLoading, setHistoryLoading] = useState(true)
-    
+    const [uploadedFile, setUploadedFile] = useState(null)
 
     const handleNewChat = () => {
         setChatTitles({ [chatTitle]: "123", ...chatTitles }); // Add the current chat title to the list of chat titles
@@ -289,12 +322,28 @@ const NewChat = ({chatData}) => {
         setCurrentChatTitle(i.target.id)
     }
 
-    const handlePopup = () => {
-        document.getElementById("popup").classList.remove("hidden")
-    }
-
-    const handleClose = () => {
-        document.getElementById("popup").classList.add("hidden")
+    const promptFile = () => {
+        var input = document.createElement("input");
+        input.id="file";
+        input.type = "file";
+        // input.accept = contentType;
+    
+        return new Promise(function(resolve) {
+            document.activeElement.onfocus = function() {
+                document.activeElement.onfocus = null;
+                setTimeout(resolve, 500);
+            };
+            input.onchange = function() {
+                var files = Array.from(input.files);
+                    resolve(files[0])
+                console.log(files);
+                handleSend(files[0].name)
+                setUploadedFile(files[0])
+                console.log(uploadedFile)
+            };
+            input.click();
+            // console.log(files);
+        });
     }
 
     return (
@@ -304,17 +353,11 @@ const NewChat = ({chatData}) => {
             <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} />
             <div className="flex-auto">
 
-            <div id="popup" className="hidden">
-                <h1>Pop Up</h1>
-                <button onClick={handleClose}>Close Pop Up</button>
-            </div>
-
                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                     <div className='col-span-2 mx-auto'>
-                        <UploadDoc/>
-                    {/* <button onClick={handlePopup} className='flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded' style={{ marginTop: '10px' }}>
+                    <button onClick={promptFile} className='flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded' style={{ marginTop: '10px' }}>
                     Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
-                    </button> */}
+                    </button>
                     </div>
                     <WlcMsg/>
                 </div>
