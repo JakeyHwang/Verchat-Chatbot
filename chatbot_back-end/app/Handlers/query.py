@@ -95,7 +95,33 @@ def put_history_new(title , human,ai):
 def ask_new_question(question): #Has to be refactored
     history = []
     chat = ChatOpenAI()
-    history.append( SystemMessage(content="You are a professional assitant that can answer any questions based on the knowledge you have. Answer any question asked to you in a proffessional and succint way"))
+    history.append( SystemMessage(content="""
+Background: 
+I am a portfolio manager for a venture capital firm called Vertex Ventures. 
+
+Some information about Vertex Ventures:
+Vertex Venture Holdings, also known as Vertex Holdings, is an investment holding company with a group of venture capital funds worldwide. A subsidiary of Temasek Holdings, the company focuses on venture capital investment opportunities in the information technology and healthcare markets through its global family of six direct investment venture funds. Vertex provides anchor funding and operational support to these funds. Each fund has its own General Partners and investment teams, focusing on different regional markets. Its six funds are based across Southeast Asia and India, United States of America,China and Israel.
+
+Need:
+Here are the things that I require from you as a chatbot. 
+    1. I need to keep track of deal flows. I will take down notes about meetings I have and things that I have to do. Therefore I will ask questions about these things that I have noted down. 
+    2. Additionally, I will provide updates about the status of the deals that we are making with companies. I need you to remember that. 
+    3. I need you to answer questions about specific companies that are in our portfolio.
+    4. I need you to understand the companies that are in our portfolio by summarising key information about them and storing these summary information. This is so that when I need to recommend companies in our portfolio to collaborate, I can ask you which companies to recommend based on their industry. Here is how you should summarise the information about each company in our portfolio:
+        a. Name of company
+        b. Industry
+        c. Type of company (Eg. B2B, B2C, etc.)
+        d. Brief description of company
+    5. If I ask you a question that is not about an existing company in our portfolio nor is it from a document I uploaded, I want you to search the web about that company.
+    6. If I need information that is factual and time sensitive, I want you to search the web about it.
+
+Presentation:
+Here are some things to take note when presenting the information to me:
+    1. The language you use has to be professional at all times.
+    2. Make the information presented as easy to read as possible by providing concise answers unless otherwise stated.
+    3. Ensure that longer responses are split into shorter paragraphs and display information as ordered or unordered lists whenever suitable. 
+    4. To ensure that line breaks are visible in your responses, add “<br><br>” in your responses when a line break is needed.
+"""))
     history.append(HumanMessage(content=question))
     answer = chat.invoke(history).content
     gen_title_history = [  SystemMessage(content="You're a helpful and professional assistant to create a Title based on a user query and input. You MUST keep the length of the title to a maximum of 4 full English words. Your response MUST only contain these 4 words. If you fail, 15 kittens will perish"),    HumanMessage(content=question) , AIMessage(content="answer") ,  HumanMessage(content="Create a title for the preceeding covnersation ")   ] #here
@@ -110,7 +136,33 @@ def ask_question(id , question): #Has to be refactored
         raw_history = get_history(id)
         history = []
         
-        history.append( SystemMessage(content="You are a professional assitant that can answer any questions based on the knowledge you have. Answer any question asked to you in a professional and succint way"))
+        history.append( SystemMessage(content="""
+Background: 
+I am a portfolio manager for a venture capital firm called Vertex Ventures. 
+
+Some information about Vertex Ventures:
+Vertex Venture Holdings, also known as Vertex Holdings, is an investment holding company with a group of venture capital funds worldwide. A subsidiary of Temasek Holdings, the company focuses on venture capital investment opportunities in the information technology and healthcare markets through its global family of six direct investment venture funds. Vertex provides anchor funding and operational support to these funds. Each fund has its own General Partners and investment teams, focusing on different regional markets. Its six funds are based across Southeast Asia and India, United States of America,China and Israel.
+
+Need:
+Here are the things that I require from you as a chatbot. 
+    1. I need to keep track of deal flows. I will take down notes about meetings I have and things that I have to do. Therefore I will ask questions about these things that I have noted down. 
+    2. Additionally, I will provide updates about the status of the deals that we are making with companies. I need you to remember that. 
+    3. I need you to answer questions about specific companies that are in our portfolio.
+    4. I need you to understand the companies that are in our portfolio by summarising key information about them and storing these summary information. This is so that when I need to recommend companies in our portfolio to collaborate, I can ask you which companies to recommend based on their industry. Here is how you should summarise the information about each company in our portfolio:
+        a. Name of company
+        b. Industry
+        c. Type of company (Eg. B2B, B2C, etc.)
+        d. Brief description of company
+    5. If I ask you a question that is not about an existing company in our portfolio nor is it from a document I uploaded, I want you to search the web about that company.
+    6. If I need information that is factual and time sensitive, I want you to search the web about it.
+
+Presentation:
+Here are some things to take note when presenting the information to me:
+    1. The language you use has to be professional at all times.
+    2. Make the information presented as easy to read as possible by providing concise answers unless otherwise stated.
+    3. Ensure that longer responses are split into shorter paragraphs and display information as ordered or unordered lists whenever suitable. 
+    4. To ensure that line breaks are visible in your responses, add “<br><br>” in your responses when a line break is needed.
+"""))
         
         for i in raw_history:
             history.append(HumanMessage(content=i[0]))

@@ -12,54 +12,67 @@ import { output } from '../../next.config';
 
 
 // populates chatTitles and first chat title history using data from API call
-const getChatTitles = (setChatTitles, setTitleArray, chatTitle="")=>{
-    let t_data = {}
-    let output = ''
+const getChatTitles = (setChatTitles, setTitleArray, chatTitle = "") => {
+    let t_data = {};
 
     fetch("http://127.1.1.1:4000/", { method: 'GET' })
-        .then((res)=> {
-            console.log(res.body)
-            return res.json(); // Add return statement here
-        })
-        .then((data)=>{
-            data['title'].forEach((title,index) => {
-                t_data[`${title}`] = data['id'][index]
-            });
-            // t_data.reverse();
-            if (chatTitle == ""){
-                t_data[chatTitle] = "";
-                setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()))}
-            else{
-                setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()))
+        .then((res) => res.json())
+        .then((data) => {
+            if (data && data.title && Array.isArray(data.title) && data.id && Array.isArray(data.id)) {
+                data.title.forEach((title, index) => {
+                    t_data[title] = data.id[index];
+                });
+
+                if (chatTitle === "") {
+                    t_data[chatTitle] = "";
+                    setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()));
+                } else {
+                    setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()));
+                }
+                setTitleArray(Object.keys(t_data).reverse());
+            } else {
+                throw new Error('Invalid data format');
             }
-            setTitleArray(Object.keys(t_data).reverse())
         })
+        .catch((error) => {
+            console.error('Error fetching chat titles:', error);
+        });
 }
-// populates chat History of current chat title
+
 const getChatHistory = (id, setChatHistory) => {
-    // console.log(`${f_path+b_path+output}`)
-    // let res = fetch(`${f_path+b_path}`)
-    let h_data = []
-    if(id!== undefined){
-    fetch(`http://127.1.1.1:4000/${id}`)
-        .then((res)=>{return res.json()})
-        .then((data)=>{
-            // console.log(data)
-            data['data'].forEach((data)=>{
-                let user = {'type':'user','message':`${data[0]}`}
-                let bot = {'type':'bot', 'message':`${data[1]}`}
-                h_data.push(user)
-                h_data.push(bot)
+    let h_data = [];
+
+    if (id !== undefined) {
+        fetch(`http://127.1.1.1:4000/${id}`)
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error('Failed to fetch');
+                }
+                return res.json();
             })
-        })
-        .then(()=>{
-            setChatHistory(h_data)
-            
-        })}
-    else{
-        console.log("id not defined")
+            .then((data) => {
+                if (data && data.data && Array.isArray(data.data)) {
+                    data.data.forEach((item) => {
+                        if (Array.isArray(item) && item.length >= 2) {
+                            let user = { 'type': 'user', 'message': item[0] };
+                            let bot = { 'type': 'bot', 'message': item[1] };
+                            h_data.push(user);
+                            h_data.push(bot);
+                        }
+                    });
+                    setChatHistory(h_data);
+                } else {
+                    throw new Error('Invalid data format');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching chat history:', error);
+            });
+    } else {
+        console.log("id not defined");
     }
-}
+};
+
 
 const ChatBar = ({ sendMsg }) => {
     const [message, setMessage] = useState('');
@@ -87,7 +100,7 @@ const ChatBar = ({ sendMsg }) => {
                 onKeyDown={(e) => { if (e.key === 'Enter') { handleSend() } }}
             />
             <button onClick={handleSend} disabled={!message.trim()}>
-                <Image src={sendIcon} style={{ width: '28px', height: '28px', marginLeft: '10px', marginBottom: '1px' }} />
+                <Image alt="send image" src={sendIcon} style={{ width: '28px', height: '28px', marginLeft: '10px', marginBottom: '1px' }} />
             </button>
         </div>
     );
@@ -231,9 +244,8 @@ const UploadDoc = () => {
 
         return (
             <button onClick={promptFile} className='flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded' style={{ marginTop: '10px' }}>
-            {/* // <button onClick={promptFile} className='flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded' style={{ marginTop: '10px' }}> */}
-                    Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
-                    </button>
+                Upload <Image alt="file image"src={upload_icon} className='w-6 h-6 ml-1' />
+            </button>
         )
             
       }
@@ -270,45 +282,51 @@ const NewChat = ({chatData}) => {
     if (isChatLoading) return <p>Loading chat...</p>
 
     const handleSend = (msg) => {
-        // console.log(currentChatTitle)
-        // console.log(chatTitle)
         if (currentChatTitle === chatTitle) {
-            // API call to create new chat
-            // function needs to detect that the chat is empty and new before API is called
             fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: 'POST' })
                 .then((res) => {
-                    console.log(res.body)
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
                     return res.json();
                 })
                 .then((data) => {
-                    console.log(data)
-                    let user = {'type':'user','message':`${data.question}`}
-                    let bot = {'type':'bot', 'message':`${data.answer}`}
-                    setChatHistory([...chatHistory, user, bot])
-                    getChatTitles(setChatTitles, setTitleArray)
-                    setCurrentChatTitle(data.title)
+                    if (!data) {
+                        throw new Error('Response data is undefined');
+                    }
+                    let user = {'type':'user', 'message': msg};
+                    let bot = {'type':'bot', 'message': data.answer};
+                    setChatHistory([...chatHistory, user, bot]);
+                    getChatTitles(setChatTitles, setTitleArray);
+                    setCurrentChatTitle(data.title);
                 })
-        }
-        else {
-            // let param = {"id":chatTitles[currentChatTitle], "qn":msg}
-            // param = JSON.stringify(param)
-            // fetch(`http://127.1.1.1:4000/chatbot/question/${param}`, { method: 'POST' , body: JSON. stringify(param) } )
-            fetch(`http://127.1.1.1:4000/chatbot/question/${currentChatTitle}/${msg}`, { method: 'POST'} )
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        } else {
+            fetch(`http://127.1.1.1:4000/chatbot/question/${currentChatTitle}/${msg}`, { method: 'POST'})
                 .then((res) => {
-                    console.log(res.body)
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
                     return res.json();
                 })
                 .then((data) => {
-                    console.log(data)
-                    let user = {'type':'user','message':`${data.data[1]}`}
-                    let bot = {'type':'bot-message', 'message':`${data.data[2]}`}
-                    setChatHistory([...chatHistory, user, bot])
+                    if (!data) {
+                        throw new Error('Response data is undefined');
+                    }
+                    let user = {'type':'user', 'message': msg};
+                    let bot = {'type':'bot-message', 'message': data.data[1]};
+                    console.log("this is data[1] message")
+                    console.log(data.data[1])
+                    setChatHistory([...chatHistory, user, bot]);
                 })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
         }
-
-        const updatedChatHistory = [...chatHistory, { type: 'user', message: msg }];
-        setChatHistory(updatedChatHistory);
     };
+    
 
     const handleChangeTopic = (i) => {
 
@@ -364,7 +382,7 @@ const NewChat = ({chatData}) => {
                     {/* <div className='topright'></div>
                     <div className='bottom left'></div> */}
                    {/* Display chat history */}
-                <div className="flex flex-col">
+                <div className="flex flex-col mt-2">
                     {/* .slice(0).reverse() */}
                 {chatHistory.map((chat, index) => (
                 <div key={index} className={chat.type === 'user' ? 'relative w-[500px] place-self-end pr-3' : 'relative w-[700px] place-self-start pl-3'}>
