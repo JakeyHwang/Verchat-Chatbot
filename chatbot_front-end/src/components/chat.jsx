@@ -183,73 +183,6 @@ const WlcMsg = () => {
     );
 }
 
-// const promptFile =(contentType, multiple) => {
-//     var input = document.createElement("input");
-//     input.type = "file";
-//     input.multiple = multiple;
-//     input.accept = contentType;
-//     return new Promise(function(resolve) {
-//       document.activeElement.onfocus = function() {
-//         document.activeElement.onfocus = null;
-//         setTimeout(resolve, 500);
-//       };
-//       input.onchange = function() {
-//         var files = Array.from(input.files);
-//         if (multiple)
-//           return resolve(files);
-//         resolve(files[0]);
-//       };
-//       input.click();
-//     });
-//   }
-
-//   const promptFile = () => {
-//     var input = document.createElement("input");
-//     input.id="file";
-//     input.type = "file";
-//     // input.accept = contentType;
-
-//     return new Promise(function(resolve) {
-//         document.activeElement.onfocus = function() {
-//             document.activeElement.onfocus = null;
-//             setTimeout(resolve, 500);
-//         };
-//         input.onchange = function() {
-//             var files = Array.from(input.files);
-//                 resolve(files[0])
-//             console.log(files);
-//         };
-//         input.click();
-//         // console.log(files);
-//     });
-// }
-
-const UploadDoc = () => {
-    const [uploadedFile, setUploadedFile] = useState(null)
-
-    const promptFile = () => {
-        var input = document.createElement("input");
-        input.id="file";
-        input.type = "file";
-        // input.accept = contentType;
-    
-        return new Promise(function(resolve) {
-            document.activeElement.onfocus = function() {
-                document.activeElement.onfocus = null;
-                setTimeout(resolve, 500);
-            };
-            document.getElementById('file').onchange = setUploadedFile(document.getElementById('file').files[0])
-        });
-    }
-
-        return (
-            <button onClick={promptFile} className='flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded' style={{ marginTop: '10px' }}>
-                Upload <Image alt="file image"src={upload_icon} className='w-6 h-6 ml-1' />
-            </button>
-        )
-            
-      }
-
 const NewChat = ({chatData}) => {
     const chatTitle = "Untitled Chat";
     const [currentIndex, setCurrentIndex] = useState('');
@@ -259,7 +192,7 @@ const NewChat = ({chatData}) => {
     const [titleArray, setTitleArray] = useState([]);
     const [isChatLoading, setChatLoading] = useState(true)
     const [isHistoryLoading, setHistoryLoading] = useState(true)
-    const [uploadedFile, setUploadedFile] = useState(null)
+    const [uploadedFile, setUploadedFile] = useState({})
 
     const handleNewChat = () => {
         setChatTitles({ [chatTitle]: "123", ...chatTitles }); // Add the current chat title to the list of chat titles
@@ -347,17 +280,13 @@ const NewChat = ({chatData}) => {
         // input.accept = contentType;
     
         return new Promise(function(resolve) {
-            document.activeElement.onfocus = function() {
-                document.activeElement.onfocus = null;
-                setTimeout(resolve, 500);
-            };
-            input.onchange = function() {
-                var files = Array.from(input.files);
-                    resolve(files[0])
-                console.log(files);
-                handleSend(files[0].name)
-                setUploadedFile(files[0])
-                console.log(uploadedFile)
+            input.onchange = function(event) {
+                var files = Array.from(event.target.files)[0];
+                resolve(files);
+                console.log(files.name);
+                setUploadedFile({ [currentChatTitle]: files })
+                handleSend(files.name);
+                console.log(uploadedFile);
             };
             input.click();
             // console.log(files);
@@ -370,15 +299,14 @@ const NewChat = ({chatData}) => {
         <div className="flex">
             <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} />
             <div className="flex-auto">
-
-                <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
-                    <div className='col-span-2 mx-auto'>
-                    <button onClick={promptFile} className='flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded' style={{ marginTop: '10px' }}>
-                    Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
-                    </button>
-                    </div>
-                    <WlcMsg/>
-                </div>
+                                <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
+                                    <div className='col-span-2 mx-auto'>
+                                        <button onClick={promptFile} disabled={uploadedFile[currentChatTitle]} className={`flex items-center text-white font-bold py-1 px-2 rounded ${uploadedFile[currentChatTitle] ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-700'}`} style={{ marginTop: '10px' }}>
+                                            Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
+                                        </button>
+                                    </div>
+                                    <WlcMsg/>
+                                </div>
                     {/* <div className='topright'></div>
                     <div className='bottom left'></div> */}
                    {/* Display chat history */}
