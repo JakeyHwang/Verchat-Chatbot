@@ -89,20 +89,21 @@ const ChatBar = ({ sendMsg }) => {
     }
 
     return (
-        <div className="fixed bottom-0 m-2 sm:m-4 md:m-6 lg:m-12 w-full flex">
-            <input
-                id="chat"
-                type="text"
-                placeholder="Ask me anything..."
-                className="border border-black bg-[#fffff] rounded-full px-4 py-1 sm:w-3/5 md:w-1/3 lg:w-4/6"
-                value={message}
-                onChange={handleChange}
-                onKeyDown={(e) => { if (e.key === 'Enter') { handleSend() } }}
-            />
-            <button onClick={handleSend} disabled={!message.trim()}>
-                <Image alt="send image" src={sendIcon} style={{ width: '28px', height: '28px', marginLeft: '10px', marginBottom: '1px' }} />
-            </button>
-        </div>
+        <div className="fixed bottom-0 m-2 w-full flex flex-col sm:flex-row">
+    <input
+        id="chat"
+        type="text"
+        placeholder="Ask me anything..."
+        className="border border-black bg-white rounded-full px-4 py-1 flex-grow mb-2 sm:w-1/6 md:w-2/3 lg:w-4/6"
+        value={message}
+        onChange={handleChange}
+        onKeyDown={(e) => { if (e.key === 'Enter') { handleSend() } }}
+    />
+    <button onClick={handleSend} disabled={!message.trim()} className="bg-blue-500 text-white px-4 py-2 rounded-lg flex-shrink-0sm:w-1/6 md:w-2/3 lg:w-4/6">
+        <Image alt="send image" src={sendIcon} className="w-6 h-6" />
+    </button>
+</div>
+
     );
 }
 
@@ -130,7 +131,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
     }
 
     return (
-        <div id="histlog" className="bg-[#d7e3fb] relative w-full lg:w-[300px] min-h-screen min-vh-100">
+        <div id="histlog" className="bg-[#d7e3fb] w-full sm:w-1/6 md:w-1/3 lg:w-4/6 min-h-screen min-vh-100">
             {/* Verchat Logo */}
             <div className="flex">
                 <Image src={vertexLogo} alt="ChatSideBar Image" style={{ width: '270px', height: '85.5px', marginBottom: '25px' }} className="rounded-lg" />
