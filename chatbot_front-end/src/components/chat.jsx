@@ -229,20 +229,20 @@ const NewChat = ({chatData}) => {
                     setCurrentChatTitle(data.title);
                     setCurrentIndex(data.id);
                     
-                    let removeNewChat = Object.keys(chatTitles).filter(objKey =>
-                        objKey !== 'Untitled Chat').reduce((newObj, key) =>
-                        {
-                            newObj[key] = chatTitles[key];
-                            return newObj;
-                        }, {}
-                    );
-                    setChatTitles(removeNewChat)
+                    // let removeNewChat = Object.keys(chatTitles).filter(objKey =>
+                    //     objKey !== 'Untitled Chat').reduce((newObj, key) =>
+                    //     {
+                    //         newObj[key] = chatTitles[key];
+                    //         return newObj;
+                    //     }, {}
+                    // );
+                    // setChatTitles(removeNewChat)
                 })
                 .catch((error) => {
                     console.error('Error:', error);
                 });
         } else {
-            fetch(`http://127.1.1.1:4000/chatbot/question/${currentChatTitle}/${msg}`, { method: 'POST'})
+            fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}`, { method: 'POST'})
                 .then((res) => {
                     if (!res.ok) {
                         throw new Error('Network response was not ok');
