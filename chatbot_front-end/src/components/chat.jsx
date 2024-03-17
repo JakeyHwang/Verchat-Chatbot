@@ -23,12 +23,7 @@ const getChatTitles = (setChatTitles, setTitleArray, chatTitle = "") => {
                     t_data[title] = data.id[index];
                 });
 
-                if (chatTitle === "") {
-                    t_data[chatTitle] = "";
-                    setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()));
-                } else {
-                    setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()));
-                }
+                setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()));
                 setTitleArray(Object.keys(t_data).reverse());
             } else {
                 throw new Error('Invalid data format');
@@ -199,7 +194,7 @@ const NewChat = ({chatData}) => {
         // setChatHistories({ ...chatHistori1es, [chatTitles.length - currentIndex - 1]: chatHistory }); // Add the current chat history to the list of chat histories
         setChatHistory([]); // Clear chat history when starting a new chat
         setCurrentChatTitle(chatTitle); // Reset chat title to the placeholder
-
+        setCurrentIndex("123")
         // api call to create new chat
         // function needs to detect that the chat is empty and new before API is called
     };
@@ -232,6 +227,16 @@ const NewChat = ({chatData}) => {
                     setChatHistory([...chatHistory, user, bot]);
                     getChatTitles(setChatTitles, setTitleArray);
                     setCurrentChatTitle(data.title);
+                    setCurrentIndex(data.id);
+                    
+                    let removeNewChat = Object.keys(chatTitles).filter(objKey =>
+                        objKey !== 'Untitled Chat').reduce((newObj, key) =>
+                        {
+                            newObj[key] = chatTitles[key];
+                            return newObj;
+                        }, {}
+                    );
+                    setChatTitles(removeNewChat)
                 })
                 .catch((error) => {
                     console.error('Error:', error);
