@@ -225,19 +225,10 @@ const NewChat = ({chatData}) => {
                     }
                     let user = {'type':'user', 'message': msg};
                     let bot = {'type':'bot', 'message': data.answer};
-                    setChatHistory([...chatHistory, user, bot]);
+                    setChatHistory([...chatHistory, user]);
                     getChatTitles(setChatTitles, setTitleArray);
                     setCurrentChatTitle(data.title);
                     setCurrentIndex(data.id);
-                    
-                    // let removeNewChat = Object.keys(chatTitles).filter(objKey =>
-                    //     objKey !== 'Untitled Chat').reduce((newObj, key) =>
-                    //     {
-                    //         newObj[key] = chatTitles[key];
-                    //         return newObj;
-                    //     }, {}
-                    // );
-                    // setChatTitles(removeNewChat)
                 })
                 .catch((error) => {
                     console.error('Error:', error);
@@ -256,9 +247,10 @@ const NewChat = ({chatData}) => {
                     }
                     let user = {'type':'user', 'message': msg};
                     let bot = {'type':'bot-message', 'message': data.data[1]};
-                    console.log("this is data[1] message")
-                    console.log(data.data[1])
-                    setChatHistory([...chatHistory, user, bot]);
+                    setChatHistory([...chatHistory, user]);
+                    setTimeout(() => {
+                        setChatHistory(prevHistory => [...prevHistory, bot]);
+                    }, 3000); // Delay of 1 second (1000 milliseconds)
                 })
                 .catch((error) => {
                     console.error('Error:', error);
