@@ -84,20 +84,20 @@ const ChatBar = ({ sendMsg }) => {
     }
 
     return (
-        <div className="fixed bottom-0 m-2 w-full flex flex-col sm:flex-row">
-    <input
-        id="chat"
-        type="text"
-        placeholder="Ask me anything..."
-        className="border border-black bg-white rounded-full px-4 py-1 flex-grow mb-2 sm:w-1/6 md:w-2/3 lg:w-4/6"
-        value={message}
-        onChange={handleChange}
-        onKeyDown={(e) => { if (e.key === 'Enter') { handleSend() } }}
-    />
-    <button onClick={handleSend} disabled={!message.trim()} className="bg-blue-500 text-white px-4 py-2 rounded-lg flex-shrink-0sm:w-1/6 md:w-2/3 lg:w-4/6">
-        <Image alt="send image" src={sendIcon} className="w-6 h-6" />
-    </button>
-</div>
+        <div className="fixed bottom-0 m-2 w-full flex flex-row">
+            <input
+                id="chat"
+                type="text"
+                placeholder="Ask me anything..."
+                className="border border-black bg-white rounded-full px-4 py-1 w-[70%] mb-2 mr-2"
+                value={message}
+                onChange={handleChange}
+                onKeyDown={(e) => { if (e.key === 'Enter') { handleSend() } }}
+            />
+            <button onClick={handleSend} disabled={!message.trim()} className="bg-blue-500 text-white px-4 py-2 rounded-full flex-shrink-0 h-9 items-center">
+                <Image alt="send image" src={sendIcon} className="w-6 h-6" />
+            </button>
+        </div>
 
     );
 }
@@ -105,6 +105,9 @@ const ChatBar = ({ sendMsg }) => {
 
 const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
     const [searchQuery, setSearchQuery] = useState('');
+
+    // state for menu open/close
+    const [openMenu, setOpenMenu] = useState(false)
 
     let arr = [];
     Object.entries(chatTitles).forEach((key) => {
@@ -125,48 +128,59 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
         changeTopic(i);
     }
 
+    // function to open and close menu
+    const handleMenu = () => {
+        setOpenMenu(!openMenu)
+        // console.log("this happe")
+    }
+
     return (
-        <div id="histlog" className="bg-[#d7e3fb] w-full sm:w-1/6 md:w-1/3 lg:w-4/6 min-h-screen min-vh-100">
-            {/* Verchat Logo */}
-            <div className="flex">
-                <Image src={vertexLogo} alt="ChatSideBar Image" style={{ width: '270px', height: '85.5px', marginBottom: '25px' }} className="rounded-lg" />
+        <>
+            <div className={openMenu ? 'bg-[#d7e3fb] absolute left-[339px] top-[100px] z-20 sm:hidden' : 'bg-[#d7e3fb] absolute top-[100px] z-20 sm:hidden'}>
+                <button onClick={handleMenu} className='text-4xl font-black'>☰</button>
             </div>
-            {/* New Chat button */}
-            <div className="flex justify-center mx-1">
-                <button
-                    className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300"
-                    style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
-                    onClick={handleNewChat}>
-                    <span>New Chat</span>
-                    <Image src={new_chat_icon} alt="Icon" className="h-4 w-4" /> {/* Image */}
-                </button>
+            <div id="histlog" className={openMenu ? "bg-[#d7e3fb] z-10 w-2/3 absolute sm:block sm:w-2/5 lg:block lg:w-1/6" : "bg-[#d7e3fb] hidden sm:block sm:w-2/5 lg:block lg:w-1/6"}>
+                {/* Verchat Logo */}
+                <div className="flex">
+                    <Image src={vertexLogo} alt="ChatSideBar Image" style={{ width: '270px', height: '85.5px', marginBottom: '25px' }} className="rounded-lg" />
+                </div>
+                {/* New Chat button */}
+                <div className="flex justify-center mx-1">
+                    <button
+                        className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300"
+                        style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
+                        onClick={handleNewChat}>
+                        <span>New Chat</span>
+                        <Image src={new_chat_icon} alt="Icon" className="h-4 w-4" /> {/* Image */}
+                    </button>
+                </div>
+                <h1 className='text-left text-gray-600 font-medium pt-1 px-4 '>Chat History</h1>
+                {/* Search Bar */}
+                <div className="flex mx-1 mb-2">
+                    <input type="text" placeholder="Search..." className="border border-gray-400 rounded-lg px-2 py-1 mt-2 w-full" onChange={handleChange} />
+                </div>
+                {/* Display chat history in reverse order .slice(0).reverse() */}
+                <div className="overflow-y-auto">
+                    {toShow.map((title, index) => (
+                        <div key={chatTitles[`${title}`]} className='font-medium mx-1'>
+                            <button
+                                key={chatTitles[`${title}`]}
+                                id={chatTitles[`${title}`]}
+                                style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
+                                className={`
+                                    w-full rounded-md py-2 px-4 text-left
+                                    ${chatTitles[`${title}`] != currentIndex ? 'bg-[#d7e3fb] hover:bg-blue-300 text-black' : 'bg-blue-400 pointer-events-none text-white'} 
+                                `}
+                                disabled={chatTitles[`${title}`] == currentIndex}
+                                onClick={handleNewTopic}
+                            >
+                                {title}
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
-            <h1 className='text-left text-gray-600 font-medium pt-1 px-4 '>Chat History</h1>
-            {/* Search Bar */}
-            <div className="flex mx-1 mb-2">
-                <input type="text" placeholder="Search..." className="border border-gray-400 rounded-lg px-2 py-1 mt-2 w-full" onChange={handleChange} />
-            </div>
-            {/* Display chat history in reverse order .slice(0).reverse() */}
-            <div className="overflow-y-auto">
-                {toShow.map((title, index) => (
-                    <div key={chatTitles[`${title}`]} className='font-medium mx-1'>
-                        <button
-                            key={chatTitles[`${title}`]}
-                            id={chatTitles[`${title}`]}
-                            style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
-                            className={`
-                                w-full rounded-md py-2 px-4 text-left
-                                ${chatTitles[`${title}`] != currentIndex ? 'bg-[#d7e3fb] hover:bg-blue-300 text-black' : 'bg-blue-400 pointer-events-none text-white'} 
-                            `}
-                            disabled={chatTitles[`${title}`] == currentIndex}
-                            onClick={handleNewTopic}
-                        >
-                            {title}
-                        </button>
-                    </div>
-                ))}
-            </div>
-        </div>
+        </>
     );
 }
 

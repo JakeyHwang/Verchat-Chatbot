@@ -93,8 +93,25 @@ def put_history_new(title , human,ai):
 
 
 def ask_new_question(question): #Has to be refactored
-    history = []
+    history = [] 
     chat = ChatOpenAI()
+    # adding company info to history
+    cred = credentials.Certificate("./firebase_keys.json")
+    app = firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    documents_data = """This is all the company information that you can find in our portfolio and database: """
+    collection_name = "Company_information"
+    collection_ref = db.collection(collection_name)
+    docs = collection_ref.stream()
+    docs = collection_ref.stream()
+    for doc in docs:
+        # doc_id = doc.id
+        doc = doc.to_dict()
+        documents_data += doc['company_name'] + ": " + doc['company_information'] + ", "
+    firebase_admin.delete_app(app)
+    
+    history.append( SystemMessage(content=documents_data))
+    
     history.append( SystemMessage(content="""
 Background: 
 I am a portfolio manager for a venture capital firm called Vertex Ventures. 
@@ -141,10 +158,27 @@ Here are some things you would need to consider when presenting these informatio
 
 def ask_question(id , question): #Has to be refactored
     try:
-        
-        raw_history = get_history(id)
         history = []
         
+        # adding company info to history
+        cred = credentials.Certificate("./firebase_keys.json")
+        app = firebase_admin.initialize_app(cred)
+        db = firestore.client()
+        documents_data = """This is all the company information that you can find in our portfolio and database: """
+        collection_name = "Company_information"
+        collection_ref = db.collection(collection_name)
+        docs = collection_ref.stream()
+        docs = collection_ref.stream()
+        for doc in docs:
+            # doc_id = doc.id
+            doc = doc.to_dict()
+            documents_data += doc['company_name'] + ": " + doc['company_information'] + ", "
+        firebase_admin.delete_app(app)
+        
+        history.append( SystemMessage(content=documents_data))
+        
+        
+        raw_history = get_history(id)
         history.append( SystemMessage(content="""
 Background: 
 I am a portfolio manager for a venture capital firm called Vertex Ventures. 
