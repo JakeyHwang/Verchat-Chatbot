@@ -225,7 +225,7 @@ const NewChat = ({chatData}) => {
                     }
                     let user = {'type':'user', 'message': msg};
                     let bot = {'type':'bot', 'message': data.answer};
-                    setChatHistory([...chatHistory, user]);
+                    setChatHistory([...chatHistory, user, bot]);
                     getChatTitles(setChatTitles, setTitleArray);
                     setCurrentChatTitle(data.title);
                     setCurrentIndex(data.id);
