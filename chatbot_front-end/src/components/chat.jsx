@@ -326,9 +326,11 @@ const NewChat = ({chatData}) => {
                     {/* .slice(0).reverse() */}
                 {chatHistory.map((chat, index) => (
                 <div key={index} className={chat.type === 'user' ? 'relative w-[500px] place-self-end pr-3' : 'relative w-[700px] place-self-start pl-3'}>
-                    <div key={index} className={`rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'bg-[#e4e4e4] ml-auto' : 'bg-[#d7e3fb] mr-auto '}`} >
-                        <h1>{chat.message}</h1>
-                    </div>
+                <div key={index} className={`rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'bg-[#e4e4e4] ml-auto' : 'bg-[#d7e3fb] mr-auto '} 
+                sm:w-1/2 lg:w-1/3 xl:w-1/4`}>
+                <h1>{chat.message}</h1>
+                </div>
+
                 </div>
                 ))}
             
