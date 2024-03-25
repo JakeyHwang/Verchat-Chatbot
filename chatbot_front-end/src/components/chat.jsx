@@ -94,8 +94,8 @@ const ChatBar = ({ sendMsg }) => {
                 onChange={handleChange}
                 onKeyDown={(e) => { if (e.key === 'Enter') { handleSend() } }}
             />
-            <button onClick={handleSend} disabled={!message.trim()} className="bg-blue-500 text-white px-4 py-2 rounded-full flex-shrink-0 h-9 items-center">
-                <Image alt="send image" src={sendIcon} className="w-6 h-6" />
+            <button onClick={handleSend} disabled={!message.trim()} >
+                <Image alt="send image" src={sendIcon} className="w-8 h-8 mb-2 ml-1" />
             </button>
         </div>
 
