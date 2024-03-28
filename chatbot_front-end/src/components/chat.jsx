@@ -97,7 +97,7 @@ const ChatBar = ({ sendMsg }) => {
                 onKeyDown={(e) => { if (e.key === 'Enter') { handleSend() } }}
             />
             <button onClick={handleSend} disabled={!message.trim()} >
-                <Image alt="send image" src={sendIcon} className="w-8 h-8 mb-3 ml-1" />
+                <Image alt="send image" src={sendIcon} className="w-8 h-8 mb-3 mr-7" />
             </button>
             </div>
         </div>
@@ -143,7 +143,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat, openMen
             <div className={openMenu ? 'bg-[#d7e3fb] hidden' : 'md:bg-[#d7e3fb] md:hidden'}>
                 <button onClick={handleMenu} className='text-4xl font-black'>☰</button>
             </div>
-            <div id="histlog" className={openMenu ? "bg-[#d7e3fb]" : "bg-[#d7e3fb] invisible md:visible"}>
+            <div id="histlog" className={openMenu ? "bg-[#d7e3fb]" : "bg-[#d7e3fb] invisible md:visible"} style={{ height: '100vh', overflowY: 'auto' }}>
                 {/* Verchat Logo */}
                 <div className="flex">
                     <Image src={vertexLogo} alt="ChatSideBar Image" style={{ width: '270px', height: '85.5px', marginBottom: '25px' }} className="rounded-lg" />
@@ -318,13 +318,13 @@ const NewChat = ({chatData}) => {
     return (
         
         
-        <div className="flex">
+        <div className="flex" style={{ maxHeight: '100vh' }}>
             <div className="grid grid-cols-10">
                 <div className={`md:col-span-2 ${openMenu ? 'col-span-4' : 'col-span-1'} md:visible`}>
                     <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} openMenuu={openMenuu} />
                 </div>
 
-                <div className={`flex-auto ${openMenu ? 'col-span-6' : 'col-span-9'} md:col-span-8`}>
+                <div className={`flex-auto ${openMenu ? 'col-span-6' : 'col-span-9'} md:col-span-8`} style={{ height: '95vh', overflowY: 'auto' }}>
                                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                                     <div className='col-span-2 mx-auto'>
                                         {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
