@@ -1,6 +1,8 @@
 env/
 __pycache__/
+company_PDF/
 
 *.env
 *.env.*
 env.*
+*.pdf
