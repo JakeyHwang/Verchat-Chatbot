@@ -84,7 +84,7 @@ const ChatBar = ({ sendMsg }) => {
     }
 
     return (
-        <div className="fixed bottom-0 m-2 w-full flex flex-row">
+        <div className="fixed bottom-0 m-0 ml-2 w-full flex flex-row">
             <input
                 id="chat"
                 type="text"
@@ -139,7 +139,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
             <div className={openMenu ? 'bg-[#d7e3fb] absolute left-[339px] top-[100px] z-20 sm:hidden' : 'bg-[#d7e3fb] absolute top-[100px] z-20 sm:hidden'}>
                 <button onClick={handleMenu} className='text-4xl font-black'>☰</button>
             </div>
-            <div id="histlog" className={openMenu ? "bg-[#d7e3fb] z-10 w-2/3 absolute sm:block sm:w-2/5 lg:block lg:w-1/6" : "bg-[#d7e3fb] hidden sm:block sm:w-2/5 lg:block lg:w-1/6"}>
+            <div style={{ height: '100vh', overflowY: 'auto' }}  id="histlog" className={openMenu ? "bg-[#d7e3fb] z-10 w-2/3 absolute sm:block sm:w-2/5 lg:block lg:w-1/6" : "bg-[#d7e3fb] hidden sm:block sm:w-2/5 lg:block lg:w-1/6"}>
                 {/* Verchat Logo */}
                 <div className="flex">
                     <Image src={vertexLogo} alt="ChatSideBar Image" style={{ width: '270px', height: '85.5px', marginBottom: '25px' }} className="rounded-lg" />
@@ -308,12 +308,12 @@ const NewChat = ({chatData}) => {
     return (
         
         
-        <div className="flex">
+        <div style={{ maxHeight: '100vh' }}  className="flex">
             <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} />
-            <div className="flex-auto">
+            <div style={{ height: '95vh', overflowY: 'auto' }}  className="flex-auto ">
                                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                                     <div className='col-span-2 mx-auto'>
-                                        <button onClick={promptFile} disabled={uploadedFile[currentChatTitle]} className={`flex items-center text-white font-bold py-1 px-2 rounded ${uploadedFile[currentChatTitle] ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-700'}`} style={{ marginTop: '10px' }}>
+                                        <button onClick={promptFile} disabled={uploadedFile[currentChatTitle]} className={`flex items-center text-white font-bold py-1 px-2 rounded ${uploadedFile[currentChatTitle] ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-700'}`} style={{ marginTop: '10px'}}>
                                             Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
                                         </button>
                                     </div>
@@ -322,7 +322,7 @@ const NewChat = ({chatData}) => {
                     {/* <div className='topright'></div>
                     <div className='bottom left'></div> */}
                    {/* Display chat history */}
-                <div className="flex flex-col mt-2">
+                <div className="flex flex-col mt-2 " >
                     {/* .slice(0).reverse() */}
                 {chatHistory.map((chat, index) => (
                 <div key={index} className={chat.type === 'user' ? 'relative w-[500px] place-self-end pr-3' : 'relative w-[700px] place-self-start pl-3'}>
@@ -332,9 +332,16 @@ const NewChat = ({chatData}) => {
             </div>
             ))}
                 {/* Assuming sendMsg is defined */}
-                <ChatBar sendMsg={(msg) => { handleSend(msg); }} />
+                
             </div>
+            <div>
+        <ChatBar sendMsg={(msg) => { handleSend(msg); }} />
+    </div>
+            
         </div>
+        
+
+            
     </div>
     );
 }
