@@ -84,26 +84,29 @@ const ChatBar = ({ sendMsg }) => {
     }
 
     return (
-        <div className="fixed bottom-0 m-0 ml-2 w-full flex flex-row">
-            <input
+        // <div className="fixed bottom-0 w-full flex flex-row">
+        <div className='w-full justify-center items-center mx-4'>
+            <div className="flex flex-1 flex-row w-[80%] justify-center items-center">
+                 <input
                 id="chat"
                 type="text"
                 placeholder="Ask me anything..."
-                className="border border-black bg-white rounded-full px-4 py-1 w-[70%] mb-2 mr-2"
+                className="border border-black bg-white rounded-full px-4 py-1 w-[100%] mb-2 mr-3"
                 value={message}
                 onChange={handleChange}
                 onKeyDown={(e) => { if (e.key === 'Enter') { handleSend() } }}
             />
             <button onClick={handleSend} disabled={!message.trim()} >
-                <Image alt="send image" src={sendIcon} className="w-8 h-8 mb-2 ml-1" />
+                <Image alt="send image" src={sendIcon} className="w-8 h-8 mb-3 ml-1" />
             </button>
+            </div>
         </div>
 
     );
 }
 
 
-const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
+const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat, openMenuu }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     // state for menu open/close
@@ -132,14 +135,15 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
     const handleMenu = () => {
         setOpenMenu(!openMenu)
         // console.log("this happe")
+        openMenuu(openMenu)
     }
 
     return (
-        <>
-            <div className={openMenu ? 'bg-[#d7e3fb] absolute left-[339px] top-[100px] z-20 sm:hidden' : 'bg-[#d7e3fb] absolute top-[100px] z-20 sm:hidden'}>
+        <div>
+            <div className={openMenu ? 'bg-[#d7e3fb] hidden' : 'md:bg-[#d7e3fb] md:hidden'}>
                 <button onClick={handleMenu} className='text-4xl font-black'>☰</button>
             </div>
-            <div style={{ height: '100vh', overflowY: 'auto' }}  id="histlog" className={openMenu ? "bg-[#d7e3fb] z-10 w-2/3 absolute sm:block sm:w-2/5 lg:block lg:w-1/6" : "bg-[#d7e3fb] hidden sm:block sm:w-2/5 lg:block lg:w-1/6"}>
+            <div id="histlog" className={openMenu ? "bg-[#d7e3fb]" : "bg-[#d7e3fb] invisible md:visible"}>
                 {/* Verchat Logo */}
                 <div className="flex">
                     <Image src={vertexLogo} alt="ChatSideBar Image" style={{ width: '270px', height: '85.5px', marginBottom: '25px' }} className="rounded-lg" />
@@ -180,7 +184,7 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat }) => {
                     ))}
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
@@ -203,6 +207,7 @@ const NewChat = ({chatData}) => {
     const [isChatLoading, setChatLoading] = useState(true)
     const [isHistoryLoading, setHistoryLoading] = useState(true)
     const [uploadedFile, setUploadedFile] = useState({})
+    const [openMenu, setOpenMenu] = useState(false)
 
     const handleNewChat = () => {
         setChatTitles({ [chatTitle]: "123", ...chatTitles }); // Add the current chat title to the list of chat titles
@@ -220,6 +225,11 @@ const NewChat = ({chatData}) => {
         setCurrentChatTitle(chatTitle);
         setCurrentIndex(0);
         setChatLoading(false)
+    }
+
+    const openMenuu = (menu) => {
+        setOpenMenu(!menu)
+        console.log(openMenu)
     }
 
     if (isChatLoading) return <p>Loading chat...</p>
@@ -308,22 +318,23 @@ const NewChat = ({chatData}) => {
     return (
         
         
-        <div style={{ maxHeight: '100vh' }}  className="flex">
-            <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} />
-            <div style={{ height: '95vh', overflowY: 'auto' }}  className="flex-auto ">
+        <div className="flex">
+            <div className="grid grid-cols-10">
+                <div className={`md:col-span-2 ${openMenu ? 'col-span-4' : 'col-span-1'} md:visible`}>
+                    <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} openMenuu={openMenuu} />
+                </div>
+
+                <div className={`flex-auto ${openMenu ? 'col-span-6' : 'col-span-9'} md:col-span-8`}>
                                 <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
                                     <div className='col-span-2 mx-auto'>
-                                        <button onClick={promptFile} disabled={uploadedFile[currentChatTitle]} className={`flex items-center text-white font-bold py-1 px-2 rounded ${uploadedFile[currentChatTitle] ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-700'}`} style={{ marginTop: '10px'}}>
+                                        {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
+                                        <button onClick={promptFile} disabled={uploadedFile[currentChatTitle]} className={`flex items-center text-white font-bold py-1 px-2 rounded ${uploadedFile[currentChatTitle] ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-700'}`} style={{ marginTop: '10px' }}>
                                             Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
                                         </button>
                                     </div>
                                     <WlcMsg/>
                                 </div>
-                    {/* <div className='topright'></div>
-                    <div className='bottom left'></div> */}
-                   {/* Display chat history */}
-                <div className="flex flex-col mt-2 " >
-                    {/* .slice(0).reverse() */}
+                <div className="flex flex-col mt-2">
                 {chatHistory.map((chat, index) => (
                 <div key={index} className={chat.type === 'user' ? 'relative w-[500px] place-self-end pr-3' : 'relative w-[700px] place-self-start pl-3'}>
                 <div key={index} className={`rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'bg-[#e4e4e4] ml-auto' : 'bg-[#d7e3fb] mr-auto '}`} >
@@ -332,15 +343,13 @@ const NewChat = ({chatData}) => {
             </div>
             ))}
                 {/* Assuming sendMsg is defined */}
-                
             </div>
-            <div>
-        <ChatBar sendMsg={(msg) => { handleSend(msg); }} />
-    </div>
-            
+            <div className={`flex justify-center w-full ${openMenu ? 'col-span-6' : 'col-span-9'} md:col-span-8 fixed bottom-0`}>
+                <ChatBar sendMsg={(msg) => { handleSend(msg); }} />
+            </div>
         </div>
-        
 
+            </div>
             
     </div>
     );
