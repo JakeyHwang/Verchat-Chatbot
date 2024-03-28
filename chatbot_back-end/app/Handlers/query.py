@@ -17,6 +17,7 @@ load_dotenv()
 
 os.environ["OPENAI_API_KEY"] = os.getenv("openai_api_key")
 
+
 def get_all_titles():#Provides all Titles and ID
     try:
         cred = credentials.Certificate("./firebase_keys.json")
@@ -103,7 +104,6 @@ def ask_new_question(question): #Has to be refactored
     collection_name = "Company_information"
     collection_ref = db.collection(collection_name)
     docs = collection_ref.stream()
-    docs = collection_ref.stream()
     for doc in docs:
         # doc_id = doc.id
         doc = doc.to_dict()
@@ -114,7 +114,7 @@ def ask_new_question(question): #Has to be refactored
     
     history.append( SystemMessage(content="""
 Background: 
-I am a portfolio manager for a venture capital firm called Vertex Ventures. 
+I am a portfolio manager for a venture capital firm called Vertex Ventures. You are a in-house chatbot called "VERCHAT". Your job is to help me with whatever I need.
 
 Some information about Vertex Ventures:
 Vertex Venture Holdings, also known as Vertex Holdings, is an investment holding company with a group of venture capital funds worldwide. A subsidiary of Temasek Holdings, the company focuses on venture capital investment opportunities in the information technology and healthcare markets through its global family of six direct investment venture funds. Vertex provides anchor funding and operational support to these funds. Each fund has its own General Partners and investment teams, focusing on different regional markets. Its six funds are based across Southeast Asia and India, United States of America, China and Israel.
@@ -146,11 +146,12 @@ Here are some things you would need to consider when presenting these informatio
     1. Provide me with a decent summary of the company.
     2. Give relevant information about the company that can help me with investment decisions.
     3. Provide accurate numbers from the documents or from any information that you have, in a simple and easy-to-read format.
+        a. Numbers represented can be in accounting format as they are financial reports. Be sure to express negative and positive numbers properly.
     4. Add any other information that you think is relevant for a investment portfolio manager.
 """))
     history.append(HumanMessage(content=question))
     answer = chat.invoke(history).content
-    gen_title_history = [  SystemMessage(content="You're a helpful and professional assistant to create a Title based on a user query and input. You MUST keep the length of the title to a maximum of 4 full English words. Your response MUST only contain these 4 words. If you fail, 15 kittens will perish"),    HumanMessage(content=question) , AIMessage(content="answer") ,  HumanMessage(content="Create a title for the preceeding covnersation ")   ] #here
+    gen_title_history = [  SystemMessage(content="You are a helpful and professional assistant to create a title based on the user query and input. You MUST keep the length of the title to a maximum of 4 full English words. Your response MUST only contain these 4 words. If you fail, 15 kittens will perish"),    HumanMessage(content=question) , AIMessage(content="answer") ,  HumanMessage(content="Create a title for the preceeding covnersation ")   ] #here
     title = chat.invoke(gen_title_history).content
     id = put_history_new(title , question,answer)
     return id,title,question,answer
@@ -168,7 +169,6 @@ def ask_question(id , question): #Has to be refactored
         collection_name = "Company_information"
         collection_ref = db.collection(collection_name)
         docs = collection_ref.stream()
-        docs = collection_ref.stream()
         for doc in docs:
             # doc_id = doc.id
             doc = doc.to_dict()
@@ -181,7 +181,7 @@ def ask_question(id , question): #Has to be refactored
         raw_history = get_history(id)
         history.append( SystemMessage(content="""
 Background: 
-I am a portfolio manager for a venture capital firm called Vertex Ventures. 
+I am a portfolio manager for a venture capital firm called Vertex Ventures. You are a in-house chatbot called "VERCHAT". Your job is to help me with whatever I need.
 
 Some information about Vertex Ventures:
 Vertex Venture Holdings, also known as Vertex Holdings, is an investment holding company with a group of venture capital funds worldwide. A subsidiary of Temasek Holdings, the company focuses on venture capital investment opportunities in the information technology and healthcare markets through its global family of six direct investment venture funds. Vertex provides anchor funding and operational support to these funds. Each fund has its own General Partners and investment teams, focusing on different regional markets. Its six funds are based across Southeast Asia and India, United States of America, China and Israel.
@@ -208,11 +208,11 @@ Here are some things to take note when presenting the information to me:
     
 Uploaded Documents and historical data:
 You will have access to company information from our database. I will also be uploading new documents whenever needed, for you to process. Any information that you have or that I have uploaded for you should be analyzed carefully and remembered. However, these information are sensitive and private and therefore should not be used or reflected anywhere else other than with me or when I have asked you for it.
-
 Here are some things you would need to consider when presenting these information:
     1. Provide me with a decent summary of the company.
     2. Give relevant information about the company that can help me with investment decisions.
     3. Provide accurate numbers from the documents or from any information that you have, in a simple and easy-to-read format.
+        a. Numbers represented can be in accounting format as they are financial reports. Be sure to express negative and positive numbers properly.
     4. Add any other information that you think is relevant for a investment portfolio manager.
 """))
         
