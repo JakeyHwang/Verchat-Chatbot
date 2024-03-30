@@ -9,8 +9,6 @@ import '../public/styles.css';
 import { createSearchParamsBailoutProxy } from 'next/dist/client/components/searchparams-bailout-proxy';
 import { output } from '../../next.config';
 
-
-
 // populates chatTitles and first chat title history using data from API call
 const getChatTitles = (setChatTitles, setTitleArray, chatTitle = "") => {
     let t_data = {};
@@ -137,6 +135,8 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat, openMen
         // console.log("this happe")
         openMenuu(openMenu)
     }
+  
+
 
     return (
         <div>
@@ -151,7 +151,8 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat, openMen
                 {/* New Chat button */}
                 <div className="flex justify-center mx-1">
                     <button
-                        className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300"
+                        id="newChatButton"
+                        className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300 transition-colors duration-500 ease-in-out"
                         style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
                         onClick={handleNewChat}>
                         <span>New Chat</span>
@@ -163,26 +164,25 @@ const Sidebar = ({ chatTitles, changeTopic, currentIndex, handleNewChat, openMen
                 <div className="flex mx-1 mb-2">
                     <input type="text" placeholder="Search..." className="border border-gray-400 rounded-lg px-2 py-1 mt-2 w-full" onChange={handleChange} />
                 </div>
-                {/* Display chat history in reverse order .slice(0).reverse() */}
-                <div className="overflow-y-auto">
+                {/* Display chat history in reverse order*/}
+                <ol className="">
                     {toShow.map((title, index) => (
-                        <div key={chatTitles[`${title}`]} className='font-medium mx-1'>
+                        <li key={chatTitles[`${title}`]} className={`chat-items font-medium mx-1 translate-y-0`}>
                             <button
                                 key={chatTitles[`${title}`]}
                                 id={chatTitles[`${title}`]}
                                 style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}
                                 className={`
-                                    w-full rounded-md py-2 px-4 text-left
-                                    ${chatTitles[`${title}`] != currentIndex ? 'bg-[#d7e3fb] hover:bg-blue-300 text-black' : 'bg-blue-400 pointer-events-none text-white'} 
-                                `}
+                                    w-full rounded-md py-2 px-4 text-left transition-colors duration-500 ease-in-out
+                                    ${chatTitles[`${title}`] != currentIndex ? 'bg-[#d7e3fb] hover:bg-blue-300 text-black' : 'bg-blue-400 pointer-events-none text-white'} `}
                                 disabled={chatTitles[`${title}`] == currentIndex}
                                 onClick={handleNewTopic}
                             >
                                 {title}
                             </button>
-                        </div>
+                        </li>
                     ))}
-                </div>
+                </ol>
             </div>
         </div>
     );
@@ -209,6 +209,35 @@ const NewChat = ({chatData}) => {
     const [uploadedFile, setUploadedFile] = useState({})
     const [openMenu, setOpenMenu] = useState(false)
 
+    //delay function
+    const delay = async (ms) => {
+        return new Promise((resolve) => 
+            setTimeout(resolve, ms));
+    };
+    
+    // function for sliding transition
+    const slideDown = async () => {
+        let items = document.getElementsByClassName("chat-items")
+        for (var i=0; i < items.length; i++) {
+            items[i].classList.remove(`transition-transform`)
+            items[i].classList.remove(`duration-1000`)
+            if (i>=0){
+                items[i].classList.replace(`translate-y-0`,`translate-y-[-40px]`)
+            }
+        }
+        await delay(500);
+        for (var i=0; i < items.length; i++) {
+            if (i>=0) {
+                items[i].classList.add(`transition-transform`)
+                items[i].classList.add(`duration-1000`)
+                items[i].classList.replace(`translate-y-[-40px]`,`translate-y-0`)
+            }
+            // item.classList.replace(`translate-y-[-64px]`,`translate-y-[0px]`)
+            // transition-transform duration-1000
+        }
+    }
+
+
     const handleNewChat = () => {
         setChatTitles({ [chatTitle]: "123", ...chatTitles }); // Add the current chat title to the list of chat titles
         // setChatHistories({ ...chatHistori1es, [chatTitles.length - currentIndex - 1]: chatHistory }); // Add the current chat history to the list of chat histories
@@ -217,6 +246,8 @@ const NewChat = ({chatData}) => {
         setCurrentIndex("123")
         // api call to create new chat
         // function needs to detect that the chat is empty and new before API is called
+        slideDown()
+    
     };
 
     // running API call only once upon page load
@@ -325,33 +356,31 @@ const NewChat = ({chatData}) => {
                 </div>
 
                 <div className={`flex-auto ${openMenu ? 'col-span-6' : 'col-span-9'} md:col-span-8`} style={{ height: '95vh', overflowY: 'auto' }}>
-                                <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
-                                    <div className='col-span-2 mx-auto'>
-                                        {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
-                                        <button onClick={promptFile} disabled={uploadedFile[currentChatTitle]} className={`flex items-center text-white font-bold py-1 px-2 rounded ${uploadedFile[currentChatTitle] ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-700'}`} style={{ marginTop: '10px' }}>
-                                            Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
-                                        </button>
-                                    </div>
-                                    <WlcMsg/>
-                                </div>
-                <div className="flex flex-col mt-2">
-                {chatHistory.map((chat, index) => (
-                <div key={index} className={chat.type === 'user' ? 'relative w-[400px] place-self-end pr-3' : 'relative w-[600px] place-self-start pl-3'}>
-                <div key={index} className={`rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'bg-[#e4e4e4] ml-auto' : 'bg-[#d7e3fb] mr-auto '}`} >
-                <h1>{chat.message}</h1>
+                    <div className='grid grid-flow-row auto-rows-max grid-cols-2 gap-y-4 mx-2'>
+                        <div className='col-span-2 mx-auto'>
+                            {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
+                            <button onClick={promptFile} disabled={uploadedFile[currentChatTitle]} className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out ${uploadedFile[currentChatTitle] ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-700'}`} style={{ marginTop: '10px' }}>
+                                Upload <Image src={upload_icon} className='w-6 h-6 ml-1' />
+                            </button>
+                        </div>
+                        <WlcMsg/>
+                    </div>
+                    <div className="flex flex-col mt-2">
+                        {chatHistory.map((chat, index) => (
+                        <div key={index} className={chat.type === 'user' ? 'relative w-[400px] place-self-end pr-3' : 'relative w-[600px] place-self-start pl-3'}>
+                            <div key={index} className={`rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'bg-[#e4e4e4] ml-auto' : 'bg-[#d7e3fb] mr-auto '}`} >
+                                <h1>{chat.message}</h1>
+                            </div>
+                        </div>
+                        ))}
+                    {/* Assuming sendMsg is defined */}
+                    </div>
+                    <div className={`flex justify-center w-full ${openMenu ? 'col-span-6' : 'col-span-9'} md:col-span-8 fixed bottom-0`}>
+                        <ChatBar sendMsg={(msg) => { handleSend(msg); }} />
+                    </div>
                 </div>
             </div>
-            ))}
-                {/* Assuming sendMsg is defined */}
-            </div>
-            <div className={`flex justify-center w-full ${openMenu ? 'col-span-6' : 'col-span-9'} md:col-span-8 fixed bottom-0`}>
-                <ChatBar sendMsg={(msg) => { handleSend(msg); }} />
-            </div>
         </div>
-
-            </div>
-            
-    </div>
     );
 }
 
