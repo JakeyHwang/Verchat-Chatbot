@@ -336,7 +336,7 @@ const NewChat = ({chatData}) => {
                                 </div>
                 <div className="flex flex-col mt-2">
                 {chatHistory.map((chat, index) => (
-                <div key={index} className={chat.type === 'user' ? 'relative w-[500px] place-self-end pr-3' : 'relative w-[700px] place-self-start pl-3'}>
+                <div key={index} className={chat.type === 'user' ? 'relative w-[400px] place-self-end pr-3' : 'relative w-[600px] place-self-start pl-3'}>
                 <div key={index} className={`rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'bg-[#e4e4e4] ml-auto' : 'bg-[#d7e3fb] mr-auto '}`} >
                 <h1>{chat.message}</h1>
                 </div>
