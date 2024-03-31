@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import vertexLogo from "../public/transparent_verchat_logo.png";
 import sendIcon from "../public/paper-plane.png";
@@ -7,8 +7,6 @@ import new_chat_icon from "../public/new_chat_icon.png";
 import upload_icon from "../public/submit.png";
 import loading_icon from "../public/loading.png";
 import "../public/styles.css";
-import { createSearchParamsBailoutProxy } from "next/dist/client/components/searchparams-bailout-proxy";
-import { output } from "../../next.config";
 
 // populates chatTitles and first chat title history using data from API call
 const getChatTitles = (setChatTitles, setTitleArray, chatTitle = "") => {
@@ -332,6 +330,7 @@ const NewChat = ({ chatData }) => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
+          console.log("this happened")
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.answer };
           setChatHistory([...chatHistory, user, bot]);
@@ -342,7 +341,34 @@ const NewChat = ({ chatData }) => {
         .catch((error) => {
           console.error("Error:", error);
         });
-    } else {
+    } 
+    else if (uploadedFile.namespace != null) {
+      namespace = uploadedFile
+      fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (!data) {
+            throw new Error("Response data is undefined");
+          }
+          let user = { type: "user", message: msg };
+          let bot = { type: "bot", message: data.answer };
+          setChatHistory([...chatHistory, user, bot]);
+          getChatTitles(setChatTitles, setTitleArray);
+          setCurrentChatTitle(data.title);
+          setCurrentIndex(data.id);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+
+    }
+    else {
       fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}`, {
         method: "POST",
       })
@@ -357,7 +383,7 @@ const NewChat = ({ chatData }) => {
             throw new Error("Response data is undefined");
           }
           let user = { type: "user", message: msg };
-          let bot = { type: "bot-message", message: data.data[1] };
+          let bot = { type: "bot-message", message: data.data };
           setChatHistory([...chatHistory, user]);
           setTimeout(() => {
             setChatHistory((prevHistory) => [...prevHistory, bot]);
@@ -369,35 +395,63 @@ const NewChat = ({ chatData }) => {
     }
   };
 
-  const handleChangeTopic = (i) => {
-    if (i.target.id === chatTitle) {
-      setChatHistory([]);
-    } else {
-      getChatHistory(i.target.id, setChatHistory);
+    const handleChangeTopic = (i) => {
+        if (i.target.id === chatTitle) {
+            setChatHistory([]);
+        } else {
+            getChatHistory(i.target.id, setChatHistory);
+        }
+        setCurrentIndex(i.target.id);
+        setCurrentChatTitle(i.target.id);
+    };
+
+    const handlePDF = (file) =>{
+        fetch(`http://127.1.1.1:4000/upload/${file}`, { method: "POST" })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return res.json();
+                })
+                .then((data) => {
+                if (!data) {
+                    throw new Error("Response data is undefined");
+                }
+                console.log(data.namespace)
+                })
+                .catch((error) => {
+                console.error("Error:", error);
+                });
+
     }
-    setCurrentIndex(i.target.id);
-    setCurrentChatTitle(i.target.id);
-  };
+    // const path = function(path) {
+    //     const fpath = path
+    //     return { fpath };
+    // };
 
-  const promptFile = () => {
-    var input = document.createElement("input");
-    input.id = "file";
-    input.type = "file";
-    // input.accept = contentType;
+    const promptFile = () => {
+        var input = document.createElement("input");
+        input.id="file";
+        input.type = "file";
+        // input.accept = contentType;
+        let bot = {'type':'bot', 'message': "Your file has been received and processed. How can I help?"};
+        
 
-    return new Promise(function (resolve) {
-      input.onchange = function (event) {
-        var files = Array.from(event.target.files)[0];
-        resolve(files);
-        console.log(files.name);
-        setUploadedFile({ [currentChatTitle]: files });
-        handleSend(files.name);
-        console.log(uploadedFile);
-      };
-      input.click();
-      // console.log(files);
-    });
-  };
+        return new Promise(function(resolve) {
+            input.onchange = function(event) {
+                var file = Array.from(event.target.files)[0];
+                
+                
+                resolve(file);
+                console.log(file.name);
+                setUploadedFile({ [currentChatTitle]: file })
+                                
+                handlePDF(/*file path to be added*/)
+                          
+            };
+            input.click();
+        });
+    }
 
   return (
     <div className="flex" style={{ maxHeight: "100vh" }}>
@@ -476,7 +530,6 @@ const NewChat = ({ chatData }) => {
                 <div></div>
               </>
             ))}
-
             <div id="loading-screen" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
               <div class="spinner-border text-primary animate-spin" role="status">
               <Image
@@ -492,16 +545,7 @@ const NewChat = ({ chatData }) => {
                 handleSend(msg);
               }}
             />
-
-            
           </div>
-          {/* <div className="flex justify-center">
-            <ChatBar
-              sendMsg={(msg) => {
-                handleSend(msg);
-              }}
-            />
-          </div> */}
         </div>
       </div>
     </div>

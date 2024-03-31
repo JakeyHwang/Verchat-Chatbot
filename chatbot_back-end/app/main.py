@@ -2,6 +2,7 @@ from fastapi import FastAPI, Header
 from typing import Annotated
 from fastapi.middleware.cors import CORSMiddleware
 from .Handlers import query
+from .Handlers import query_PDF
 # from pydantic import BaseModel
 import os
 import json
@@ -21,6 +22,7 @@ app.add_middleware(
 # API for collecting all chat titles upon logging in
 @app.get("/")
 def start_up():
+    
     datum = query.get_all_titles()
     title = []
     id = []
@@ -53,27 +55,40 @@ def get_history_data(id:str):
 # "qn": "<yourquestion>"}
 @app.post("/chatbot/question/{id}/{qn}")
 def query_llm(id:str, qn:str):
-    # print(data)
-    # data = json.loads(data)
-    # print(data)
-    # if (data!=None):
-        # id = data['id']
-        # qn = data['qn']
+
+    ans = query_PDF.query_pdf(id , qn)
     if(id != None and qn != None):
-        ans = query.ask_question(id , qn)
         return { 'data': ans}
     else:
         return {'error': 'data not found'}
 
-# API for creating new chat
+# API for creating new chat without pdf
 # requires question in string
 @app.post("/chatbot/{qn}")
 def create_new_chat(qn:str):
-    id,title,question,answer = query.ask_new_question(qn)
+    id,title,question,answer = query_PDF.query_pdf_new(qn)
     if(id,title,question,answer != None):
         return{'id':id, 'title': title, 'question': question, 'answer': answer}
     else:
         return {'error': 'data not found'}
 
-{"id": "mCwXP0RwWY3yqsGKgtR2",
- "qn": "How long has this company been around"}
+
+# API for creating new chat with pdf
+# requires question in string
+@app.post("/chatbot/{qn}/{namespace}")
+def create_new_chat(qn:str, namespace:str):
+    id,title,question,answer = query_PDF.query_pdf_new(qn, namespace)
+    if(id,title,question,answer != None):
+        return{'id':id, 'title': title, 'question': question, 'answer': answer}
+    else:
+        return {'error': 'data not found'}
+    
+# API for receving pdf and creating vectorstore
+@app.post("/upload/{file}")
+def upload(file:str):
+    # fpath = file.fpath
+    fpath = "test_name"
+    # print(fpath)
+    namespace = query_PDF.vectorise_pdf(fpath)
+    
+    return {'namespace': namespace}
