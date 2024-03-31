@@ -5,6 +5,7 @@ import vertexLogo from "../public/transparent_verchat_logo.png";
 import sendIcon from "../public/paper-plane.png";
 import new_chat_icon from "../public/new_chat_icon.png";
 import upload_icon from "../public/submit.png";
+import loading_icon from "../public/loading.png";
 import "../public/styles.css";
 import { createSearchParamsBailoutProxy } from "next/dist/client/components/searchparams-bailout-proxy";
 import { output } from "../../next.config";
@@ -83,7 +84,13 @@ const ChatBar = ({ sendMsg }) => {
     if (message.trim()) {
       sendMsg(message);
       setMessage("");
+      document.getElementById("loading-screen").classList.remove("hidden");
     }
+    setTimeout(() => {
+      document.getElementById("loading-screen").classList.add("hidden");
+  }, 5000); // 2000 milliseconds = 2 seconds
+  
+  setMessage("");
   };
 
   return (
@@ -102,7 +109,7 @@ const ChatBar = ({ sendMsg }) => {
             }
           }}
         />
-        <button onClick={handleSend} disabled={!message.trim()}>
+        <button id="sendButton" onClick={handleSend} disabled={!message.trim()}>
           <Image
             alt="send image"
             src={sendIcon}
@@ -255,7 +262,9 @@ const NewChat = ({ chatData }) => {
   const [isHistoryLoading, setHistoryLoading] = useState(true);
   const [uploadedFile, setUploadedFile] = useState({});
   const [openMenu, setOpenMenu] = useState(false);
+ 
 
+  
   //delay function
   const delay = async (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -310,6 +319,7 @@ const NewChat = ({ chatData }) => {
   if (isChatLoading) return <p>Loading chat...</p>;
 
   const handleSend = (msg) => {
+    
     if (currentChatTitle === chatTitle) {
       fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: "POST" })
         .then((res) => {
@@ -467,7 +477,16 @@ const NewChat = ({ chatData }) => {
               </>
             ))}
 
-
+            <div id="loading-screen" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
+              <div class="spinner-border text-primary animate-spin" role="status">
+              <Image
+                alt="loading"
+                src={loading_icon}
+                className="w-8 h-8 "
+              />
+              </div>
+              <div class ="text-white text-lg ml-3">Loading...</div>
+            </div>
             <ChatBar
               sendMsg={(msg) => {
                 handleSend(msg);
