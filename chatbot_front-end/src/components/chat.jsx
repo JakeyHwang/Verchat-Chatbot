@@ -155,7 +155,7 @@ const Sidebar = ({
     <div>
       <div
         className={
-          openMenu ? "md:bg-[#d7e3fb] fixed inset-y-0 left-0 z-50 w-64" : "md:bg-[#d7e3fb] fixed inset-y-0 left-0 z-50 w-16"
+          openMenu ? "bg-[#d7e3fb] md:hidden" : "md:bg-[#d7e3fb] md:hidden"
         }
       >
         <button onClick={handleMenu} className="text-4xl font-black">
