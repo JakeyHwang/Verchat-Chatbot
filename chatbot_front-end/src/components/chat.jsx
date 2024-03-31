@@ -403,9 +403,64 @@ const NewChat = ({ chatData }) => {
             openMenuu={openMenuu}
           />
         </div>
-        <div className="flex flex-col flex-1 overflow-hidden">
-          <div className="flex flex-col flex-1 overflow-y-auto">
-            {/* Chat history */}
+
+        <div
+          className={`flex-auto ${
+            openMenu ? "col-span-6" : "col-span-9"
+          } md:col-span-8`}
+          style={{ height: "95vh", overflowY: "auto" }}
+        >
+          <div className="grid grid-flow-row auto-rows-max grid-cols-2 gap-y-1 mx-2">
+            <div className="col-span-2 mx-auto">
+              {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
+              <button
+                onClick={promptFile}
+                disabled={uploadedFile[currentChatTitle]}
+                className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out ${
+                  uploadedFile[currentChatTitle]
+                    ? "bg-gray-500"
+                    : "bg-blue-500 hover:bg-blue-700"
+                }`}
+                style={{ marginTop: "10px" }}
+              >
+                Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
+              </button>
+            </div>
+            <div
+                  className={`col-span-2 relative place-self-start pl-3`}
+                >
+                  <div
+                    className={`rounded-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}
+                  >
+                    <h1>Hi, how may I help you today?</h1>
+                  </div>
+                </div>
+            <div></div>
+            {Array.from(chatHistory).map((chat, index) => (
+              <>
+                <div></div>
+                <div
+                  key={index}
+                  className={`col-span-2 ${
+                    chat.type === "user"
+                      ? "relative place-self-end pr-3" // "relative w-[400px] place-self-end pr-3"
+                      : "relative place-self-start pl-3" // "relative w-[600px] place-self-start pl-3"
+                  }`}
+                >
+                  <div
+                    key={index}
+                    className={`rounded-lg px-2 py-1 text-wrap mb-2 ${
+                      chat.type === "user"
+                        ? "bg-[#e4e4e4] ml-auto"
+                        : "bg-[#d7e3fb] mr-auto "
+                    }`}
+                  >
+                    <h1>{chat.message}</h1>
+                  </div>
+                </div>
+                <div></div>
+              </>
+            ))}
           </div>
           <div className="flex justify-center">
             <ChatBar
