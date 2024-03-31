@@ -87,14 +87,13 @@ const ChatBar = ({ sendMsg }) => {
   };
 
   return (
-    // <div className="fixed bottom-0 w-full flex flex-row">
     <div className="w-full justify-center items-center mx-4">
       <div className="flex flex-1 flex-row w-[80%] justify-center items-center">
         <input
           id="chat"
           type="text"
           placeholder="Ask me anything..."
-          className="border border-black bg-white rounded-full px-4 py-1 w-[100%] mb-2 mr-3"
+          className="border border-black bg-white rounded-full px-4 py-2 w-[80%] mb-2 mr-3" // Adjusted padding and width
           value={message}
           onChange={handleChange}
           onKeyDown={(e) => {
@@ -114,7 +113,6 @@ const ChatBar = ({ sendMsg }) => {
     </div>
   );
 };
-
 const Sidebar = ({
   chatTitles,
   changeTopic,
@@ -392,13 +390,9 @@ const NewChat = ({ chatData }) => {
   };
 
   return (
-    <div className="flex" style={{ maxHeight: "100vh" }}>
-      <div className="grid grid-cols-10">
-        <div
-          className={`md:col-span-2 ${
-            openMenu ? "col-span-4" : "col-span-1"
-          } md:visible`}
-        >
+    <div className="flex flex-col h-screen">
+      <div className="flex flex-1">
+        <div className="md:w-64">
           <Sidebar
             chatTitles={chatTitles}
             changeTopic={(i) => {
@@ -409,80 +403,11 @@ const NewChat = ({ chatData }) => {
             openMenuu={openMenuu}
           />
         </div>
-
-        <div
-          className={`flex-auto ${
-            openMenu ? "col-span-6" : "col-span-9"
-          } md:col-span-8`}
-          style={{ height: "95vh", overflowY: "auto" }}
-        >
-          <div className="grid grid-flow-row auto-rows-max grid-cols-4 gap-y-1 mx-2">
-            <div className="col-span-4 mx-auto">
-              {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
-              <button
-                onClick={promptFile}
-                disabled={uploadedFile[currentChatTitle]}
-                className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out ${
-                  uploadedFile[currentChatTitle]
-                    ? "bg-gray-500"
-                    : "bg-blue-500 hover:bg-blue-700"
-                }`}
-                style={{ marginTop: "10px" }}
-              >
-                Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
-              </button>
-            </div>
-            <div
-                  className={`col-span-3 relative place-self-start pl-3`}
-                >
-                  <div
-                    className={`rounded-t-lg rounded-br-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}
-                  >
-                    <h1>Hi, how may I help you today?</h1>
-                  </div>
-                </div>
-            <div></div>
-            {Array.from(chatHistory).map((chat, index) => (
-              <>
-                <div></div>
-                <div
-                  key={index}
-                  className={`col-span-3 ${
-                    chat.type === "user"
-                      ? "relative place-self-end pr-3" // "relative w-[400px] place-self-end pr-3"
-                      : "relative place-self-start pl-3" // "relative w-[600px] place-self-start pl-3"
-                  }`}
-                >
-                  <div
-                    key={index}
-                    className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${
-                      chat.type === "user"
-                        ? "rounded-bl-lg bg-[#e4e4e4] ml-auto"
-                        : "rounded-br-lg bg-[#d7e3fb] mr-auto "
-                    }`}
-                  >
-                    <h1>{chat.message}</h1>
-                  </div>
-                </div>
-                <div></div>
-              </>
-            ))}
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex flex-col flex-1 overflow-y-auto">
+            {/* Chat history */}
           </div>
-          {/* <div className="flex flex-col mt-2">
-                        {chatHistory.map((chat, index) => (
-                        <div key={index} className={chat.type === 'user' ? 'relative w-[400px] place-self-end pr-3' : 'relative w-[600px] place-self-start pl-3'}>
-                            <div key={index} className={`rounded-lg px-2 py-1 text-wrap mb-2 ${chat.type === 'user' ? 'bg-[#e4e4e4] ml-auto' : 'bg-[#d7e3fb] mr-auto '}`} >
-                                <h1>{chat.message}</h1>
-                            </div>
-                        </div>
-                        ))} */}
-          {/* Assuming sendMsg is defined */}
-          {/* </div> */}
-          <div
-            className={`flex justify-center w-full ${
-              openMenu ? "col-span-6" : "col-span-9"
-            } md:col-span-8 fixed bottom-0`}
-          >
+          <div className="flex justify-center">
             <ChatBar
               sendMsg={(msg) => {
                 handleSend(msg);
