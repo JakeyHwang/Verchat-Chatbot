@@ -87,7 +87,7 @@ const ChatBar = ({ sendMsg }) => {
   };
 
   return (
-    <div className="w-full justify-center items-center mx-4">
+    <div className="w-full justify-center fixed bottom-0 items-center mx-4">
       <div className="flex flex-1 flex-row w-[80%] justify-center items-center">
         <input
           id="chat"
@@ -390,9 +390,13 @@ const NewChat = ({ chatData }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex flex-1">
-        <div className="md:w-64">
+    <div className="flex" style={{ maxHeight: "100vh" }}>
+      <div className="grid grid-cols-10">
+        <div
+          className={`md:col-span-2 ${
+            openMenu ? "col-span-4" : "col-span-1"
+          } md:visible`}
+        >
           <Sidebar
             chatTitles={chatTitles}
             changeTopic={(i) => {
@@ -404,14 +408,15 @@ const NewChat = ({ chatData }) => {
           />
         </div>
 
+
         <div
           className={`flex-auto ${
             openMenu ? "col-span-6" : "col-span-9"
           } md:col-span-8`}
           style={{ height: "95vh", overflowY: "auto" }}
         >
-          <div className="grid grid-flow-row auto-rows-max grid-cols-2 gap-y-1 mx-2">
-            <div className="col-span-2 mx-auto">
+          <div className="grid grid-flow-row auto-rows-max grid-cols-4 gap-y-1 mx-2">
+            <div className="col-span-4 mx-auto">
               {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
               <button
                 onClick={promptFile}
@@ -427,10 +432,10 @@ const NewChat = ({ chatData }) => {
               </button>
             </div>
             <div
-                  className={`col-span-2 relative place-self-start pl-3`}
+                  className={`col-span-3 relative place-self-start pl-3`}
                 >
                   <div
-                    className={`rounded-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}
+                    className={`rounded-t-lg rounded-br-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}
                   >
                     <h1>Hi, how may I help you today?</h1>
                   </div>
@@ -441,18 +446,18 @@ const NewChat = ({ chatData }) => {
                 <div></div>
                 <div
                   key={index}
-                  className={`col-span-2 ${
+                  className={`rounded-t-lg col-span-3 ${
                     chat.type === "user"
-                      ? "relative place-self-end pr-3" // "relative w-[400px] place-self-end pr-3"
-                      : "relative place-self-start pl-3" // "relative w-[600px] place-self-start pl-3"
+                      ? "rounded-bl-lg relative place-self-end pr-3" // "relative w-[400px] place-self-end pr-3"
+                      : "rounded-br-lg relative place-self-start pl-3" // "relative w-[600px] place-self-start pl-3"
                   }`}
                 >
                   <div
                     key={index}
-                    className={`rounded-lg px-2 py-1 text-wrap mb-2 ${
+                    className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${
                       chat.type === "user"
-                        ? "bg-[#e4e4e4] ml-auto"
-                        : "bg-[#d7e3fb] mr-auto "
+                        ? "rounded-bl-lg bg-[#e4e4e4] ml-auto"
+                        : "rounded-br-lg bg-[#d7e3fb] mr-auto "
                     }`}
                   >
                     <h1>{chat.message}</h1>
@@ -461,14 +466,23 @@ const NewChat = ({ chatData }) => {
                 <div></div>
               </>
             ))}
-          </div>
-          <div className="flex justify-center">
+
+
             <ChatBar
               sendMsg={(msg) => {
                 handleSend(msg);
               }}
             />
+
+            
           </div>
+          {/* <div className="flex justify-center">
+            <ChatBar
+              sendMsg={(msg) => {
+                handleSend(msg);
+              }}
+            />
+          </div> */}
         </div>
       </div>
     </div>
