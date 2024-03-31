@@ -87,7 +87,7 @@ def create_new_chat(qn:str, namespace:str):
 @app.post("/upload/{file}")
 def upload(file:str):
     # fpath = file.fpath
-    fpath = "test_name"
+    fpath = "C:/Users/hwang/Desktop/company data/Ace Hardware Annual Report 2022.pdf"
     # print(fpath)
     namespace = query_PDF.vectorise_pdf(fpath)
     

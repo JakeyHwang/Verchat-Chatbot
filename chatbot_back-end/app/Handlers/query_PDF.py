@@ -58,7 +58,7 @@ def chunk_text(data):
     return text_chunks
 
 def vectorise_pdf(fpath):
-    namespace = fpath
+    namespace = "test_name"
     index_name = "fyp"
     txt_chunks = PDFtoChunks(fpath)
     embedding_model = OpenAIEmbeddings()
