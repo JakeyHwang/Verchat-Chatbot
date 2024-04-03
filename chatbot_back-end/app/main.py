@@ -23,15 +23,20 @@ app.add_middleware(
 @app.get("/")
 def start_up():
     
-    datum = query.get_all_titles()
+    datum = query_PDF.get_all_titles()
     title = []
     id = []
+    namespace = {}
     if (datum != None):
-        for data in datum:
-            title.append(data[1])
-            id.append(data[0])
-        
-        return {'title':title, 'id': id}
+        for item in datum:
+            if (len(item)>3):
+                id.append(item[0])
+                title.append(item[1])
+                namespace[item[0]]=item[3]
+            id.append(item[0])
+            title.append(item[1])
+        return {'title':title, 'id': id, 'namespace': namespace}
+            
     else:
         return {'error': 'data not found'}
 
@@ -42,7 +47,7 @@ def start_up():
 # requires chat ID
 @app.get("/{id}")
 def get_history_data(id:str):
-    data = query.get_history(id)
+    data = query_PDF.get_history(id)
     if(data != None):
         return {'data': data}
     else:
@@ -84,11 +89,8 @@ def create_new_chat(qn:str, namespace:str):
         return {'error': 'data not found'}
     
 # API for receving pdf and creating vectorstore
-@app.post("/upload/{file}")
-def upload(file:str):
-    # fpath = file.fpath
-    fpath = "C:/Users/hwang/Desktop/company data/Ace Hardware Annual Report 2022.pdf"
-    # print(fpath)
-    namespace = query_PDF.vectorise_pdf(fpath)
+@app.post("/upload/{id}/{fpath}")
+def upload(id:str, fpath:str):
+    namespace = query_PDF.vectorise_pdf(id, fpath)
     
     return {'namespace': namespace}

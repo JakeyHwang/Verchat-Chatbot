@@ -9,7 +9,7 @@ import loading_icon from "../public/loading.png";
 import "../public/styles.css";
 
 // populates chatTitles and first chat title history using data from API call
-const getChatTitles = (setChatTitles, setTitleArray, chatTitle = "") => {
+const getChatTitles = (setChatTitles, setTitleArray, chatTitle = "", setUploadedFile) => {
   let t_data = {};
 
   fetch("http://127.1.1.1:4000/", { method: "GET" })
@@ -25,9 +25,9 @@ const getChatTitles = (setChatTitles, setTitleArray, chatTitle = "") => {
         data.title.forEach((title, index) => {
           t_data[title] = data.id[index];
         });
-
         setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()));
         setTitleArray(Object.keys(t_data).reverse());
+        setUploadedFile(data.namespace)
       } else {
         throw new Error("Invalid data format");
       }
@@ -212,6 +212,7 @@ const Sidebar = ({
         <ol className="">
           {toShow.map((title, index) => (
             <li
+              id ={chatTitles[`${title}`]}
               key={chatTitles[`${title}`]}
               className={`chat-items font-medium mx-1 translate-y-0`}
             >
@@ -303,7 +304,7 @@ const NewChat = ({ chatData }) => {
 
   // running API call only once upon page load
   if (currentIndex === "") {
-    getChatTitles(setChatTitles, setTitleArray, chatTitle);
+    getChatTitles(setChatTitles, setTitleArray, chatTitle, setUploadedFile);
     setCurrentChatTitle(chatTitle);
     setCurrentIndex(0);
     setChatLoading(false);
@@ -330,11 +331,10 @@ const NewChat = ({ chatData }) => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
-          console.log("this happened")
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.answer };
           setChatHistory([...chatHistory, user, bot]);
-          getChatTitles(setChatTitles, setTitleArray);
+          getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
           setCurrentChatTitle(data.title);
           setCurrentIndex(data.id);
         })
@@ -342,8 +342,8 @@ const NewChat = ({ chatData }) => {
           console.error("Error:", error);
         });
     } 
-    else if (uploadedFile.namespace != null) {
-      namespace = uploadedFile
+    else if (uploadedFile[currentIndex] != "knowledge_consolidated") {
+      namespace = uploadedFile[currentIndex]
       fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" })
         .then((res) => {
           if (!res.ok) {
@@ -358,7 +358,7 @@ const NewChat = ({ chatData }) => {
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.answer };
           setChatHistory([...chatHistory, user, bot]);
-          getChatTitles(setChatTitles, setTitleArray);
+          getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
           setCurrentChatTitle(data.title);
           setCurrentIndex(data.id);
         })
@@ -383,7 +383,7 @@ const NewChat = ({ chatData }) => {
             throw new Error("Response data is undefined");
           }
           let user = { type: "user", message: msg };
-          let bot = { type: "bot-message", message: data.data };
+          let bot = { type: "bot", message: data.data };
           setChatHistory([...chatHistory, user]);
           setTimeout(() => {
             setChatHistory((prevHistory) => [...prevHistory, bot]);
@@ -405,8 +405,8 @@ const NewChat = ({ chatData }) => {
         setCurrentChatTitle(i.target.id);
     };
 
-    const handlePDF = (file) =>{
-        fetch(`http://127.1.1.1:4000/upload/${file}`, { method: "POST" })
+    const handlePDF = (id,fpath) =>{
+        fetch(`http://127.1.1.1:4000/upload/${id}/${fpath}`, { method: "POST" })
             .then((res) => {
                 if (!res.ok) {
                     throw new Error("Network response was not ok");
@@ -417,25 +417,21 @@ const NewChat = ({ chatData }) => {
                 if (!data) {
                     throw new Error("Response data is undefined");
                 }
-                console.log(data.namespace)
+                setUploadedFile({ [currentIndex]: data.namespace })
+                let bot = {'type':'bot', 'message': "Your file has been received and processed! How can I help?"};
+                
+                setChatHistory((prevHistory) => [...prevHistory, bot])
                 })
                 .catch((error) => {
                 console.error("Error:", error);
                 });
 
     }
-    // const path = function(path) {
-    //     const fpath = path
-    //     return { fpath };
-    // };
 
-    const promptFile = () => {
+    const promptFile = (id) => {
         var input = document.createElement("input");
         input.id="file";
         input.type = "file";
-        // input.accept = contentType;
-        let bot = {'type':'bot', 'message': "Your file has been received and processed. How can I help?"};
-        
 
         return new Promise(function(resolve) {
             input.onchange = function(event) {
@@ -443,10 +439,10 @@ const NewChat = ({ chatData }) => {
                 
                 
                 resolve(file);
-                console.log(file.name);
-                setUploadedFile({ [currentChatTitle]: file })
                                 
-                handlePDF(/*file path to be added*/)
+                var file_path = "C:/Users/hwang/Desktop/company data/Ace Hardware Annual Report 2022.pdf"
+                file_path = file_path.replaceAll("/", "_")
+                handlePDF(id,file_path)
                           
             };
             input.click();
@@ -479,14 +475,14 @@ const NewChat = ({ chatData }) => {
           } md:col-span-8`}
           style={{ height: "94.45vh", overflowY: "auto" }}
         >
-          <div className="grid grid-flow-row auto-rows-max grid-cols-4 gap-y-1 mx-2">
+          <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1 mx-2">
             <div className="col-span-4 mx-auto">
               {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
               <button
-                onClick={promptFile}
-                disabled={uploadedFile[currentChatTitle]}
+                onClick={()=>promptFile(currentIndex)}
+                disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
                 className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out ${
-                  uploadedFile[currentChatTitle]
+                  uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]
                     ? "bg-gray-500"
                     : "bg-blue-500 hover:bg-blue-700"
                 }`}
@@ -496,7 +492,7 @@ const NewChat = ({ chatData }) => {
               </button>
             </div>
             <div
-                  className={`col-span-3 relative place-self-start pl-3`}
+                  className={`col-start-1 col-span-5 relative place-self-start pl-3`}
                 >
                   <div
                     className={`rounded-t-lg rounded-br-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}
@@ -504,19 +500,19 @@ const NewChat = ({ chatData }) => {
                     <h1>Hi, how may I help you today?</h1>
                   </div>
                 </div>
-            <div></div>
             {Array.from(chatHistory).map((chat, index) => (
               <>
-                <div></div>
                 <div
+                  id = {index}
                   key={index}
-                  className={`rounded-t-lg col-span-3 ${
+                  className={`rounded-t-lg ${
                     chat.type === "user"
-                      ? "rounded-bl-lg relative place-self-end pr-3" // "relative w-[400px] place-self-end pr-3"
-                      : "rounded-br-lg relative place-self-start pl-3" // "relative w-[600px] place-self-start pl-3"
+                      ? "col-end-6 col-span-2 rounded-bl-lg relative pr-3" // "relative w-[400px] place-self-end pr-3"
+                      : "col-start-1 col-span-3 rounded-br-lg relative pl-3" // "relative w-[600px] place-self-start pl-3"
                   }`}
                 >
                   <div
+                    id = {index}
                     key={index}
                     className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${
                       chat.type === "user"
@@ -527,11 +523,10 @@ const NewChat = ({ chatData }) => {
                     <h1>{chat.message}</h1>
                   </div>
                 </div>
-                <div></div>
               </>
             ))}
-            <div id="loading-screen" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
-              <div class="spinner-border text-primary animate-spin" role="status">
+            <div id="loading-screen" className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
+              <div className="spinner-border text-primary animate-spin" role="status">
               <Image
                 alt="loading"
                 src={loading_icon}

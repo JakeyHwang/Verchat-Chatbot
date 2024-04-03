@@ -54,22 +54,45 @@ def chunk_text(data):
         chunk_size=1500, chunk_overlap=150, length_function=len
     )
     text_chunks = text_splitter.split_documents(data)
-    print(len(text_chunks))
+    # print(len(text_chunks))
     return text_chunks
 
-def vectorise_pdf(fpath):
-    namespace = "test_name"
+def put_new_namespace(id,namespace):
+    try :
+        print(id)
+        cred = credentials.Certificate("./firebase_keys.json")
+        app = firebase_admin.initialize_app(cred)
+        db = firestore.client()
+        collection_name = "Verchat"
+        doc_ref = db.collection(collection_name)
+        doc = doc_ref.document(id)
+        update = {"edited" :datetime.now(pytz.utc)  , "pinecone_namespace":namespace  }#New
+        doc.update(update)
+        firebase_admin.delete_app(app)
+        print("this happened namespacenew")
+        
+        return 'Updated'
+    except Exception as E :
+        print(E)
+        firebase_admin.delete_app(app)
+        return E
+    
+def vectorise_pdf(id,fpath):
+    namespace = fpath.replace(" ","_")
+    path_url = fpath.replace("_","/")
     index_name = "fyp"
-    txt_chunks = PDFtoChunks(fpath)
+    txt_chunks = PDFtoChunks(path_url)
     embedding_model = OpenAIEmbeddings()
-    # print("Vertex Embedding model loaded")
-    vectorstore = PineconeVectorStore.from_documents(
-                    txt_chunks,
-                    index_name=index_name,
-                    embedding=embedding_model,
-                    namespace=namespace
-                )
+    
+    result = put_new_namespace(id,namespace)
+    print("this happened vectorizze")
     try:
+        vectorstore = PineconeVectorStore.from_documents(
+                        txt_chunks,
+                        index_name=index_name,
+                        embedding=embedding_model,
+                        namespace=namespace
+                    )
         return namespace
     except Exception as E:
         print(E)
@@ -83,22 +106,21 @@ def get_all_titles():#Provides all Titles and ID
         collection_name = "Verchat"
         collection_ref = db.collection(collection_name)
         docs = collection_ref.stream()
+        # print("this is docs")
         for doc in docs:
             doc_id = doc.id
             doc = doc.to_dict()
-            documents_data.append((doc_id , ['title'] , doc['edited']))#New
+            if (len(doc)>3):
+                documents_data.append((doc_id , doc['title'] , doc['edited'], doc['pinecone_namespace']))#New
+            else:
+                documents_data.append((doc_id , doc['title'] , doc['edited']))
         sorted_data = sorted(documents_data, key=lambda x: x[2])#New
-        try: 
-            namespace = doc["namespace"]
-            firebase_admin.delete_app(app)#New
-            return sorted_data , True , namespace
-        except Exception as E :
-            firebase_admin.delete_app(app)#New
-            return sorted_data , False
+        firebase_admin.delete_app(app)#New
+        return sorted_data
     except Exception as E:
         print(E)
         firebase_admin.delete_app(app)
-        return []
+        return E
     
 def get_history(id):
     # print(os.listdir())
@@ -115,7 +137,7 @@ def get_history(id):
     firebase_admin.delete_app(app)
     try:
         try:
-            namespace = str(doc['namespace'])
+            namespace = str(doc['pinecone_namespace'])
             return [id_memory,namespace]    
         except Exception as E :
             return id_memory
@@ -145,7 +167,7 @@ def put_history_new_pdf(title , human,ai , namespace):
         app = firebase_admin.initialize_app(cred)
         db = firestore.client()
         memory_dict = [{'Human':human , "AI":ai}]
-        doc_ref = db.collection("Verchat").add({  'title' : title , 'memory': memory_dict  , 'edited' :datetime.now(pytz.utc)  , "namespace":namespace  })#New
+        doc_ref = db.collection("Verchat").add({  'title' : title , 'memory': memory_dict  , 'edited' :datetime.now(pytz.utc)  , "pinecone_namespace":namespace  })#New
         firebase_admin.delete_app(app)#New
         return doc_ref[1].id#New
         
