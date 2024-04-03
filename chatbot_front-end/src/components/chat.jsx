@@ -477,7 +477,7 @@ const NewChat = ({ chatData }) => {
           className={`flex-auto ${
             openMenu ? "col-span-6" : "col-span-9"
           } md:col-span-8`}
-          style={{ height: "95vh", overflowY: "auto" }}
+          style={{ height: "94.45vh", overflowY: "auto" }}
         >
           <div className="grid grid-flow-row auto-rows-max grid-cols-4 gap-y-1 mx-2">
             <div className="col-span-4 mx-auto">
