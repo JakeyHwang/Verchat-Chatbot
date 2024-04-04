@@ -444,7 +444,7 @@ const NewChat = ({ chatData }) => {
                                 
                 var file_path = "C:/Users/hwang/Desktop/company data/Ace Hardware Annual Report 2022.pdf"
                 file_path = file_path.replaceAll("/", "_")
-                handlePDF(id,file_path)
+                // handlePDF(id,file_path)
                           
             };
             input.click();
