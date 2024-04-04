@@ -477,7 +477,7 @@ const NewChat = ({ chatData }) => {
           style={{ height: "91.4vh", overflowY: "auto" }}
         >
           <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1 mx-2">
-            <div className="w-[100%] flex col-span-5 mx-auto items-center">
+            <div className="w-[100%] flex col-span-4 mx-auto items-center">
               {/* {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
               <button
                 onClick={()=>promptFile(currentIndex)}
@@ -491,13 +491,14 @@ const NewChat = ({ chatData }) => {
               >
                 Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
               </button>
-              <div className="mt-[13px] right-0">
-              <label className="inline-flex items-center me-5 cursor-pointer">
-  <input type="checkbox" value="" className="sr-only peer" />
-  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600"></div>
-  <span className="ms-3 text-gray-900">External Search</span>
-</label>
               </div>
+              <div className="mt-[13px] col-start-5 col-end-6 justify-center right-0">
+              <label className="inline-flex items-center cursor-pointer right-0">
+  <input type="checkbox" value="" className="sr-only peer" />
+  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600 right-0"></div>
+  <span className="ms-1 text-gray-900 text-xs hidden md:block right-0 ms-3">External Search</span>
+</label>
+              {/* </div> */}
               </div>
 
             {/* <div className="col-start-3 col-end-4">
