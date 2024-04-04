@@ -51,11 +51,18 @@ const getChatHistory = (id, setChatHistory) => {
       .then((data) => {
         if (data && data.data && Array.isArray(data.data)) {
           data.data.forEach((item) => {
-            if (Array.isArray(item) && item.length >= 2) {
-              let user = { type: "user", message: item[0] };
-              let bot = { type: "bot", message: item[1] };
-              h_data.push(user);
-              h_data.push(bot);
+            console.log(item)
+            if (Array.isArray(item) && item.length >= 1) {
+              item.forEach((value, index) => {
+                let user = { type: "user", message: value[0] };
+                let bot = { type: "bot", message: value[1] };
+                h_data.push(user);
+                h_data.push(bot);
+              })
+              // let user = { type: "user", message: item[0] };
+              // let bot = { type: "bot", message: item[1] };
+              // h_data.push(user);
+              // h_data.push(bot);
             }
           });
           setChatHistory(h_data);
@@ -92,7 +99,7 @@ const ChatBar = ({ sendMsg }) => {
   };
 
   return (
-    <div className="w-full justify-center fixed bottom-0 items-center mx-4">
+    <div className="w-full justify-center fixed bottom-0 items-center">
       <div className="flex flex-1 flex-row w-[80%] justify-center items-center">
         <input
           id="chat"
@@ -468,20 +475,41 @@ const NewChat = ({ chatData }) => {
           />
         </div>
 
-
         <div
           className={`flex-auto ${
             openMenu ? "col-span-6" : "col-span-9"
           } md:col-span-8`}
-          style={{ height: "94.45vh", overflowY: "auto" }}
+          style={{ height: "91.4vh", overflowY: "auto" }}
         >
           <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1 mx-2">
-            <div className="col-span-4 mx-auto">
-              {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
+            <div className="w-[100%] flex col-span-5 mx-auto items-center">
+              {/* {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
               <button
                 onClick={()=>promptFile(currentIndex)}
                 disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
-                className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out ${
+                className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${
+                  uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]
+                    ? "bg-gray-500"
+                    : "bg-blue-500 hover:bg-blue-700"
+                }`}
+                style={{ marginTop: "10px" }}
+              >
+                Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
+              </button>
+              <div className="mt-[13px] right-0">
+              <label class="inline-flex items-center me-5 cursor-pointer">
+  <input type="checkbox" value="" class="sr-only peer" />
+  <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600"></div>
+  <span class="ms-3 text-gray-900">External Search</span>
+</label>
+              </div>
+              </div>
+
+            {/* <div className="col-start-3 col-end-4">
+            <button
+                onClick={()=>promptFile(currentIndex)}
+                disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
+                className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${
                   uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]
                     ? "bg-gray-500"
                     : "bg-blue-500 hover:bg-blue-700"
@@ -491,8 +519,17 @@ const NewChat = ({ chatData }) => {
                 Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
               </button>
             </div>
+
+            <div className="col-start-5 col-end-6">
+              <label class="inline-flex items-center justify-center cursor-pointer">
+  <input type="checkbox" value="" class="sr-only peer" />
+  <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600"></div>
+  <span class="ms-3 text-gray-900">External Search</span>
+</label>
+              </div> */}
+
             <div
-                  className={`col-start-1 col-span-5 relative place-self-start pl-3`}
+                  className={`col-span-3 relative place-self-start pl-3`}
                 >
                   <div
                     className={`rounded-t-lg rounded-br-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}
@@ -502,6 +539,7 @@ const NewChat = ({ chatData }) => {
                 </div>
             {Array.from(chatHistory).map((chat, index) => (
               <>
+              <div></div>
                 <div
                   id = {index}
                   key={index}
@@ -535,11 +573,14 @@ const NewChat = ({ chatData }) => {
               </div>
               <div class ="text-white text-lg ml-3">Loading...</div>
             </div>
+            <div className="col-span-5">
             <ChatBar
               sendMsg={(msg) => {
                 handleSend(msg);
               }}
             />
+            </div>
+            
           </div>
         </div>
       </div>
