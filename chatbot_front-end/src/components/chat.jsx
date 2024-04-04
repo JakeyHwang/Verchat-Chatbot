@@ -174,7 +174,7 @@ const Sidebar = ({
         className={
           openMenu ? "bg-[#d7e3fb]" : "bg-[#d7e3fb] invisible md:visible"
         }
-        style={{ height: "100vh", overflowY: "auto" }}
+        
       >
         {/* Verchat Logo */}
         <div className="flex">
@@ -211,7 +211,7 @@ const Sidebar = ({
           />
         </div>
         {/* Display chat history in reverse order*/}
-        <ol className="">
+        <ol className="" style={{ height: "59.3vh", overflowY: "auto" }}>
           {toShow.map((title, index) => (
             <li
               id ={chatTitles[`${title}`]}
@@ -474,7 +474,7 @@ const NewChat = ({ chatData }) => {
           className={`flex-auto ${
             openMenu ? "col-span-6" : "col-span-9"
           } md:col-span-8`}
-          style={{ height: "91.4vh", overflowY: "auto" }}
+          style={{ height: "92vh", overflowY: "auto" }}
         >
           <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1 mx-2">
             <div className="w-[100%] flex col-span-4 mx-auto items-center">
