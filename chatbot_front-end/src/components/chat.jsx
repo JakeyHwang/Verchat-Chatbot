@@ -49,20 +49,15 @@ const getChatHistory = (id, setChatHistory) => {
         return res.json();
       })
       .then((data) => {
+        console.log(data)
         if (data && data.data && Array.isArray(data.data)) {
           data.data.forEach((item) => {
             console.log(item)
             if (Array.isArray(item) && item.length >= 1) {
-              item.forEach((value, index) => {
-                let user = { type: "user", message: value[0] };
-                let bot = { type: "bot", message: value[1] };
+                let user = { type: "user", message: item[0] };
+                let bot = { type: "bot", message: item[1] };
                 h_data.push(user);
                 h_data.push(bot);
-              })
-              // let user = { type: "user", message: item[0] };
-              // let bot = { type: "bot", message: item[1] };
-              // h_data.push(user);
-              // h_data.push(bot);
             }
           });
           setChatHistory(h_data);
@@ -497,10 +492,10 @@ const NewChat = ({ chatData }) => {
                 Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
               </button>
               <div className="mt-[13px] right-0">
-              <label class="inline-flex items-center me-5 cursor-pointer">
-  <input type="checkbox" value="" class="sr-only peer" />
-  <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600"></div>
-  <span class="ms-3 text-gray-900">External Search</span>
+              <label className="inline-flex items-center me-5 cursor-pointer">
+  <input type="checkbox" value="" className="sr-only peer" />
+  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600"></div>
+  <span className="ms-3 text-gray-900">External Search</span>
 </label>
               </div>
               </div>
