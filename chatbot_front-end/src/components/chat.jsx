@@ -85,11 +85,11 @@ const ChatBar = ({ sendMsg }) => {
     if (message.trim()) {
       sendMsg(message);
       setMessage("");
-      document.getElementById("loading-screen").classList.remove("hidden");
+      // document.getElementById("loading-screen").classList.remove("hidden");
     }
-    setTimeout(() => {
-      document.getElementById("loading-screen").classList.add("hidden");
-  }, 5000); // 2000 milliseconds = 2 seconds
+  //   setTimeout(() => {
+  //     document.getElementById("loading-screen").classList.add("hidden");
+  // }, 5000); // 2000 milliseconds = 2 seconds
   
   setMessage("");
   };
@@ -320,86 +320,67 @@ const NewChat = ({ chatData }) => {
 
   if (isChatLoading) return <p>Loading chat...</p>;
 
-  const handleSend = (msg) => {
+  const handleSend = async (msg) => {
+    // Display user message immediately
+    const userMessage = { type: "user", message: msg };
+    setChatHistory(prevChatHistory => [...prevChatHistory, userMessage]);
+
     // case when new chat
     if (currentChatTitle === chatTitle) {
-      // case if there is no uploaded file
-      if (uploadedFile[currentIndex]){
-        var namespace = uploadedFile[currentIndex]
-        fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data) {
-            throw new Error("Response data is undefined");
-          }
-          let user = { type: "user", message: msg };
-          let bot = { type: "bot", message: data.answer };
-          setChatHistory([...chatHistory, user, bot]);
-          getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
-          setCurrentChatTitle(data.title);
-          setCurrentIndex(data.id);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-      }
-      // case if new chat has uploaded file
-      else {
-        fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: "POST" })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data) {
-            throw new Error("Response data is undefined");
-          }
-          let user = { type: "user", message: msg };
-          let bot = { type: "bot", message: data.answer };
-          setChatHistory([...chatHistory, user, bot]);
-          getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
-          setCurrentChatTitle(data.title);
-          setCurrentIndex(data.id);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-      }
-      
-    } 
-    else {
-      // for
-      var namespace = uploadedFile[currentIndex]
-      fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}`, {
-        method: "POST",
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data) {
-            throw new Error("Response data is undefined");
-          }
-          console.log(data)
-          let user = { type: "user", message: msg };
-          let bot = { type: "bot", message: data.data };
-          setChatHistory([...chatHistory, user, bot]);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+        // case if there is no uploaded file
+        if (uploadedFile[currentIndex]) {
+            var namespace = uploadedFile[currentIndex];
+            try {
+                const response = await fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" });
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                const data = await response.json();
+                let botReply = { type: "bot", message: data.answer };
+                setChatHistory(prevChatHistory => [...prevChatHistory, botReply]);
+                getChatTitles(setChatTitles, setTitleArray, setUploadedFile);
+                setCurrentChatTitle(data.title);
+                setCurrentIndex(data.id);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        } else {
+            try {
+                const response = await fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: "POST" });
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                const data = await response.json();
+                let botReply = { type: "bot", message: data.answer };
+                setChatHistory(prevChatHistory => [...prevChatHistory, botReply]);
+                getChatTitles(setChatTitles, setTitleArray, setUploadedFile);
+                setCurrentChatTitle(data.title);
+                setCurrentIndex(data.id);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+    } else {
+        // for existing chat
+        var namespace = uploadedFile[currentIndex];
+        try {
+            const response = await fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}`, {
+                method: "POST",
+            });
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            const data = await response.json();
+            let botReply = { type: "bot", message: data.data };
+            setChatHistory(prevChatHistory => [...prevChatHistory, botReply]);
+        } catch (error) {
+            console.error("Error:", error);
+        }
     }
-  };
+};
+
+
+
 
     const handleChangeTopic = (i) => {
         if (i.target.id === chatTitle) {
@@ -563,7 +544,7 @@ const NewChat = ({ chatData }) => {
                 </div>
               </>
             ))}
-            <div id="loading-screen" className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
+            {/* <div id="loading-screen" className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
               <div className="spinner-border text-primary animate-spin" role="status">
               <Image
                 alt="loading"
@@ -572,7 +553,7 @@ const NewChat = ({ chatData }) => {
               />
               </div>
               <div class ="text-white text-lg ml-3">Loading...</div>
-            </div>
+            </div> */}
             <div className="col-span-5">
             <ChatBar
               sendMsg={(msg) => {
