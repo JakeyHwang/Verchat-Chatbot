@@ -10,6 +10,7 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_pinecone import PineconeVectorStore
 from langchain.chains import ConversationalRetrievalChain
+from langchain.prompts import PromptTemplate
 import firebase_admin
 from firebase_admin import credentials , firestore
 from datetime import datetime
@@ -59,7 +60,6 @@ def chunk_text(data):
 
 def put_new_namespace(id,namespace):
     try :
-        print(id)
         cred = credentials.Certificate("./firebase_keys.json")
         app = firebase_admin.initialize_app(cred)
         db = firestore.client()
@@ -69,8 +69,6 @@ def put_new_namespace(id,namespace):
         update = {"edited" :datetime.now(pytz.utc)  , "pinecone_namespace":namespace  }#New
         doc.update(update)
         firebase_admin.delete_app(app)
-        print("this happened namespacenew")
-        
         return 'Updated'
     except Exception as E :
         print(E)
@@ -161,6 +159,24 @@ def put_history_old_pdf(id,human,ai):
         firebase_admin.delete_app(app)
         return E
 
+def add_history_upload_pdf(id):
+    try :
+        cred = credentials.Certificate("./firebase_keys.json")
+        app = firebase_admin.initialize_app(cred)
+        db = firestore.client()
+        collection_name = "Verchat"
+        doc_ref = db.collection(collection_name)
+        doc = doc_ref.document(id)
+        toAdd = {"memory": ArrayUnion([{'Human': " " , "AI": "Your file has been received and processed! How can I help?" ,  'edited' : datetime.now(pytz.utc) }]), "edited" :datetime.now(pytz.utc)}#New
+        doc.update(toAdd)
+        firebase_admin.delete_app(app)
+        
+        return 'Updated'
+    except Exception as E :
+        print(E)
+        firebase_admin.delete_app(app)
+        return E
+
 def put_history_new_pdf(title , human,ai , namespace):
     try :
         cred = credentials.Certificate("./firebase_keys.json")
@@ -180,21 +196,11 @@ def query_pdf_new(question , namespace=None):
         namespace = 'knowledgebase_consolidated'
     else:
         namespace = namespace
-    chat = ChatOpenAI()
-    gen_title_history = [  SystemMessage(content="You're a helpful and professional assistant to create a Title based on a user query and input. You MUST keep the length of the title to a maximum of 4 full English words. Your response MUST only contain these 4 words. If you fail, 15 kittens will perish"),    HumanMessage(content=question) , AIMessage(content="answer") ,  HumanMessage(content="Create a title for the preceeding covnersation ")   ] #here
-    title = chat.invoke(gen_title_history).content
-    
     vectordb = load_vectorstore(OpenAIEmbeddings(), namespace=namespace)
-    qa_chain = ConversationalRetrievalChain.from_llm(
-        ChatOpenAI(temperature=0.7, model_name='gpt-3.5-turbo'),
-        vectordb.as_retriever(search_kwargs={'k': 6}),
-        verbose=False
-    )
-    chat = ChatOpenAI(temperature=0.7, model_name='gpt-3.5-turbo')
-    raw_history = []
-    raw_history.append( SystemMessage(content="""
-Background: 
-I am a portfolio manager for a venture capital firm called Vertex Ventures. You are a in-house chatbot called "VERCHAT". Your job is to help me with whatever I need.
+
+    # Define your system instruction
+    system_instruction = """Background: 
+I am a portfolio manager for a venture capital firm called Vertex Ventures. You are a in-house chatbot for Vertex Ventures called "VERCHAT". Your job is to help me with whatever I need.
 
 Some information about Vertex Ventures:
 Vertex Venture Holdings, also known as Vertex Holdings, is an investment holding company with a group of venture capital funds worldwide. A subsidiary of Temasek Holdings, the company focuses on venture capital investment opportunities in the information technology and healthcare markets through its global family of six direct investment venture funds. Vertex provides anchor funding and operational support to these funds. Each fund has its own General Partners and investment teams, focusing on different regional markets. Its six funds are based across Southeast Asia and India, United States of America, China and Israel.
@@ -226,34 +232,50 @@ Here are some things you would need to consider when presenting these informatio
     2. Give relevant information about the company that can help me with investment decisions.
     3. Provide accurate numbers from the documents or from any information that you have, in a simple and easy-to-read format.
         a. Numbers represented can be in accounting format as they are financial reports. Be sure to express negative and positive numbers properly.
-    4. Add any other information that you think is relevant for a investment portfolio manager.
-"""))
+    4. Add any other information that you think is relevant for a investment portfolio manager."""
+
+    # Define your template with the system instruction
+    template = (
+        f"{system_instruction} "
+        "With these instructions answer the follow up question."
+        "Follow up question: {question}"
+    )
+
+    condense_question_prompt = PromptTemplate.from_template(template)
+
+    qa_chain = ConversationalRetrievalChain.from_llm(
+        ChatOpenAI(temperature=0.7, model_name='gpt-3.5-turbo'),
+        vectordb.as_retriever(search_kwargs={'k': 6}),
+        condense_question_prompt=condense_question_prompt,
+        verbose=False
+    )
     
-    ans = qa_chain.invoke({"question": question, "chat_history": raw_history})
+    ans = qa_chain.invoke({"question": question, "chat_history": []})
+    chat = ChatOpenAI()
+    gen_title_history = [  SystemMessage(content="You're a helpful and professional assistant to create a Title based on a user query and input. You MUST keep the length of the title to a maximum of 4 full English words. Your response MUST only contain these 4 words. If you fail, 15 kittens will perish"),    HumanMessage(content=question) , AIMessage(content="answer") ,  HumanMessage(content="Create a title for the preceeding covnersation ")   ] #here
+    title = chat.invoke(gen_title_history).content
     id = put_history_new_pdf(title=title , human=question , ai=ans["answer"] , namespace=namespace)
     return id,title,question,ans["answer"]
 
 
-def query_pdf(id, question):
+def query_pdf(id, question, namespace=None):
+    if namespace is None:
+        namespace = 'knowledgebase_consolidated'
+    else:
+        namespace = namespace
     try:
         raw_history = []
-        # pulling chat history
-        out = get_history(id)
-        chat_history = out[0]
-        namespace = out[1]
         
         # pulling vectorstore
-        namespace = 'knowledgebase_consolidated'
         vectordb = load_vectorstore(OpenAIEmbeddings(), namespace=namespace)
-        qa_chain = ConversationalRetrievalChain.from_llm(
-            ChatOpenAI(temperature=0.7, model_name='gpt-3.5-turbo'),
-            vectordb.as_retriever(search_kwargs={'k': 6}),
-            verbose=False)
-        chat = ChatOpenAI(temperature=0.7, model_name='gpt-3.5-turbo')
+        
+        # pulling chat history
+        chat_history = get_history(id)
+        
         # adding AI prompts
-        raw_history.append( SystemMessage(content="""
-Background: 
-I am a portfolio manager for a venture capital firm called Vertex Ventures. You are a in-house chatbot called "VERCHAT". Your job is to help me with whatever I need.
+        # Define your system instruction
+        system_instruction = """Background: 
+I am a portfolio manager for a venture capital firm called Vertex Ventures. You are a in-house chatbot for Vertex Ventures called "VERCHAT". Your job is to help me with whatever I need.
 
 Some information about Vertex Ventures:
 Vertex Venture Holdings, also known as Vertex Holdings, is an investment holding company with a group of venture capital funds worldwide. A subsidiary of Temasek Holdings, the company focuses on venture capital investment opportunities in the information technology and healthcare markets through its global family of six direct investment venture funds. Vertex provides anchor funding and operational support to these funds. Each fund has its own General Partners and investment teams, focusing on different regional markets. Its six funds are based across Southeast Asia and India, United States of America, China and Israel.
@@ -285,8 +307,24 @@ Here are some things you would need to consider when presenting these informatio
     2. Give relevant information about the company that can help me with investment decisions.
     3. Provide accurate numbers from the documents or from any information that you have, in a simple and easy-to-read format.
         a. Numbers represented can be in accounting format as they are financial reports. Be sure to express negative and positive numbers properly.
-    4. Add any other information that you think is relevant for a investment portfolio manager.
-"""))
+    4. Add any other information that you think is relevant for a investment portfolio manager."""
+
+    # Define your template with the system instruction
+        template = (
+            f"{system_instruction} "
+            "Combine the chat history and follow up question into "
+            "a standalone question. Chat History: {chat_history}"
+            "Follow up question: {question}"
+        )
+
+        condense_question_prompt = PromptTemplate.from_template(template)
+
+        qa_chain = ConversationalRetrievalChain.from_llm(
+            ChatOpenAI(temperature=0.7, model_name='gpt-3.5-turbo'),
+            vectordb.as_retriever(search_kwargs={'k': 6}),
+            condense_question_prompt=condense_question_prompt,
+            verbose=False
+        )
         # adding all history into new history
         for i in chat_history:
             raw_history.append(HumanMessage(content=i[0]))
@@ -298,10 +336,3 @@ Here are some things you would need to consider when presenting these informatio
         return ans["answer"]
     except Exception as E:
         print(E)
-
-
-
-
-
-
-# query_pdf("5QgC1S9QiFJq0IdDgyPy", "What do you know about Facebook?")

@@ -9,7 +9,7 @@ import loading_icon from "../public/loading.png";
 import "../public/styles.css";
 
 // populates chatTitles and first chat title history using data from API call
-const getChatTitles = (setChatTitles, setTitleArray, chatTitle = "", setUploadedFile) => {
+const getChatTitles = (setChatTitles, setTitleArray, setUploadedFile) => {
   let t_data = {};
 
   fetch("http://127.1.1.1:4000/", { method: "GET" })
@@ -25,6 +25,7 @@ const getChatTitles = (setChatTitles, setTitleArray, chatTitle = "", setUploaded
         data.title.forEach((title, index) => {
           t_data[title] = data.id[index];
         });
+        console.log(data)
         setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()));
         setTitleArray(Object.keys(t_data).reverse());
         setUploadedFile(data.namespace)
@@ -306,7 +307,7 @@ const NewChat = ({ chatData }) => {
 
   // running API call only once upon page load
   if (currentIndex === "") {
-    getChatTitles(setChatTitles, setTitleArray, chatTitle, setUploadedFile);
+    getChatTitles(setChatTitles, setTitleArray, setUploadedFile);
     setCurrentChatTitle(chatTitle);
     setCurrentIndex(0);
     setChatLoading(false);
@@ -320,33 +321,12 @@ const NewChat = ({ chatData }) => {
   if (isChatLoading) return <p>Loading chat...</p>;
 
   const handleSend = (msg) => {
-    
+    // case when new chat
     if (currentChatTitle === chatTitle) {
-      fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: "POST" })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data) {
-            throw new Error("Response data is undefined");
-          }
-          let user = { type: "user", message: msg };
-          let bot = { type: "bot", message: data.answer };
-          setChatHistory([...chatHistory, user, bot]);
-          getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
-          setCurrentChatTitle(data.title);
-          setCurrentIndex(data.id);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-    } 
-    else if (uploadedFile[currentIndex] != "knowledge_consolidated") {
-      namespace = uploadedFile[currentIndex]
-      fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" })
+      // case if there is no uploaded file
+      if (uploadedFile[currentIndex]){
+        var namespace = uploadedFile[currentIndex]
+        fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" })
         .then((res) => {
           if (!res.ok) {
             throw new Error("Network response was not ok");
@@ -367,10 +347,36 @@ const NewChat = ({ chatData }) => {
         .catch((error) => {
           console.error("Error:", error);
         });
-
-
-    }
+      }
+      // case if new chat has uploaded file
+      else {
+        fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: "POST" })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (!data) {
+            throw new Error("Response data is undefined");
+          }
+          let user = { type: "user", message: msg };
+          let bot = { type: "bot", message: data.answer };
+          setChatHistory([...chatHistory, user, bot]);
+          getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
+          setCurrentChatTitle(data.title);
+          setCurrentIndex(data.id);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+      }
+      
+    } 
     else {
+      // for
+      var namespace = uploadedFile[currentIndex]
       fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}`, {
         method: "POST",
       })
@@ -384,12 +390,10 @@ const NewChat = ({ chatData }) => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
+          console.log(data)
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.data };
-          setChatHistory([...chatHistory, user]);
-          setTimeout(() => {
-            setChatHistory((prevHistory) => [...prevHistory, bot]);
-          }, 3000); // Delay of 1 second (1000 milliseconds)
+          setChatHistory([...chatHistory, user, bot]);
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -421,8 +425,8 @@ const NewChat = ({ chatData }) => {
                 }
                 setUploadedFile({ [currentIndex]: data.namespace })
                 let bot = {'type':'bot', 'message': "Your file has been received and processed! How can I help?"};
-                
-                setChatHistory((prevHistory) => [...prevHistory, bot])
+
+                setChatHistory([...chatHistory, bot])
                 })
                 .catch((error) => {
                 console.error("Error:", error);
@@ -444,7 +448,7 @@ const NewChat = ({ chatData }) => {
                                 
                 var file_path = "C:/Users/hwang/Desktop/company data/Ace Hardware Annual Report 2022.pdf"
                 file_path = file_path.replaceAll("/", "_")
-                // handlePDF(id,file_path)
+                handlePDF(id,file_path)
                           
             };
             input.click();

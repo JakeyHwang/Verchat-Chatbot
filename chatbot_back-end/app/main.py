@@ -1,7 +1,5 @@
 from fastapi import FastAPI, Header
-from typing import Annotated
 from fastapi.middleware.cors import CORSMiddleware
-from .Handlers import query
 from .Handlers import query_PDF
 # from pydantic import BaseModel
 import os
@@ -62,7 +60,7 @@ def get_history_data(id:str):
 def query_llm(id:str, qn:str):
 
     ans = query_PDF.query_pdf(id , qn)
-    if(id != None and qn != None):
+    if(ans != None):
         return { 'data': ans}
     else:
         return {'error': 'data not found'}
@@ -92,5 +90,6 @@ def create_new_chat(qn:str, namespace:str):
 @app.post("/upload/{id}/{fpath}")
 def upload(id:str, fpath:str):
     namespace = query_PDF.vectorise_pdf(id, fpath)
+    status = query_PDF.add_history_upload_pdf(id)
     
-    return {'namespace': namespace}
+    return {'status':status,'namespace': namespace}
