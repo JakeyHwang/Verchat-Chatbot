@@ -121,12 +121,13 @@ const ChatBar = ({ sendMsg }) => {
     </div>
   );
 };
+
 const Sidebar = ({
   chatTitles,
   changeTopic,
   currentIndex,
   handleNewChat,
-  openMenuu,
+  handleOpenMenu,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -156,7 +157,6 @@ const Sidebar = ({
   const handleMenu = () => {
     setOpenMenu(!openMenu);
     // console.log("this happe")
-    openMenuu(openMenu);
   };
 
   return (
@@ -253,7 +253,7 @@ const WlcMsg = () => {
   );
 };
 
-const NewChat = ({ chatData }) => {
+const NewChat = () => {
   const chatTitle = "Untitled Chat";
   const [currentIndex, setCurrentIndex] = useState("");
   const [currentChatTitle, setCurrentChatTitle] = useState(chatTitle);
@@ -263,7 +263,8 @@ const NewChat = ({ chatData }) => {
   const [isChatLoading, setChatLoading] = useState(true);
   const [isHistoryLoading, setHistoryLoading] = useState(true);
   const [uploadedFile, setUploadedFile] = useState({});
-  const [openMenu, setOpenMenu] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [openUpload, setOpenUpload] = useState(false)
  
 
   
@@ -274,7 +275,8 @@ const NewChat = ({ chatData }) => {
 
   // function for sliding transition
   const slideDown = async () => {
-    let items = document.getElementsByClassName("chat-items");
+    var items = document.getElementsByClassName("chat-items");
+    // var items = document.getElementsByClassName("chat-items");
     for (var i = 0; i < items.length; i++) {
       items[i].classList.remove(`transition-transform`);
       items[i].classList.remove(`duration-1000`);
@@ -289,19 +291,15 @@ const NewChat = ({ chatData }) => {
         items[i].classList.add(`duration-1000`);
         items[i].classList.replace(`translate-y-[-40px]`, `translate-y-0`);
       }
-      // item.classList.replace(`translate-y-[-64px]`,`translate-y-[0px]`)
-      // transition-transform duration-1000
+
     }
   };
 
   const handleNewChat = () => {
     setChatTitles({ [chatTitle]: "123", ...chatTitles }); // Add the current chat title to the list of chat titles
-    // setChatHistories({ ...chatHistori1es, [chatTitles.length - currentIndex - 1]: chatHistory }); // Add the current chat history to the list of chat histories
     setChatHistory([]); // Clear chat history when starting a new chat
     setCurrentChatTitle(chatTitle); // Reset chat title to the placeholder
     setCurrentIndex("123");
-    // api call to create new chat
-    // function needs to detect that the chat is empty and new before API is called
     slideDown();
   };
 
@@ -313,9 +311,8 @@ const NewChat = ({ chatData }) => {
     setChatLoading(false);
   }
 
-  const openMenuu = (menu) => {
-    setOpenMenu(!menu);
-    console.log(openMenu);
+  const handleOpenMenu = () => {
+    setMenu(!menu);
   };
 
   if (isChatLoading) return <p>Loading chat...</p>;
@@ -327,55 +324,79 @@ const NewChat = ({ chatData }) => {
 
     // case when new chat
     if (currentChatTitle === chatTitle) {
-        // case if there is no uploaded file
-        if (uploadedFile[currentIndex]) {
-            var namespace = uploadedFile[currentIndex];
-            try {
-                const response = await fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" });
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                const data = await response.json();
-                let botReply = { type: "bot", message: data.answer };
-                setChatHistory(prevChatHistory => [...prevChatHistory, botReply]);
-                getChatTitles(setChatTitles, setTitleArray, setUploadedFile);
-                setCurrentChatTitle(data.title);
-                setCurrentIndex(data.id);
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        } else {
-            try {
-                const response = await fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: "POST" });
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                const data = await response.json();
-                let botReply = { type: "bot", message: data.answer };
-                setChatHistory(prevChatHistory => [...prevChatHistory, botReply]);
-                getChatTitles(setChatTitles, setTitleArray, setUploadedFile);
-                setCurrentChatTitle(data.title);
-                setCurrentIndex(data.id);
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        }
-    } else {
-        // for existing chat
-        var namespace = uploadedFile[currentIndex];
-        try {
-            const response = await fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}`, {
-                method: "POST",
-            });
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            const data = await response.json();
-            let botReply = { type: "bot", message: data.data };
-            setChatHistory(prevChatHistory => [...prevChatHistory, botReply]);
-        } catch (error) {
-            console.error("Error:", error);
-        }
+      // case if there is no uploaded file
+      if (uploadedFile[currentIndex]){
+        var namespace = uploadedFile[currentIndex]
+        fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (!data) {
+            throw new Error("Response data is undefined");
+          }
+          let user = { type: "user", message: msg };
+          let bot = { type: "bot", message: data.answer };
+          setChatHistory([...chatHistory, user, bot]);
+          getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
+          setCurrentChatTitle(data.title);
+          setCurrentIndex(data.id);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+      }
+      // case if new chat has uploaded file
+      else {
+        fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: "POST" })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (!data) {
+            throw new Error("Response data is undefined");
+          }
+          let user = { type: "user", message: msg };
+          let bot = { type: "bot", message: data.answer };
+          setChatHistory([...chatHistory, user, bot]);
+          getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
+          setCurrentChatTitle(data.title);
+          setCurrentIndex(data.id);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+      }
+      
+    } 
+    else {
+      var namespace = uploadedFile[currentIndex]
+      fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}`, {
+        method: "POST",
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (!data) {
+            throw new Error("Response data is undefined");
+          }
+          let user = { type: "user", message: msg };
+          let bot = { type: "bot", message: data.data };
+          setChatHistory([...chatHistory, user, bot]);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     }
 };
 
@@ -393,55 +414,83 @@ const NewChat = ({ chatData }) => {
     };
 
     const handlePDF = (id,fpath) =>{
-        fetch(`http://127.1.1.1:4000/upload/${id}/${fpath}`, { method: "POST" })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return res.json();
-                })
-                .then((data) => {
-                if (!data) {
-                    throw new Error("Response data is undefined");
-                }
-                setUploadedFile({ [currentIndex]: data.namespace })
-                let bot = {'type':'bot', 'message': "Your file has been received and processed! How can I help?"};
+      console.log(fpath)
+      fetch(`http://127.1.1.1:4000/upload/${id}/${fpath}`, { method: "POST" })
+          .then((res) => {
+              if (!res.ok) {
+                  throw new Error("Network response was not ok");
+              }
+              return res.json();
+              })
+              .then((data) => {
+              if (!data) {
+                  throw new Error("Response data is undefined");
+              }
+              setUploadedFile({ [currentIndex]: data.namespace })
+              let bot = {'type':'bot', 'message': "Your file has been received and processed! How can I help?"};
 
-                setChatHistory([...chatHistory, bot])
-                })
-                .catch((error) => {
-                console.error("Error:", error);
-                });
+              setChatHistory([...chatHistory, bot])
+              })
+              .catch((error) => {
+              console.error("Error:", error);
+              });
 
     }
+    const handleOpenUpload =()=>{
+      setOpenUpload(!openUpload)
+      console.log(openUpload)
+    }
 
-    const promptFile = (id) => {
-        var input = document.createElement("input");
-        input.id="file";
-        input.type = "file";
+    const OpenUpload = () =>{
+      return(
+        <div className="z-10 flex flex-col bg-blue-400 rounded-md justify-center absolute top-[40%] left-[10%] sm:left-[40%] border-4 w-[400px] h-[150px]">
+            <h1 className="place-self-center">Enter file path of PDF</h1>
+            <p className="place-self-center mb-5 italic font-thin text-[12px]">i.e. C:/path/to/file.pdf</p>
+          <div className="place-self-center">
+            <input
+            id="uploadDoc"
+            type="text"
+            placeholder="Please Enter PDF URL"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleOpenUpload()
+                var fpath = e.target.value
+                fpath = fpath.replaceAll("/", "_")
+                handlePDF(currentIndex,fpath)
+              }}}></input>
+          </div>
+        </div>
+      )
+    }
+    // removed for new function
+    // const promptFile = (id) => {
+    //     var input = document.createElement("input");
+    //     input.id="uploaded_file";
+    //     input.type = "text";
 
-        return new Promise(function(resolve) {
-            input.onchange = function(event) {
-                var file = Array.from(event.target.files)[0];
+    //     return new Promise(function(resolve) {
+    //         input.onchange = function(event) {
+    //             var file = Array.from(event.target.files)[0];
                 
                 
-                resolve(file);
+    //             resolve(file);
                                 
-                var file_path = "C:/Users/hwang/Desktop/company data/Ace Hardware Annual Report 2022.pdf"
-                file_path = file_path.replaceAll("/", "_")
-                handlePDF(id,file_path)
+    //             var file_path = "C:/Users/hwang/Desktop/company data/Ace Hardware Annual Report 2022.pdf"
+    //             file_path = file_path.replaceAll("/", "_")
+    //             handlePDF(id,file_path)
                           
-            };
-            input.click();
-        });
-    }
+    //         };
+    //         input.click();
+    //     });
+    // }
 
   return (
     <div className="flex" style={{ maxHeight: "100vh" }}>
+      {openUpload? <OpenUpload />:""}
       <div className="grid grid-cols-10">
         <div
           className={`md:col-span-2 ${
-            openMenu ? "col-span-4" : "col-span-1"
+            menu ? "col-span-4" : "col-span-1"
           } md:visible`}
         >
           <Sidebar
@@ -451,13 +500,13 @@ const NewChat = ({ chatData }) => {
             }}
             currentIndex={currentIndex}
             handleNewChat={handleNewChat}
-            openMenuu={openMenuu}
+            handleOpenMenu={handleOpenMenu}
           />
         </div>
 
         <div
           className={`flex-auto ${
-            openMenu ? "col-span-6" : "col-span-9"
+            menu ? "col-span-6" : "col-span-9"
           } md:col-span-8`}
           style={{ height: "92vh", overflowY: "auto" }}
         >
@@ -465,30 +514,7 @@ const NewChat = ({ chatData }) => {
             <div className="w-[100%] flex col-span-4 mx-auto items-center">
               {/* {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
               <button
-                onClick={()=>promptFile(currentIndex)}
-                disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
-                className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${
-                  uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]
-                    ? "bg-gray-500"
-                    : "bg-blue-500 hover:bg-blue-700"
-                }`}
-                style={{ marginTop: "10px" }}
-              >
-                Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
-              </button>
-              </div>
-              <div className="mt-[13px] col-start-5 col-end-6 justify-center right-0">
-              <label className="inline-flex items-center cursor-pointer right-0">
-  <input type="checkbox" value="" className="sr-only peer" />
-  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600 right-0"></div>
-  <span className="ms-1 text-gray-900 text-xs hidden md:block right-0 ms-3">External Search</span>
-</label>
-              {/* </div> */}
-              </div>
-
-            {/* <div className="col-start-3 col-end-4">
-            <button
-                onClick={()=>promptFile(currentIndex)}
+                onClick={handleOpenUpload}
                 disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
                 className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${
                   uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]
@@ -500,17 +526,15 @@ const NewChat = ({ chatData }) => {
                 Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
               </button>
             </div>
-
-            <div className="col-start-5 col-end-6">
-              <label class="inline-flex items-center justify-center cursor-pointer">
-  <input type="checkbox" value="" class="sr-only peer" />
-  <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600"></div>
-  <span class="ms-3 text-gray-900">External Search</span>
-</label>
-              </div> */}
-
+            <div className="mt-[13px] col-start-5 col-end-6 justify-center right-0">
+              <label className="inline-flex items-center cursor-pointer right-0">
+                <input type="checkbox" value="" className="sr-only peer" />
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600 right-0"></div>
+                <span className="ms-1 text-gray-900 text-xs hidden md:block right-0 ms-3">External Search</span>
+              </label>
+            </div>
             <div
-                  className={`col-span-3 relative place-self-start pl-3`}
+                  className={`col-span-5 relative place-self-start pl-3`}
                 >
                   <div
                     className={`rounded-t-lg rounded-br-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}
@@ -520,7 +544,6 @@ const NewChat = ({ chatData }) => {
                 </div>
             {Array.from(chatHistory).map((chat, index) => (
               <>
-              <div></div>
                 <div
                   id = {index}
                   key={index}
@@ -542,18 +565,9 @@ const NewChat = ({ chatData }) => {
                     <h1>{chat.message}</h1>
                   </div>
                 </div>
+                <div></div>
               </>
             ))}
-            {/* <div id="loading-screen" className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
-              <div className="spinner-border text-primary animate-spin" role="status">
-              <Image
-                alt="loading"
-                src={loading_icon}
-                className="w-8 h-8 "
-              />
-              </div>
-              <div class ="text-white text-lg ml-3">Loading...</div>
-            </div> */}
             <div className="col-span-5">
             <ChatBar
               sendMsg={(msg) => {
