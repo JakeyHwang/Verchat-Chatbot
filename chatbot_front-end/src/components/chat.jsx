@@ -41,7 +41,7 @@ const getChatTitles = (setChatTitles, setTitleArray, setUploadedFile) => {
 const getChatHistory = (id, setChatHistory) => {
   let h_data = [];
 
-  if (id !== undefined) {
+  if (id !== undefined && id !=123) {
     fetch(`http://127.1.1.1:4000/${id}`)
       .then((res) => {
         if (!res.ok) {
@@ -70,7 +70,7 @@ const getChatHistory = (id, setChatHistory) => {
         console.error("Error fetching chat history:", error);
       });
   } else {
-    console.log("id not defined");
+    setChatHistory(h_data);
   }
 };
 
@@ -378,7 +378,8 @@ const NewChat = () => {
     } 
     else {
       var namespace = uploadedFile[currentIndex]
-      fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}`, {
+      if (namespace != 'knowledgebase_consolidated') {
+        fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
         method: "POST",
       })
         .then((res) => {
@@ -398,11 +399,34 @@ const NewChat = () => {
         .catch((error) => {
           console.error("Error:", error);
         });
+      }
+      else{
+        namespace = namespace.replaceAll("_","^")
+        fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
+        method: "POST",
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (!data) {
+            throw new Error("Response data is undefined");
+          }
+          let user = { type: "user", message: msg };
+          let bot = { type: "bot", message: data.data };
+          setChatHistory([...chatHistory, user, bot]);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+      }
+      
+      
     }
 };
-
-
-
 
     const handleChangeTopic = (i) => {
         if (i.target.id === chatTitle) {
@@ -463,131 +487,73 @@ const NewChat = () => {
         </div>
       )
     }
-    // removed for new function
-    // const promptFile = (id) => {
-    //     var input = document.createElement("input");
-    //     input.id="uploaded_file";
-    //     input.type = "text";
-
-    //     return new Promise(function(resolve) {
-    //         input.onchange = function(event) {
-    //             var file = Array.from(event.target.files)[0];
-                
-                
-    //             resolve(file);
-                                
-    //             var file_path = "C:/Users/hwang/Desktop/company data/Ace Hardware Annual Report 2022.pdf"
-    //             file_path = file_path.replaceAll("/", "_")
-    //             handlePDF(id,file_path)
-                          
-    //         };
-    //         input.click();
-    //     });
-    // }
 
   return (
-    <div className="flex grid grid-cols-10" style={{ maxHeight: "100vh" }}>
+    <div className="grid grid-cols-10" style={{ maxHeight: "100vh" }}>
       {openUpload? <OpenUpload />:""}
       {/* <div className="grid grid-cols-10"> */}
-        <div
-          className={`${
-            menu ? "col-span-4 md:col-span-2" : "col-span-0 hidden"
-          }`}
-        >
-          <Sidebar
-            chatTitles={chatTitles}
-            changeTopic={(i) => {
-              handleChangeTopic(i);
-            }}
-            currentIndex={currentIndex}
-            handleNewChat={handleNewChat}
-            handleOpenMenu={handleOpenMenu}
-          />
-        </div>
-
-        <div
-          className={`flex-auto ${
-            menu ? "col-span-6 md:col-span-8" : "col-span-10"
-          }`}
-          style={{ height: "100vh", overflowY: "auto" }}
-        >
-          <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1">
+      <div className={`${menu ? "col-span-4 md:col-span-2" : "col-span-0 hidden"}`}>
+        <Sidebar
+          chatTitles={chatTitles}
+          changeTopic={(i) => {handleChangeTopic(i);}}
+          currentIndex={currentIndex}
+          handleNewChat={handleNewChat}
+          handleOpenMenu={handleOpenMenu}
+        />
+      </div>
+      <div
+        className={`flex-auto ${
+          menu ? "col-span-6 md:col-span-8" : "col-span-10"
+        }`}
+        style={{ height: "100vh", overflowY: "auto" }}
+      >
+        <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1">
           <div className="sticky top-0">
-        <button onClick={handleOpenMenu} className="text-4xl font-black">
-          ☰
-        </button>
-      </div>
-            <div className="w-[100%] flex col-span-3 mx-auto items-center sticky top-0">
-              {/* {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
-              <button
-                onClick={handleOpenUpload}
-                disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
-                className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${
-                  uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]
-                    ? "bg-gray-500"
-                    : "bg-blue-500 hover:bg-blue-700"
-                }`}
-                style={{ marginTop: "10px" }}
-              >
-                Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
-              </button>
-            </div>
-            <div className="mt-[13px] col-start-5 col-end-6 justify-center mx-auto sticky top-3">
-              <label className="inline-flex items-center cursor-pointer mx-auto">
-                <input type="checkbox" value="" className="sr-only peer" />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600 right-0"></div>
-                <span className="ms-1 text-gray-900 text-xs hidden md:block mx-auto ">External Search</span>
-              </label>
-            </div>
-            <div
-                  className={`col-span-5 relative place-self-start pl-3`}
-                >
-                  <div
-                    className={`rounded-t-lg rounded-br-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}
-                  >
-                    <h1>Hi, how may I help you today?</h1>
-                  </div>
-                </div>
-            {Array.from(chatHistory).map((chat, index) => (
-              <>
-                <div
-                  id = {index}
-                  key={index}
-                  className={`rounded-t-lg ${
-                    chat.type === "user"
-                      ? "col-end-6 col-span-2 rounded-bl-lg relative pr-3" // "relative w-[400px] place-self-end pr-3"
-                      : "col-start-1 col-span-3 rounded-br-lg relative pl-3" // "relative w-[600px] place-self-start pl-3"
-                  }`}
-                >
-                  <div
-                    id = {index}
-                    key={index}
-                    className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${
-                      chat.type === "user"
-                        ? "rounded-bl-lg bg-[#e4e4e4] ml-auto"
-                        : "rounded-br-lg bg-[#d7e3fb] mr-auto "
-                    }`}
-                  >
-                    <h1>{chat.message}</h1>
-                  </div>
-                </div>
-                <div></div>
-              </>
-            ))}
+            <button onClick={handleOpenMenu} className="text-4xl font-black">
+            ☰
+            </button>
           </div>
-          <div
-          className={`w-[100%] bottom-0 ${
-            menu ? "sticky bottom-0 col-span-6 md:col-span-8 static" : "fixed col-span-10"
-          }`}>
-            <ChatBar
-              sendMsg={(msg) => {
-                handleSend(msg);
-              }}
-            />
+          <div className="w-[100%] flex col-span-3 mx-auto items-center sticky top-0">
+            <button
+              onClick={handleOpenUpload}
+              disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
+              className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${ uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex] ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-700"}`} style={{ marginTop: "10px" }}>
+              Upload <Image src={upload_icon} className="w-6 h-6 ml-1" /></button>
+          </div>
+          <div className="mt-[13px] col-start-5 col-end-6 justify-center mx-auto sticky top-3">
+            <label className="inline-flex items-center cursor-pointer mx-auto">
+              <input type="checkbox" value="" className="sr-only peer" />
+                <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600 right-0"></div>
+              <span className="ms-1 text-gray-900 text-xs hidden md:block mx-auto ">External Search</span>
+            </label>
+          </div>
+          <div className={`col-span-5 relative place-self-start pl-3`}>
+            <div className={`rounded-t-lg rounded-br-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}>
+              <h1>Hi, how may I help you today?</h1>
             </div>
+          </div>
+          {Array.from(chatHistory).map((chat, index) => (
+          <>
+            <div
+              id = {index}
+              key={index}
+              className={`rounded-t-lg ${chat.type === "user" ? "col-end-6 col-span-2 rounded-bl-lg relative pr-3" : "col-start-1 col-span-3 rounded-br-lg relative pl-3"}`}>
+              <div
+                id = {index}
+                key={index}
+                className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${chat.type === "user" ? "rounded-bl-lg bg-[#e4e4e4] ml-auto" : "rounded-br-lg bg-[#d7e3fb] mr-auto "}`}>
+                <h1>{chat.message}</h1>
+              </div>
+            </div>
+            <div></div>
+          </>
+          ))}
+        </div>
+        <div className={`w-[100%] bottom-0 ${menu ? "sticky bottom-0 col-span-6 md:col-span-8" : "fixed col-span-10"}`}>
+          <ChatBar sendMsg={(msg) => {handleSend(msg);}} />
         </div>
       </div>
-    // </div>
+    </div>
   );
 };
 

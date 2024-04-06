@@ -56,10 +56,12 @@ def get_history_data(id:str):
 # requires a JSON object in string format as input
 # {"id": "<chatid>",
 # "qn": "<yourquestion>"}
-@app.post("/chatbot/question/{id}/{qn}")
-def query_llm(id:str, qn:str):
+@app.post("/chatbot/question/{id}/{qn}/{namespace}")
+def query_llm(id:str, qn:str, namespace:str):
+    if (namespace == "knowledgebase^consolidated"):
+        namespace = namespace.replace('^','_')
 
-    ans = query_PDF.query_pdf(id , qn)
+    ans = query_PDF.query_pdf(id , qn, namespace)
     if(ans != None):
         return { 'data': ans}
     else:
