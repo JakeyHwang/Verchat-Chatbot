@@ -95,8 +95,8 @@ const ChatBar = ({ sendMsg }) => {
   };
 
   return (
-    <div className="w-full justify-center fixed bottom-0 items-center">
-      <div className="flex flex-1 flex-row w-[80%] justify-center items-center">
+    // <div className="w-[100%] justify-center fixed items-center">
+      <div className="flex flex-1 flex-row w-[100%] bg-[#f8fafc] bottom-0 justify-center items-center mx-auto">
         <input
           id="chat"
           type="text"
@@ -114,11 +114,11 @@ const ChatBar = ({ sendMsg }) => {
           <Image
             alt="send image"
             src={sendIcon}
-            className="w-8 h-8 mb-3 mr-7"
+            className="w-8 h-8 mb-3"
           />
         </button>
       </div>
-    </div>
+    // </div>
   );
 };
 
@@ -153,15 +153,15 @@ const Sidebar = ({
     changeTopic(i);
   };
 
-  // function to open and close menu
-  const handleMenu = () => {
-    setOpenMenu(!openMenu);
-    // console.log("this happe")
-  };
+  // // function to open and close menu
+  // const handleMenu = () => {
+  //   setOpenMenu(!openMenu);
+  //   // console.log("this happe")
+  // };
 
   return (
     <div>
-      <div
+      {/* <div
         className={
           openMenu ? "bg-[#d7e3fb] md:hidden" : "md:bg-[#d7e3fb] md:hidden"
         }
@@ -169,11 +169,11 @@ const Sidebar = ({
         <button onClick={handleMenu} className="text-4xl font-black">
           ☰
         </button>
-      </div>
+      </div> */}
       <div
         id="histlog"
         className={
-          openMenu ? "bg-[#d7e3fb]" : "bg-[#d7e3fb] invisible md:visible"
+          openMenu ? "bg-[#d7e3fb]" : "bg-[#d7e3fb]"
         }
         
       >
@@ -313,6 +313,7 @@ const NewChat = () => {
 
   const handleOpenMenu = () => {
     setMenu(!menu);
+    console.log(menu);
   };
 
   if (isChatLoading) return <p>Loading chat...</p>;
@@ -485,13 +486,13 @@ const NewChat = () => {
     // }
 
   return (
-    <div className="flex" style={{ maxHeight: "100vh" }}>
+    <div className="flex grid grid-cols-10" style={{ maxHeight: "100vh" }}>
       {openUpload? <OpenUpload />:""}
-      <div className="grid grid-cols-10">
+      {/* <div className="grid grid-cols-10"> */}
         <div
-          className={`md:col-span-2 ${
-            menu ? "col-span-4" : "col-span-1"
-          } md:visible`}
+          className={`${
+            menu ? "col-span-4 md:col-span-2" : "col-span-0 hidden"
+          }`}
         >
           <Sidebar
             chatTitles={chatTitles}
@@ -506,12 +507,17 @@ const NewChat = () => {
 
         <div
           className={`flex-auto ${
-            menu ? "col-span-6" : "col-span-9"
-          } md:col-span-8`}
-          style={{ height: "92vh", overflowY: "auto" }}
+            menu ? "col-span-6 md:col-span-8" : "col-span-10"
+          }`}
+          style={{ height: "100vh", overflowY: "auto" }}
         >
-          <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1 mx-2">
-            <div className="w-[100%] flex col-span-4 mx-auto items-center">
+          <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1">
+          <div className="sticky top-0">
+        <button onClick={handleOpenMenu} className="text-4xl font-black">
+          ☰
+        </button>
+      </div>
+            <div className="w-[100%] flex col-span-3 mx-auto items-center sticky top-0">
               {/* {/* <Sidebar chatTitles={chatTitles} changeTopic={(i) => { handleChangeTopic(i) }} currentIndex={currentIndex} handleNewChat={handleNewChat} /> */}
               <button
                 onClick={handleOpenUpload}
@@ -526,11 +532,11 @@ const NewChat = () => {
                 Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
               </button>
             </div>
-            <div className="mt-[13px] col-start-5 col-end-6 justify-center right-0">
-              <label className="inline-flex items-center cursor-pointer right-0">
+            <div className="mt-[13px] col-start-5 col-end-6 justify-center mx-auto sticky top-3">
+              <label className="inline-flex items-center cursor-pointer mx-auto">
                 <input type="checkbox" value="" className="sr-only peer" />
                   <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600 right-0"></div>
-                <span className="ms-1 text-gray-900 text-xs hidden md:block right-0 ms-3">External Search</span>
+                <span className="ms-1 text-gray-900 text-xs hidden md:block mx-auto ">External Search</span>
               </label>
             </div>
             <div
@@ -568,18 +574,20 @@ const NewChat = () => {
                 <div></div>
               </>
             ))}
-            <div className="col-span-5">
+          </div>
+          <div
+          className={`w-[100%] bottom-0 ${
+            menu ? "sticky bottom-0 col-span-6 md:col-span-8 static" : "fixed col-span-10"
+          }`}>
             <ChatBar
               sendMsg={(msg) => {
                 handleSend(msg);
               }}
             />
             </div>
-            
-          </div>
         </div>
       </div>
-    </div>
+    // </div>
   );
 };
 
