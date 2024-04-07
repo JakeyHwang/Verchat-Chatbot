@@ -25,7 +25,6 @@ const getChatTitles = (setChatTitles, setTitleArray, setUploadedFile) => {
         data.title.forEach((title, index) => {
           t_data[title] = data.id[index];
         });
-        console.log(data)
         setChatTitles(Object.fromEntries(Object.entries(t_data).reverse()));
         setTitleArray(Object.keys(t_data).reverse());
         setUploadedFile(data.namespace)
@@ -53,12 +52,11 @@ const getChatHistory = (id, setChatHistory) => {
         console.log(data)
         if (data && data.data && Array.isArray(data.data)) {
           data.data.forEach((item) => {
-            console.log(item)
             if (Array.isArray(item) && item.length >= 1) {
-                let user = { type: "user", message: item[0] };
-                let bot = { type: "bot", message: item[1] };
-                h_data.push(user);
-                h_data.push(bot);
+              let user = { type: "user", message: item[0] };
+              let bot = { type: "bot", message: item[1] };
+              h_data.push(user);
+              h_data.push(bot);
             }
           });
           setChatHistory(h_data);
@@ -85,40 +83,27 @@ const ChatBar = ({ sendMsg }) => {
     if (message.trim()) {
       sendMsg(message);
       setMessage("");
-      // document.getElementById("loading-screen").classList.remove("hidden");
-    }
-  //   setTimeout(() => {
-  //     document.getElementById("loading-screen").classList.add("hidden");
-  // }, 5000); // 2000 milliseconds = 2 seconds
-  
+    }  
   setMessage("");
   };
 
   return (
-    // <div className="w-[100%] justify-center fixed items-center">
-      <div className="flex flex-1 flex-row w-[100%] bottom-0 justify-center items-center mx-auto">
-        <input
-          id="chat"
-          type="text"
-          placeholder="Ask me anything..."
-          className="border border-black bg-white rounded-full px-4 py-2 w-[80%] mb-2 mr-3" // Adjusted padding and width
-          value={message}
-          onChange={handleChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSend();
-            }
-          }}
-        />
-        <button id="sendButton" onClick={handleSend} disabled={!message.trim()}>
-          <Image
-            alt="send image"
-            src={sendIcon}
-            className="w-8 h-8 mb-3"
-          />
-        </button>
-      </div>
-    // </div>
+    <div className="flex flex-1 flex-row w-[100%] bg-[#f8fafc] bottom-0 justify-center items-center mx-auto">
+      <input
+        id="chat"
+        type="text"
+        placeholder="Ask me anything..."
+        className="border border-black bg-white rounded-full px-4 py-2 w-[80%] mb-2 mr-3" // Adjusted padding and width
+        value={message}
+        onChange={handleChange}
+        onKeyDown={(e) => {if (e.key === "Enter") {handleSend();}}}/>
+      <button id="sendButton" onClick={handleSend} disabled={!message.trim()}>
+        <Image
+          alt="send image"
+          src={sendIcon}
+          className="w-8 h-8 mb-3" />
+      </button>
+    </div>
   );
 };
 
@@ -153,38 +138,18 @@ const Sidebar = ({
     changeTopic(i);
   };
 
-  // // function to open and close menu
-  // const handleMenu = () => {
-  //   setOpenMenu(!openMenu);
-  //   // console.log("this happe")
-  // };
-
   return (
     <div>
-      {/* <div
-        className={
-          openMenu ? "bg-[#d7e3fb] md:hidden" : "md:bg-[#d7e3fb] md:hidden"
-        }
-      >
-        <button onClick={handleMenu} className="text-4xl font-black">
-          ☰
-        </button>
-      </div> */}
       <div
         id="histlog"
-        className={
-          openMenu ? "bg-[#d7e3fb]" : "bg-[#d7e3fb]"
-        }
-        
-      >
+        className={openMenu ? "bg-[#d7e3fb]" : "bg-[#d7e3fb]"}>
         {/* Verchat Logo */}
         <div className="flex">
           <Image
             src={vertexLogo}
             alt="ChatSideBar Image"
             style={{ width: "270px", height: "85.5px", marginBottom: "25px" }}
-            className="rounded-lg"
-          />
+            className="rounded-lg" />
         </div>
         {/* New Chat button */}
         <div className="flex justify-center mx-1">
@@ -192,24 +157,20 @@ const Sidebar = ({
             id="newChatButton"
             className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300 transition-colors duration-500 ease-in-out"
             style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
-            onClick={handleNewChat}
-          >
+            onClick={handleNewChat}>
             <span>New Chat</span>
             <Image src={new_chat_icon} alt="Icon" className="h-4 w-4" />{" "}
             {/* Image */}
           </button>
         </div>
-        <h1 className="text-left text-gray-600 font-medium pt-1 px-4 ">
-          Chat History
-        </h1>
+        <h1 className="text-left text-gray-600 font-medium pt-1 px-4 ">Chat History</h1>
         {/* Search Bar */}
         <div className="flex mx-1 mb-2">
           <input
             type="text"
             placeholder="Search..."
             className="border border-gray-400 rounded-lg px-2 py-1 mt-2 w-full"
-            onChange={handleChange}
-          />
+            onChange={handleChange} />
         </div>
         {/* Display chat history in reverse order*/}
         <ol className="" style={{ height: "59.3vh", overflowY: "auto" }}>
@@ -217,38 +178,20 @@ const Sidebar = ({
             <li
               id ={chatTitles[`${title}`]}
               key={chatTitles[`${title}`]}
-              className={`chat-items font-medium mx-1 translate-y-0`}
-            >
+              className={`chat-items font-medium mx-1 translate-y-0`}>
               <button
                 key={chatTitles[`${title}`]}
                 id={chatTitles[`${title}`]}
                 style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
-                className={`
-                                    w-full rounded-md py-2 px-4 text-left transition-colors duration-500 ease-in-out
-                                    ${
-                                      chatTitles[`${title}`] != currentIndex
-                                        ? "bg-[#d7e3fb] hover:bg-blue-300 text-black"
-                                        : "bg-blue-400 pointer-events-none text-white"
-                                    } `}
+                className={`w-full rounded-md py-2 px-4 text-left transition-colors duration-500 ease-in-out ${chatTitles[`${title}`] != currentIndex ? "bg-[#d7e3fb] hover:bg-blue-300 text-black" : "bg-blue-400 pointer-events-none text-white"} `}
                 disabled={chatTitles[`${title}`] == currentIndex}
-                onClick={handleNewTopic}
-              >
+                onClick={handleNewTopic}>
                 {title}
               </button>
             </li>
           ))}
         </ol>
       </div>
-    </div>
-  );
-};
-
-const WlcMsg = () => {
-  return (
-    <div>
-      <h1 className="bg-[#d7e3fb] rounded-lg px-2 py-1 col-span-2">
-        Hi, how may I help you today?
-      </h1>
     </div>
   );
 };
@@ -260,13 +203,9 @@ const NewChat = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [chatTitles, setChatTitles] = useState([currentChatTitle]);
   const [titleArray, setTitleArray] = useState([]);
-  const [isChatLoading, setChatLoading] = useState(true);
-  const [isHistoryLoading, setHistoryLoading] = useState(true);
   const [uploadedFile, setUploadedFile] = useState({});
   const [menu, setMenu] = useState(false);
   const [openUpload, setOpenUpload] = useState(false)
- 
-
   
   //delay function
   const delay = async (ms) => {
@@ -308,15 +247,12 @@ const NewChat = () => {
     getChatTitles(setChatTitles, setTitleArray, setUploadedFile);
     setCurrentChatTitle(chatTitle);
     setCurrentIndex(0);
-    setChatLoading(false);
   }
 
   const handleOpenMenu = () => {
     setMenu(!menu);
-    console.log(menu);
   };
 
-  if (isChatLoading) return <p>Loading chat...</p>;
 
   const handleSend = async (msg) => {
     // Display user message immediately
@@ -423,70 +359,67 @@ const NewChat = () => {
           console.error("Error:", error);
         });
       }
-      
-      
     }
-};
+  };
 
-    const handleChangeTopic = (i) => {
-        if (i.target.id === chatTitle) {
-            setChatHistory([]);
-        } else {
-            getChatHistory(i.target.id, setChatHistory);
-        }
-        setCurrentIndex(i.target.id);
-        setCurrentChatTitle(i.target.id);
-    };
+  const handleChangeTopic = (i) => {
+      if (i.target.id === chatTitle) {
+          setChatHistory([]);
+      } else {
+          getChatHistory(i.target.id, setChatHistory);
+      }
+      setCurrentIndex(i.target.id);
+      setCurrentChatTitle(i.target.id);
+  };
 
-    const handlePDF = (id,fpath) =>{
-      console.log(fpath)
-      fetch(`http://127.1.1.1:4000/upload/${id}/${fpath}`, { method: "POST" })
-          .then((res) => {
-              if (!res.ok) {
-                  throw new Error("Network response was not ok");
-              }
-              return res.json();
-              })
-              .then((data) => {
-              if (!data) {
-                  throw new Error("Response data is undefined");
-              }
-              setUploadedFile({ [currentIndex]: data.namespace })
-              let bot = {'type':'bot', 'message': "Your file has been received and processed! How can I help?"};
+  const handlePDF = (id,fpath) =>{
+    console.log(fpath)
+    fetch(`http://127.1.1.1:4000/upload/${id}/${fpath}`, { method: "POST" })
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return res.json();
+            })
+            .then((data) => {
+            if (!data) {
+                throw new Error("Response data is undefined");
+            }
+            setUploadedFile({ [currentIndex]: data.namespace })
+            let bot = {'type':'bot', 'message': "Your file has been received and processed! How can I help?"};
 
-              setChatHistory([...chatHistory, bot])
-              })
-              .catch((error) => {
-              console.error("Error:", error);
-              });
+            setChatHistory([...chatHistory, bot])
+            })
+            .catch((error) => {
+            console.error("Error:", error);
+            });
+  }
+  const handleOpenUpload =()=>{
+    setOpenUpload(!openUpload)
 
-    }
-    const handleOpenUpload =()=>{
-      setOpenUpload(!openUpload)
-      console.log(openUpload)
-    }
+  }
 
-    const OpenUpload = () =>{
-      return(
-        <div className="z-10 flex flex-col bg-blue-400 rounded-md justify-center absolute top-[40%] left-[10%] sm:left-[40%] border-4 w-[400px] h-[150px]">
-            <h1 className="place-self-center">Enter file path of PDF</h1>
-            <p className="place-self-center mb-5 italic font-thin text-[12px]">i.e. C:/path/to/file.pdf</p>
-          <div className="place-self-center">
-            <input
-            id="uploadDoc"
-            type="text"
-            placeholder="Please Enter PDF URL"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleOpenUpload()
-                var fpath = e.target.value
-                fpath = fpath.replaceAll("/", "_")
-                handlePDF(currentIndex,fpath)
-              }}}></input>
-          </div>
+  const OpenUpload = () =>{
+    return(
+      <div className="z-10 flex flex-col bg-blue-400 rounded-md justify-center absolute top-[40%] left-[10%] sm:left-[40%] border-4 w-[400px] h-[150px]">
+          <h1 className="place-self-center">Enter file path of PDF</h1>
+          <p className="place-self-center mb-5 italic font-thin text-[12px]">i.e. C:/path/to/file.pdf</p>
+        <div className="place-self-center">
+          <input
+          id="uploadDoc"
+          type="text"
+          placeholder="Please Enter PDF URL"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleOpenUpload()
+              var fpath = e.target.value
+              fpath = fpath.replaceAll("/", "_")
+              handlePDF(currentIndex,fpath)
+            }}}></input>
         </div>
-      )
-    }
+      </div>
+    )
+  }
 
   return (
     <div className="grid grid-cols-10" style={{ maxHeight: "100vh" }}>
@@ -498,15 +431,10 @@ const NewChat = () => {
           changeTopic={(i) => {handleChangeTopic(i);}}
           currentIndex={currentIndex}
           handleNewChat={handleNewChat}
-          handleOpenMenu={handleOpenMenu}
-        />
+          handleOpenMenu={handleOpenMenu} />
       </div>
       <div
-        className={`flex-auto ${
-          menu ? "col-span-6 md:col-span-8" : "col-span-10"
-        }`}
-        style={{ height: "100vh", overflowY: "auto" }}
-      >
+        className={`flex-auto ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`} style={{ height: "100vh", overflowY: "auto" }}>
         <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1">
           <div className="sticky top-0">
             <button onClick={handleOpenMenu} className="text-4xl font-black">
@@ -518,7 +446,8 @@ const NewChat = () => {
               onClick={handleOpenUpload}
               disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
               className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${ uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex] ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-700"}`} style={{ marginTop: "10px" }}>
-              Upload <Image src={upload_icon} className="w-6 h-6 ml-1" /></button>
+              Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
+            </button>
           </div>
           <div className="mt-[13px] col-start-5 col-end-6 justify-center mx-auto sticky top-3">
             <label className="inline-flex items-center cursor-pointer mx-auto">
@@ -533,20 +462,20 @@ const NewChat = () => {
             </div>
           </div>
           {Array.from(chatHistory).map((chat, index) => (
-          <>
-            <div
-              id = {index}
-              key={index}
-              className={`rounded-t-lg ${chat.type === "user" ? "col-end-6 col-span-2 rounded-bl-lg relative pr-3" : "col-start-1 col-span-3 rounded-br-lg relative pl-3"}`}>
+            <>
               <div
                 id = {index}
                 key={index}
-                className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${chat.type === "user" ? "rounded-bl-lg bg-[#e4e4e4] ml-auto" : "rounded-br-lg bg-[#d7e3fb] mr-auto "}`}>
-                <h1>{chat.message}</h1>
+                className={`rounded-t-lg ${chat.type === "user" ? "col-end-6 col-span-2 rounded-bl-lg relative pr-3" : "col-start-1 col-span-3 rounded-br-lg relative pl-3"}`}>
+                <div
+                  id = {index}
+                  key={index}
+                  className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${chat.type === "user" ? "rounded-bl-lg bg-[#e4e4e4] ml-auto" : "rounded-br-lg bg-[#d7e3fb] mr-auto "}`}>
+                  <h1>{chat.message}</h1>
+                </div>
               </div>
-            </div>
-            <div></div>
-          </>
+              <div></div>
+            </>
           ))}
         </div>
         <div className={`w-[100%] bottom-0 ${menu ? "sticky bottom-0 col-span-6 md:col-span-8" : "fixed col-span-10"}`}>
