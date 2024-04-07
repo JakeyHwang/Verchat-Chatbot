@@ -206,7 +206,6 @@ const NewChat = () => {
   // function for sliding transition
   const slideDown = async () => {
     var items = document.getElementsByClassName("chat-items");
-    // var items = document.getElementsByClassName("chat-items");
     for (var i = 0; i < items.length; i++) {
       items[i].classList.remove(`transition-transform`);
       items[i].classList.remove(`duration-1000`);
@@ -246,15 +245,7 @@ const NewChat = () => {
   const handleSend = async (msg) => {
     // Display user message immediately
     const userMessage = { type: "user", message: msg };
-    const loadingMessage = { type: "bot", message: /*loadMessage*/"Loading..." };
-    /*const isLoading = True;
-
-    const loadMessage = (isLoading == True)=>{
-    
-      while(condition){
-        return print("Loading...")
-      }
-    }*/
+    const loadingMessage = { type: "bot", message: "Loading..." };
     
     setChatHistory(prevChatHistory => [...prevChatHistory, userMessage]);
     setChatHistory(prevChatHistory => [...prevChatHistory, loadingMessage]);
@@ -318,7 +309,6 @@ const NewChat = () => {
     else {
       var namespace = uploadedFile[currentIndex]
       if (namespace != 'knowledgebase_consolidated') {
-        namespace = namespace.replaceAll("_","~")
         fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
         method: "POST",
       })
@@ -400,7 +390,6 @@ const NewChat = () => {
   }
   const handleOpenUpload =()=>{
     setOpenUpload(!openUpload)
-
   }
 
   const OpenUpload = () =>{
@@ -425,15 +414,21 @@ const NewChat = () => {
       </div>
     )
   }
-  
-  const loadingMessage = () =>{
-    return(
-      <div></div>
-    )
-  }
 
+
+  if(document.querySelector('#chatlog')){
+    let messageBody = document.querySelector('#chatlog');
+    messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+
+  }
+  
   return (
     <div className="grid grid-cols-10 max-h-screen h-screen">
+      <button id="scrollButton" className="absolute bottom-0 right-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
+        </svg>
+      </button>
       {openUpload? <OpenUpload />:""}
       <div className={`h-full ${menu ? "col-span-4 md:col-span-2" : "col-span-0 hidden"}`}>
         <Sidebar
@@ -443,7 +438,7 @@ const NewChat = () => {
           handleNewChat={handleNewChat}
           handleOpenMenu={handleOpenMenu} />
       </div>
-      <div className={`flex flex-col max-h-[100vh] justify-between overflow-y-auto ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`}>
+      <div id="chatlog" className={`flex flex-col max-h-[100vh] justify-between overflow-y-auto ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`}>
         <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1">
           <div className="sticky top-0 z-10">
             <button onClick={handleOpenMenu} className="text-4xl font-black">
