@@ -249,7 +249,20 @@ const NewChat = () => {
   const handleSend = async (msg) => {
     // Display user message immediately
     const userMessage = { type: "user", message: msg };
+    const loadingMessage = { type: "bot", message: /*loadMessage*/"Loading..." };
+    /*const isLoading = True;
+
+    const loadMessage = (isLoading == True)=>{
+    
+      while(condition){
+        return print("Loading...")
+      }
+    }*/
+    
     setChatHistory(prevChatHistory => [...prevChatHistory, userMessage]);
+    setChatHistory(prevChatHistory => [...prevChatHistory, loadingMessage]);
+
+    
 
     // case when new chat
     if (currentChatTitle === chatTitle) {
@@ -293,6 +306,7 @@ const NewChat = () => {
           }
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.answer };
+          //insert part to remove the loading message
           setChatHistory([...chatHistory, user, bot]);
           getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
           setCurrentChatTitle(data.title);
