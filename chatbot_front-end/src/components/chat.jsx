@@ -88,7 +88,7 @@ const ChatBar = ({ sendMsg }) => {
   };
 
   return (
-    <div className="flex flex-1 flex-row w-[100%] bg-[#f8fafc] bottom-0 justify-center items-center mx-auto">
+    <div className="flex flex-1 flex-row w-[100%]bottom-0 justify-center items-center mx-auto">
       <input
         id="chat"
         type="text"
