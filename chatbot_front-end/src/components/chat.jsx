@@ -197,6 +197,7 @@ const NewChat = () => {
   const [uploadedFile, setUploadedFile] = useState({});
   const [menu, setMenu] = useState(false);
   const [openUpload, setOpenUpload] = useState(false)
+  //const [loading, setLoading] = useState(true)
 
   //delay function
   const delay = async (ms) => {
@@ -242,25 +243,66 @@ const NewChat = () => {
   const handleOpenMenu = () => {
     setMenu(!menu);
   };
+  /*const loadMessage = () => {
+    const frames = ["Loading", "Loading.", "Loading..", "Loading..."];
+      let index = 0;
+    
+      const updateLoadingMessage = () => {
+        
+         // Display the current frame
+          const message = frames[index];
+        setChatHistory(prevChatHistory => {
+          // Replace the last message with the updated loading message
+          const updatedHistory = [...prevChatHistory];
+          if (updatedHistory.length > 0 && updatedHistory[updatedHistory.length - 1].type === "bot") {
+            updatedHistory[updatedHistory.length - 1].message = message;
+          } else {
+            updatedHistory.push({ type: "bot", message });
+          }
+          return updatedHistory;
+      });
+        // Increment index for the next frame
+        index = (index + 1) % frames.length;
+
+        // Repeat the process with a delay of 0.3s
+       
+          
+          setTimeout(updateLoadingMessage, 300);
+        };
+        
+        updateLoadingMessage();
+      
+  };*/
 
   const handleSend = async (msg) => {
+    //setLoading(true)
     // Display user message immediately
     const userMessage = { type: "user", message: msg };
-    const loadingMessage = { type: "bot", message: /*loadMessage*/"Loading..." };
-    /*const isLoading = True;
-
-    const loadMessage = (isLoading == True)=>{
-    
-      while(condition){
-        return print("Loading...")
-      }
-    }*/
-    
     setChatHistory(prevChatHistory => [...prevChatHistory, userMessage]);
+    /*if (loading == true){
+      
+      loadMessage();
+    }
+    console.log(chatHistory);*/
+    
+    
+    const isLoading = true;
+    const loadMessage = (isLoading) => {
+      if (isLoading) {
+          return "Loading...";
+      }
+      
+    }
+    const loadingMessage = { type: "bot", message: loadMessage(isLoading)};
+    
     setChatHistory(prevChatHistory => [...prevChatHistory, loadingMessage]);
-
     
 
+    
+    
+     
+    
+        
     // case when new chat
     if (currentChatTitle === chatTitle) {
       // case if there is no uploaded file
@@ -268,6 +310,7 @@ const NewChat = () => {
         var namespace = uploadedFile[currentIndex]
         fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" })
         .then((res) => {
+          
           if (!res.ok) {
             throw new Error("Network response was not ok");
           }
@@ -277,6 +320,7 @@ const NewChat = () => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
+          //setLoading(false)
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.answer };
           setChatHistory([...chatHistory, user, bot]);
@@ -292,6 +336,7 @@ const NewChat = () => {
       else {
         fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: "POST" })
         .then((res) => {
+          
           if (!res.ok) {
             throw new Error("Network response was not ok");
           }
@@ -301,9 +346,10 @@ const NewChat = () => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
+          //setLoading(false)
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.answer };
-          //insert part to remove the loading message
+         
           setChatHistory([...chatHistory, user, bot]);
           getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
           setCurrentChatTitle(data.title);
@@ -318,20 +364,23 @@ const NewChat = () => {
     else {
       var namespace = uploadedFile[currentIndex]
       if (namespace != 'knowledgebase_consolidated') {
-        namespace = namespace.replaceAll("_","~")
+        //namespace = namespace.replaceAll("_","~")
         fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
         method: "POST",
       })
         .then((res) => {
+          
           if (!res.ok) {
             throw new Error("Network response was not ok");
           }
+          
           return res.json();
         })
         .then((data) => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
+          //setLoading(false)
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.data };
           setChatHistory([...chatHistory, user, bot]);
@@ -346,6 +395,7 @@ const NewChat = () => {
         method: "POST",
       })
         .then((res) => {
+         
           if (!res.ok) {
             throw new Error("Network response was not ok");
           }
@@ -355,6 +405,7 @@ const NewChat = () => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
+          //setLoading(false)
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.data };
           setChatHistory([...chatHistory, user, bot]);
@@ -364,6 +415,8 @@ const NewChat = () => {
         });
       }
     }
+    //setLoading(false)
+    console.log(chatHistory)
   };
 
   const handleChangeTopic = (i) => {
@@ -426,11 +479,7 @@ const NewChat = () => {
     )
   }
   
-  const loadingMessage = () =>{
-    return(
-      <div></div>
-    )
-  }
+  
 
   return (
     <div className="grid grid-cols-10 max-h-screen h-screen">
@@ -487,7 +536,7 @@ const NewChat = () => {
             </>
           ))}
         </div>
-        <div className={`sticky w-[100%] bottom-0 order-last ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`}>
+        <div className={`sticky w-[100%] bottom-0 order-last  ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`}>
           <ChatBar sendMsg={(msg) => {handleSend(msg);}} />
         </div>
       </div>
