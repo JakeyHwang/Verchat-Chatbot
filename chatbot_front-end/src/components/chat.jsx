@@ -49,7 +49,6 @@ const getChatHistory = (id, setChatHistory) => {
         return res.json();
       })
       .then((data) => {
-        console.log(data)
         if (data && data.data && Array.isArray(data.data)) {
           data.data.forEach((item) => {
             if (Array.isArray(item) && item.length >= 1) {
@@ -198,7 +197,7 @@ const NewChat = () => {
   const [uploadedFile, setUploadedFile] = useState({});
   const [menu, setMenu] = useState(false);
   const [openUpload, setOpenUpload] = useState(false)
-  
+
   //delay function
   const delay = async (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -222,7 +221,6 @@ const NewChat = () => {
         items[i].classList.add(`duration-1000`);
         items[i].classList.replace(`translate-y-[-40px]`, `translate-y-0`);
       }
-
     }
   };
 
@@ -244,7 +242,6 @@ const NewChat = () => {
   const handleOpenMenu = () => {
     setMenu(!menu);
   };
-
 
   const handleSend = async (msg) => {
     // Display user message immediately
@@ -307,6 +304,7 @@ const NewChat = () => {
     else {
       var namespace = uploadedFile[currentIndex]
       if (namespace != 'knowledgebase_consolidated') {
+        namespace = namespace.replaceAll("_","~")
         fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
         method: "POST",
       })
@@ -329,7 +327,7 @@ const NewChat = () => {
         });
       }
       else{
-        namespace = namespace.replaceAll("_","^")
+        namespace = namespace.replaceAll("_","~")
         fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
         method: "POST",
       })
@@ -365,7 +363,7 @@ const NewChat = () => {
   };
 
   const handlePDF = (id,fpath) =>{
-    console.log(fpath)
+
     fetch(`http://127.1.1.1:4000/upload/${id}/${fpath}`, { method: "POST" })
         .then((res) => {
             if (!res.ok) {
@@ -394,7 +392,7 @@ const NewChat = () => {
   const OpenUpload = () =>{
     return(
       <div className="z-10 flex flex-col bg-blue-400 rounded-md justify-center absolute top-[40%] left-[10%] sm:left-[40%] border-4 w-[400px] h-[150px]">
-          <button onclick={handleOpenUpload()} className="absolute top-0 right-2 text-2xl">x</button>
+          <button className="absolute top-0 right-2 text-2xl" onClick={handleOpenUpload}>x</button>
           <h1 className="place-self-center">Enter file path of PDF</h1>
           <p className="place-self-center mb-5 italic font-thin text-[12px]">i.e. C:/path/to/file.pdf</p>
         <div className="place-self-center">
@@ -411,6 +409,12 @@ const NewChat = () => {
             }}}></input>
         </div>
       </div>
+    )
+  }
+  
+  const loadingMessage = () =>{
+    return(
+      <div></div>
     )
   }
 
