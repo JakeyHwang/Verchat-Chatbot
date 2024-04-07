@@ -529,7 +529,7 @@ const NewChat = () => {
             </>
           ))}
         </div>
-        <div className={`sticky w-[100%] bottom-0 order-last  ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`}>
+        <div className={`sticky w-[100%] bottom-0 order-last bg-[#FFFFFF]  ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`}>
           <ChatBar sendMsg={(msg) => {handleSend(msg);}} />
         </div>
       </div>
