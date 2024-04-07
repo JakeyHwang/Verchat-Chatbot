@@ -60,8 +60,6 @@ def get_history_data(id:str):
 def query_llm(id:str, qn:str, namespace:str):
     if (namespace == "knowledgebase^consolidated"):
         namespace = namespace.replace('~','_')
-    else:
-        namespace = namespace.replace("~","_")
 
     ans = query_PDF.query_pdf(id , qn, namespace)
     if(ans != None):

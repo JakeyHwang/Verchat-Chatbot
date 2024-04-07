@@ -132,10 +132,6 @@ def get_history(id):
         id_memory.append((i['Human'] , i['AI']))
     firebase_admin.delete_app(app)
     try:
-        # try:
-        #     namespace = str(doc['pinecone_namespace'])
-        #     return [id_memory,namespace]    
-        # except Exception as E :
         return id_memory
     except Exception as E :
         print(E)
