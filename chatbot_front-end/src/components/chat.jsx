@@ -139,17 +139,10 @@ const Sidebar = ({
   };
 
   return (
-    <div>
-      <div
-        id="histlog"
-        className={openMenu ? "bg-[#d7e3fb]" : "bg-[#d7e3fb]"}>
+      <div id="histlog" className="relative bg-[#d7e3fb] max-h-screen h-screen">
         {/* Verchat Logo */}
         <div className="flex">
-          <Image
-            src={vertexLogo}
-            alt="ChatSideBar Image"
-            style={{ width: "270px", height: "85.5px", marginBottom: "25px" }}
-            className="rounded-lg" />
+          <Image src={vertexLogo} alt="ChatSideBar Image" className="rounded-lg w-[270px] h-[85.5px] mb-[25px]" />
         </div>
         {/* New Chat button */}
         <div className="flex justify-center mx-1">
@@ -172,8 +165,8 @@ const Sidebar = ({
             className="border border-gray-400 rounded-lg px-2 py-1 mt-2 w-full"
             onChange={handleChange} />
         </div>
-        {/* Display chat history in reverse order*/}
-        <ol className="" style={{ height: "59.3vh", overflowY: "auto" }}>
+        {/* Display chat history in reverse order */}
+        <ol className="relative max-h-[66.5vh] overflow-y-hidden hover:overflow-y-auto" >
           {toShow.map((title, index) => (
             <li
               id ={chatTitles[`${title}`]}
@@ -192,7 +185,6 @@ const Sidebar = ({
           ))}
         </ol>
       </div>
-    </div>
   );
 };
 
@@ -402,6 +394,7 @@ const NewChat = () => {
   const OpenUpload = () =>{
     return(
       <div className="z-10 flex flex-col bg-blue-400 rounded-md justify-center absolute top-[40%] left-[10%] sm:left-[40%] border-4 w-[400px] h-[150px]">
+          <button onclick={handleOpenUpload()} className="absolute top-0 right-2 text-2xl">x</button>
           <h1 className="place-self-center">Enter file path of PDF</h1>
           <p className="place-self-center mb-5 italic font-thin text-[12px]">i.e. C:/path/to/file.pdf</p>
         <div className="place-self-center">
@@ -422,10 +415,9 @@ const NewChat = () => {
   }
 
   return (
-    <div className="grid grid-cols-10" style={{ maxHeight: "100vh" }}>
+    <div className="grid grid-cols-10 max-h-screen h-screen">
       {openUpload? <OpenUpload />:""}
-      {/* <div className="grid grid-cols-10"> */}
-      <div className={`${menu ? "col-span-4 md:col-span-2" : "col-span-0 hidden"}`}>
+      <div className={`h-full ${menu ? "col-span-4 md:col-span-2" : "col-span-0 hidden"}`}>
         <Sidebar
           chatTitles={chatTitles}
           changeTopic={(i) => {handleChangeTopic(i);}}
@@ -433,10 +425,9 @@ const NewChat = () => {
           handleNewChat={handleNewChat}
           handleOpenMenu={handleOpenMenu} />
       </div>
-      <div
-        className={`flex-auto ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`} style={{ height: "100vh", overflowY: "auto" }}>
+      <div className={`flex flex-col max-h-[100vh] justify-between overflow-y-auto ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`}>
         <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1">
-          <div className="sticky top-0">
+          <div className="sticky top-0 z-10">
             <button onClick={handleOpenMenu} className="text-4xl font-black">
             ☰
             </button>
@@ -478,7 +469,7 @@ const NewChat = () => {
             </>
           ))}
         </div>
-        <div className={`w-[100%] bottom-0 ${menu ? "sticky bottom-0 col-span-6 md:col-span-8" : "fixed col-span-10"}`}>
+        <div className={`sticky w-[100%] bottom-0 order-last ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`}>
           <ChatBar sendMsg={(msg) => {handleSend(msg);}} />
         </div>
       </div>
