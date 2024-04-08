@@ -6,6 +6,7 @@ import sendIcon from "../public/paper-plane.png";
 import new_chat_icon from "../public/new_chat_icon.png";
 import upload_icon from "../public/submit.png";
 import loading_icon from "../public/loading.png";
+import rightArrow from "../public/rightArrow.png"
 import "../public/styles.css";
 
 // populates chatTitles and first chat title history using data from API call
@@ -197,7 +198,7 @@ const NewChat = () => {
   const [uploadedFile, setUploadedFile] = useState({});
   const [menu, setMenu] = useState(false);
   const [openUpload, setOpenUpload] = useState(false)
-  //const [loading, setLoading] = useState(true)
+
 
   //delay function
   const delay = async (ms) => {
@@ -242,51 +243,13 @@ const NewChat = () => {
   const handleOpenMenu = () => {
     setMenu(!menu);
   };
-  /*const loadMessage = () => {
-    const frames = ["Loading", "Loading.", "Loading..", "Loading..."];
-      let index = 0;
-    
-      const updateLoadingMessage = () => {
-        
-         // Display the current frame
-          const message = frames[index];
-        setChatHistory(prevChatHistory => {
-          // Replace the last message with the updated loading message
-          const updatedHistory = [...prevChatHistory];
-          if (updatedHistory.length > 0 && updatedHistory[updatedHistory.length - 1].type === "bot") {
-            updatedHistory[updatedHistory.length - 1].message = message;
-          } else {
-            updatedHistory.push({ type: "bot", message });
-          }
-          return updatedHistory;
-      });
-        // Increment index for the next frame
-        index = (index + 1) % frames.length;
 
-        // Repeat the process with a delay of 0.3s
-       
-          
-          setTimeout(updateLoadingMessage, 300);
-        };
-        
-        updateLoadingMessage();
-      
-  };*/
 
   const handleSend = async (msg) => {
-    //setLoading(true)
+    
     // Display user message immediately
     const userMessage = { type: "user", message: msg };
-    const loadingMessage = { type: "bot", message: "Loading..." };
-    
     setChatHistory(prevChatHistory => [...prevChatHistory, userMessage]);
-    setChatHistory(prevChatHistory => [...prevChatHistory, loadingMessage]);
-    
-
-    
-    
-     
-    
         
     // case when new chat
     if (currentChatTitle === chatTitle) {
@@ -299,13 +262,13 @@ const NewChat = () => {
           if (!res.ok) {
             throw new Error("Network response was not ok");
           }
+          
           return res.json();
         })
         .then((data) => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
-          //setLoading(false)
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.answer };
           setChatHistory([...chatHistory, user, bot]);
@@ -325,13 +288,13 @@ const NewChat = () => {
           if (!res.ok) {
             throw new Error("Network response was not ok");
           }
+          
           return res.json();
         })
         .then((data) => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
-          //setLoading(false)
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.answer };
          
@@ -365,7 +328,6 @@ const NewChat = () => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
-          //setLoading(false)
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.data };
           setChatHistory([...chatHistory, user, bot]);
@@ -380,17 +342,17 @@ const NewChat = () => {
         method: "POST",
       })
         .then((res) => {
-         
           if (!res.ok) {
             throw new Error("Network response was not ok");
           }
+          
           return res.json();
         })
         .then((data) => {
           if (!data) {
             throw new Error("Response data is undefined");
           }
-          //setLoading(false)
+
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.data };
           setChatHistory([...chatHistory, user, bot]);
@@ -400,8 +362,7 @@ const NewChat = () => {
         });
       }
     }
-    //setLoading(false)
-    console.log(chatHistory)
+    
   };
 
   const handleChangeTopic = (i) => {
@@ -462,22 +423,16 @@ const NewChat = () => {
       </div>
     )
   }
-  
-  const loadingMessage = () =>{
-    return(
-      <div></div>
-    )
-  }
 
   return (
     <div className="grid grid-cols-10 max-h-screen h-screen">
-      <button id="scrollButton" className="absolute bottom-0 right-0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
-        </svg>
-      </button>
       {openUpload? <OpenUpload />:""}
-      <div className={`h-full ${menu ? "col-span-4 md:col-span-2" : "col-span-0 hidden"}`}>
+      <div className={`h-full ${menu ? "relative col-span-4 md:col-span-2" : "z-10 absolute translate-x-[-200%] transition-transform duration-300"}`}>
+        <div className="flex absolute top-[50vh] right-[-21.5px] h-[50px] border border-b-2 rounded-r-lg">
+          <button onClick={handleOpenMenu}>
+            <Image src={rightArrow} alt=">" width={20} height={45}/>
+          </button>
+        </div>
         <Sidebar
           chatTitles={chatTitles}
           changeTopic={(i) => {handleChangeTopic(i);}}
@@ -487,25 +442,28 @@ const NewChat = () => {
       </div>
       <div id="chatlog" className={`flex flex-col max-h-[100vh] justify-between overflow-y-auto ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`}>
         <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1">
-          <div className="sticky top-0 z-10">
-            <button onClick={handleOpenMenu} className="text-4xl font-black">
-            ☰
+          <div className="z-10 flex absolute top-[50vh] h-[50px] border border-b-2 rounded-r-lg">
+            <button onClick={handleOpenMenu} className="hover:bg-blue-300">
+              <Image src={rightArrow} alt=">" width={20} height={45}/>
             </button>
           </div>
-          <div className="w-[100%] flex col-span-3 mx-auto items-center sticky top-0">
-            <button
-              onClick={handleOpenUpload}
-              disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
-              className={`flex items-center text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${ uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex] ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-700"}`} style={{ marginTop: "10px" }}>
-              Upload <Image src={upload_icon} className="w-6 h-6 ml-1" />
-            </button>
-          </div>
-          <div className="mt-[13px] col-start-5 col-end-6 justify-center mx-auto sticky top-3">
-            <label className="inline-flex items-center cursor-pointer mx-auto">
-              <input type="checkbox" value="" className="sr-only peer" />
-                <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600 right-0"></div>
-              <span className="ms-1 text-gray-900 text-xs hidden md:block mx-auto ">External Search</span>
-            </label>
+          <div className="sticky top-0 col-span-10 z-10 bg-[#d7e3fb] grid grid-cols-5">
+            <div className="relative col-start-3 top-[-5px]">
+              <button
+                onClick={handleOpenUpload}
+                disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
+                className={`flex w-50 text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${ uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex] ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-700"}`} style={{ marginTop: "10px" }}>
+                <>Upload</>
+                <Image src={upload_icon} alt="^" className="w-6 h-6 ml-1" />
+              </button>
+            </div>
+            <div className="mt-[13px] col-end-6 justify-center mx-auto">
+              <label className="inline-flex items-center cursor-pointer mx-auto">
+                <input type="checkbox" value="" className="sr-only peer" />
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600 right-0"></div>
+                <span className="ms-1 text-gray-900 text-xs hidden md:block mx-auto ">External Search</span>
+              </label>
+            </div>
           </div>
           <div className={`col-span-5 relative place-self-start pl-3`}>
             <div className={`rounded-t-lg rounded-br-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}>
