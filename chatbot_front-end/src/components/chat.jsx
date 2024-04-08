@@ -7,6 +7,7 @@ import new_chat_icon from "../public/new_chat_icon.png";
 import upload_icon from "../public/submit.png";
 import loading_icon from "../public/loading.png";
 import rightArrow from "../public/rightArrow.png"
+import leftArrow from "../public/leftArrow.png"
 import "../public/styles.css";
 
 // populates chatTitles and first chat title history using data from API call
@@ -312,7 +313,6 @@ const NewChat = () => {
     else {
       var namespace = uploadedFile[currentIndex]
       if (namespace != 'knowledgebase_consolidated') {
-        namespace = namespace.replaceAll("_","~")
         fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
         method: "POST",
       })
@@ -337,7 +337,6 @@ const NewChat = () => {
         });
       }
       else{
-        namespace = namespace.replaceAll("_","~")
         fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
         method: "POST",
       })
@@ -376,8 +375,14 @@ const NewChat = () => {
   };
 
   const handlePDF = (id,fpath) =>{
-
-    fetch(`http://127.1.1.1:4000/upload/${id}/${fpath}`, { method: "POST" })
+    let path = fpath
+    if(path.indexOf('\\') >= 0){
+      path = path.replaceAll("\\","_")
+    }
+    if(path.includes("/")){
+      path = path.replaceAll("/","_")
+    }
+    fetch(`http://127.1.1.1:4000/upload/${id}/${path}`, { method: "POST" })
         .then((res) => {
             if (!res.ok) {
                 throw new Error("Network response was not ok");
@@ -403,12 +408,14 @@ const NewChat = () => {
 
   const OpenUpload = () =>{
     return(
-      <div className="z-10 flex flex-col bg-blue-400 rounded-md justify-center absolute top-[40%] left-[10%] sm:left-[40%] border-4 w-[400px] h-[150px]">
+      <div className="z-10 flex flex-col bg-[#d7e3fb] rounded-xl justify-center absolute top-[40%] left-[10%] sm:left-[40%] border-4 w-[400px] h-[150px]">
           <button className="absolute top-0 right-2 text-2xl" onClick={handleOpenUpload}>x</button>
           <h1 className="place-self-center">Enter file path of PDF</h1>
-          <p className="place-self-center mb-5 italic font-thin text-[12px]">i.e. C:/path/to/file.pdf</p>
-        <div className="place-self-center">
+          <p className="place-self-center italic font-thin text-[12px]">i.e. C:/path/to/file.pdf</p>
+          <p className="place-self-center mb-3 italic font-thin text-[12px]">*URL cannot have brackets*</p>
+        <div className="place-self-center w-[70%] h-[18%]">
           <input
+          className="rounded w-full h-full text-center text-xs"
           id="uploadDoc"
           type="text"
           placeholder="Please Enter PDF URL"
@@ -416,7 +423,6 @@ const NewChat = () => {
             if (e.key === "Enter") {
               handleOpenUpload()
               var fpath = e.target.value
-              fpath = fpath.replaceAll("/", "_")
               handlePDF(currentIndex,fpath)
             }}}></input>
         </div>
@@ -430,7 +436,7 @@ const NewChat = () => {
       <div className={`h-full ${menu ? "relative col-span-4 md:col-span-2" : "z-10 absolute translate-x-[-200%] transition-transform duration-300"}`}>
         <div className="flex absolute top-[50vh] right-[-21.5px] h-[50px] border border-b-2 rounded-r-lg">
           <button onClick={handleOpenMenu}>
-            <Image src={rightArrow} alt=">" width={20} height={45}/>
+            <Image src={menu ? leftArrow : rightArrow} alt={menu ? "<": ">"} width={20} height={45}/>
           </button>
         </div>
         <Sidebar
@@ -444,7 +450,7 @@ const NewChat = () => {
         <div className="grid grid-flow-row auto-rows-max grid-cols-5 gap-y-1">
           <div className="z-10 flex absolute top-[50vh] h-[50px] border border-b-2 rounded-r-lg">
             <button onClick={handleOpenMenu} className="hover:bg-blue-300">
-              <Image src={rightArrow} alt=">" width={20} height={45}/>
+              <Image src={menu? leftArrow : rightArrow} alt={menu ? "<": ">"} width={20} height={45}/>
             </button>
           </div>
           <div className="sticky top-0 col-span-10 z-10 bg-[#d7e3fb] grid grid-cols-5">
@@ -452,7 +458,7 @@ const NewChat = () => {
               <button
                 onClick={handleOpenUpload}
                 disabled={uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex]}
-                className={`flex w-50 text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${ uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex] ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-700"}`} style={{ marginTop: "10px" }}>
+                className={`flex w-50 text-white font-bold py-1 px-2 rounded transition-colors duration-500 ease-in-out mx-auto ${ uploadedFile[currentIndex] !="knowledgebase_consolidated" && uploadedFile[currentIndex] ? "bg-gray-500" : "bg-blue-400 hover:bg-blue-600"}`} style={{ marginTop: "10px" }}>
                 <>Upload</>
                 <Image src={upload_icon} alt="^" className="w-6 h-6 ml-1" />
               </button>
