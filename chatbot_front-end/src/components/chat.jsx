@@ -167,7 +167,7 @@ const Sidebar = ({
             onChange={handleChange} />
         </div>
         {/* Display chat history in reverse order */}
-        <ol className="relative max-h-[66.5vh] overflow-y-hidden hover:overflow-y-auto" >
+        <ol className="relative max-h-[61%] overflow-y-auto hover:overflow-y-auto" >
           {toShow.map((title, index) => (
             <li
               id ={chatTitles[`${title}`]}
@@ -247,10 +247,12 @@ const NewChat = () => {
 
 
   const handleSend = async (msg) => {
-    
     // Display user message immediately
     const userMessage = { type: "user", message: msg };
     setChatHistory(prevChatHistory => [...prevChatHistory, userMessage]);
+    // add loading msg while waiting for response
+    const loadingMessage = { type: "bot", message: "loading" };
+    setChatHistory(prevChatHistory => [...prevChatHistory, loadingMessage]);
         
     // case when new chat
     if (currentChatTitle === chatTitle) {
@@ -272,6 +274,8 @@ const NewChat = () => {
           }
           let user = { type: "user", message: msg };
           let bot = { type: "bot", message: data.answer };
+          // delete loading message
+          chatHistory.pop();
           setChatHistory([...chatHistory, user, bot]);
           getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
           setCurrentChatTitle(data.title);
@@ -471,27 +475,37 @@ const NewChat = () => {
               </label>
             </div>
           </div>
-          <div className={`col-span-5 relative place-self-start pl-3`}>
+          <div className={`col-start-1 col-span-3 relative pl-3`}>
             <div className={`rounded-t-lg rounded-br-lg px-2 py-1 text-wrap mb-2 bg-[#d7e3fb] mr-auto`}>
               <h1>Hi, how may I help you today?</h1>
             </div>
           </div>
+          <div></div>
           {Array.from(chatHistory).map((chat, index) => (
-            <>
-              <div
-                id = {index}
-                key={index}
-                className={`rounded-t-lg ${chat.type === "user" ? "col-end-6 col-span-2 rounded-bl-lg relative pr-3" : "col-start-1 col-span-3 rounded-br-lg relative pl-3"}`}>
-                <div
-                  id = {index}
-                  key={index}
-                  className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${chat.type === "user" ? "rounded-bl-lg bg-[#e4e4e4] ml-auto" : "rounded-br-lg bg-[#d7e3fb] mr-auto "}`}>
-                  <h1>{chat.message}</h1>
-                </div>
-              </div>
-              <div></div>
-            </>
-          ))}
+  <>
+    {chat.message === 'loading' ? (
+      <>
+      <div id={index} key={index} className={`rounded-t-lg ${chat.type === "user" ? "col-end-6 col-span-2 rounded-bl-lg relative pr-3" : "col-start-1 col-span-3 rounded-br-lg relative pl-3"}`}>
+        <div id={index} key={index} className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${chat.type === "user" ? "rounded-bl-lg bg-[#e4e4e4] ml-auto" : "rounded-br-lg bg-[#d7e3fb] mr-auto "}`}>
+        <svg className="inline-block animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <h1 className="inline-block ms-2"> Loading...</h1>
+      </div>
+      </div>
+      </>
+    ) : (
+      <div id={index} key={index} className={`${chat.type === "user" ? "col-end-6 col-span-2 relative pr-3" : "col-start-1 col-span-3 relative pl-3"}`}>
+        <div id={index} key={index} className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${chat.type === "user" ? "rounded-bl-lg bg-[#e4e4e4] ml-auto" : "rounded-br-lg bg-[#d7e3fb] mr-auto "}`}>
+          <h1>{chat.message}</h1>
+        </div>
+      </div>
+    )}
+    <div></div>
+  </>
+))}
+
         </div>
         <div className={`sticky w-[100%] bottom-0 order-last bg-[#FFFFFF]  ${menu ? "col-span-6 md:col-span-8" : "col-span-10"}`}>
           <ChatBar sendMsg={(msg) => {handleSend(msg);}} />
