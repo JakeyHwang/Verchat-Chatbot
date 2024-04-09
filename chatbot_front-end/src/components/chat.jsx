@@ -55,7 +55,21 @@ const getChatHistory = (id, setChatHistory) => {
           data.data.forEach((item) => {
             if (Array.isArray(item) && item.length >= 1) {
               let user = { type: "user", message: item[0] };
-              let bot = { type: "bot", message: item[1] };
+              let bot = { type: "bot", message: item[1].replace(/(\.)(\s)- /g, "$1<br>- ")};
+              bot.message = bot.message.replace(/(\])\s*-\s*/g, "$1<br>- ")
+              bot.message = bot.message.replace(/(\w)\s*-\s*/g, "$1<br>- ")
+              bot.message = bot.message.replace(/(\d+\.) /g, "<br>$1 ");
+              bot.message = bot.message.replace(/^(#{1,6}) (.*)$/gm, (match, hashes, text) => {
+                let level = hashes.length;
+                return `<h${level}>${text}</h${level}>`;
+              });
+
+              let isStartTag = true;
+bot.message = bot.message.replace(/\*\*/g, () => {
+  let replacement = isStartTag ? "<strong>" : "</strong>";
+  isStartTag = !isStartTag; // Toggle the flag
+  return replacement;
+});
               h_data.push(user);
               h_data.push(bot);
             }
@@ -510,7 +524,7 @@ const NewChat = () => {
               ) : (
                 <div id={index} key={index} className={`${chat.type === "user" ? "col-end-6 col-span-2 relative pr-3" : "col-start-1 col-span-3 relative pl-3"}`}>
                   <div id={index} key={index} className={`rounded-t-lg px-2 py-1 text-wrap mb-2 ${chat.type === "user" ? "rounded-bl-lg bg-[#e4e4e4] ml-auto" : "rounded-br-lg bg-[#d7e3fb] mr-auto "}`}>
-                    <h1>{chat.message}</h1>
+                    <h1 dangerouslySetInnerHTML={{__html : chat.message}}></h1>
                   </div>
                 </div>
               )}
