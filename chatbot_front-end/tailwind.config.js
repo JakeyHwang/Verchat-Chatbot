@@ -14,5 +14,29 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      // adding new plugin to remove scrollbar
+      const newUtilities = {
+        "#scrollstyle::-webkit-scrollbar-track": {
+          "-webkit-box-shadow": "inset 0 0 6px rgba(0, 0, 0, 0.3)",
+          "border-radius": "10px",
+          "background-color": "#D7E3FB",
+        },
+        
+        "#scrollstyle::-webkit-scrollbar": {
+          "width": "7px",
+          "background-color": "#D7E3FB",
+        },
+        
+        "#scrollstyle::-webkit-scrollbar-thumb": {
+          "border-radius": "10px",
+          "-webkit-box-shadow": "inset 0 0 6px rgba(0, 0, 0, .3)",
+          "background-color": "rgb(96 165 250)",
+        }
+        }
+    
+    addUtilities(newUtilities,["responsive","hover"])
+    }
+  ],
 };

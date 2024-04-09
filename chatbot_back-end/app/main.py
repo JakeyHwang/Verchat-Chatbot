@@ -58,7 +58,7 @@ def get_history_data(id:str):
 # "qn": "<yourquestion>"}
 @app.post("/chatbot/question/{id}/{qn}/{namespace}")
 def query_llm(id:str, qn:str, namespace:str):
-
+    qn = qn+"?"
     ans = query_PDF.query_pdf(id , qn, namespace)
     if(ans != None):
         return { 'data': ans}
@@ -69,6 +69,7 @@ def query_llm(id:str, qn:str, namespace:str):
 # requires question in string
 @app.post("/chatbot/{qn}")
 def create_new_chat(qn:str):
+    qn = qn+"?"
     id,title,question,answer = query_PDF.query_pdf_new(qn)
     if(id,title,question,answer != None):
         return{'id':id, 'title': title, 'question': question, 'answer': answer}
@@ -80,6 +81,7 @@ def create_new_chat(qn:str):
 # requires question in string
 @app.post("/chatbot/{qn}/{namespace}")
 def create_new_chat(qn:str, namespace:str):
+    qn = qn+"?"
     id,title,question,answer = query_PDF.query_pdf_new(qn, namespace)
     if(id,title,question,answer != None):
         return{'id':id, 'title': title, 'question': question, 'answer': answer}

@@ -230,7 +230,14 @@ def query_pdf_new(question , namespace=None):
         4. Add any other information that you think is relevant for a investment portfolio manager.
 
         If the question requires you to analyse your previous responses, use the chat history given by 
-
+    
+    Using the above information, answer the following question or topic: "{question}" in a detailed report -- \
+    The report should focus on the answer to the question, should be well structured, informative, \
+    in depth, with facts and numbers if available and a minimum of 1,200 words.
+    You should strive to write the report as long as you can using all relevant and necessary information provided.
+    You must write the report with markdown syntax.
+    You MUST determine your own concrete and valid opinion based on the given information. Do NOT deter to general and meaningless conclusions.
+    
     Chat History:
     {chat_history}
 
@@ -277,7 +284,16 @@ def query_pdf_new(question , namespace=None):
         2. Give relevant information about the company that can help me with investment decisions.
         3. Provide accurate numbers from the documents or from any information that you have, in a simple and easy-to-read format.
             a. Numbers represented can be in accounting format as they are financial reports. Be sure to express negative and positive numbers properly.
-        4. Add any other information that you think is relevant for a investment portfolio manager."""
+        4. Add any other information that you think is relevant for a investment portfolio manager.
+        
+    Using the above information, answer the following question or topic: "{question}" in a detailed report -- \
+    The report should focus on the answer to the question, should be well structured, informative, \
+    in depth, with facts and numbers if available and a minimum of 1,200 words.
+    You should strive to write the report as long as you can using all relevant and necessary information provided.
+    You must write the report with markdown syntax.
+    You MUST determine your own concrete and valid opinion based on the given information. Do NOT deter to general and meaningless conclusions."""
+
+    
 
     # Define your template with the system instruction
     template = (
@@ -351,6 +367,13 @@ def query_pdf(id, question, namespace=None):
 
             If the question requires you to analyse your previous responses, use the chat history given by 
 
+        Using the above information, answer the following question or topic: "{question}" in a detailed report -- \
+        The report should focus on the answer to the question, should be well structured, informative, \
+        in depth, with facts and numbers if available and a minimum of 1,200 words.
+        You should strive to write the report as long as you can using all relevant and necessary information provided.
+        You must write the report with markdown syntax.
+        You MUST determine your own concrete and valid opinion based on the given information. Do NOT deter to general and meaningless conclusions.
+    
         Chat History:
         {chat_history}
 
@@ -396,8 +419,15 @@ def query_pdf(id, question, namespace=None):
             2. Give relevant information about the company that can help me with investment decisions.
             3. Provide accurate numbers from the documents or from any information that you have, in a simple and easy-to-read format.
                 a. Numbers represented can be in accounting format as they are financial reports. Be sure to express negative and positive numbers properly.
-            4. Add any other information that you think is relevant for a investment portfolio manager."""
-
+            4. Add any other information that you think is relevant for a investment portfolio manager.
+            
+        Using the above information, answer the following question or topic: "{question}" in a detailed report -- \
+        The report should focus on the answer to the question, should be well structured, informative, \
+        in depth, with facts and numbers if available and a minimum of 1,200 words.
+        You should strive to write the report as long as you can using all relevant and necessary information provided.
+        You must write the report with markdown syntax.
+        You MUST determine your own concrete and valid opinion based on the given information. Do NOT deter to general and meaningless conclusions."""
+        
         # Define your template with the system instruction
         template = (
             f"{system_instruction} "
