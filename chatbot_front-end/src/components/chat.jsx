@@ -143,17 +143,17 @@ const Sidebar = ({
       <div id="histlog" className="relative bg-[#d7e3fb] max-h-screen h-screen">
         {/* Verchat Logo */}
         <div className="flex">
-          <Image src={vertexLogo} alt="ChatSideBar Image" className="rounded-lg w-[270px] h-[85.5px] mb-[25px]" />
+          <Image src={vertexLogo} alt="ChatSideBar Image" className="rounded-lg w-[270px] h-[85.5px] mb-[10px]" />
         </div>
         {/* New Chat button */}
         <div className="flex justify-center mx-1">
           <button
             id="newChatButton"
-            className="bg-[#d7e3fb] w-full rounded-md py-2 px-4 text-left flex items-center font-medium justify-between hover:bg-blue-300 transition-colors duration-500 ease-in-out"
+            className="bg-blue-400 w-full rounded-md py-2 px-4 text-left text-white flex items-center font-medium justify-between hover:bg-blue-600 transition-colors duration-500 ease-in-out"
             style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
             onClick={handleNewChat}>
             <span>New Chat</span>
-            <Image src={new_chat_icon} alt="Icon" className="h-4 w-4" />{" "}
+            <Image src={new_chat_icon} alt="Icon" className="h-4 w-4 invert" />{" "}
             {/* Image */}
           </button>
         </div>
