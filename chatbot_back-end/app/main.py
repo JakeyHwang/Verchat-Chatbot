@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Header
 from fastapi.middleware.cors import CORSMiddleware
 from .Handlers import query_PDF
+from .Handlers import query_internet
 # from pydantic import BaseModel
 import os
 import json
@@ -52,7 +53,7 @@ def get_history_data(id:str):
         return {'error': 'data not found'}
 
 
-# API endpoint for asking question
+# API endpoint for asking question based on inhouse data
 # requires a JSON object in string format as input
 # {"id": "<chatid>",
 # "qn": "<yourquestion>"}
@@ -64,13 +65,37 @@ def query_llm(id:str, qn:str, namespace:str):
         return { 'data': ans}
     else:
         return {'error': 'data not found'}
+    
+# API endpoint for asking question on internet
+# requires a JSON object in string format as input
+# {"id": "<chatid>",
+# "qn": "<yourquestion>"}
+@app.post("/internet/question/{id}/{qn}")
+def query_llm(id:str, qn:str):
+    qn = qn+"?"
+    ans = query_internet.query_internet(id , qn)
+    if(ans != None):
+        return { 'data': ans}
+    else:
+        return {'error': 'data not found'}
 
-# API for creating new chat without pdf
+# API for creating new chat based on inhouse data
 # requires question in string
 @app.post("/chatbot/{qn}")
 def create_new_chat(qn:str):
     qn = qn+"?"
     id,title,question,answer = query_PDF.query_pdf_new(qn)
+    if(id,title,question,answer != None):
+        return{'id':id, 'title': title, 'question': question, 'answer': answer}
+    else:
+        return {'error': 'data not found'}
+
+# API for creating new chat on internet
+# requires question in string
+@app.post("/internet/{qn}")
+def create_new_internet_chat(qn:str):
+    qn = qn+"?"
+    id,title,question,answer = query_internet.query_internet_new(qn)
     if(id,title,question,answer != None):
         return{'id':id, 'title': title, 'question': question, 'answer': answer}
     else:
@@ -95,3 +120,4 @@ def upload(id:str, fpath:str):
     status = query_PDF.add_history_upload_pdf(id)
     
     return {'status':status,'namespace': namespace}
+

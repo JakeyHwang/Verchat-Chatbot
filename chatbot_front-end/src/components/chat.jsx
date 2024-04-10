@@ -63,13 +63,12 @@ const getChatHistory = (id, setChatHistory) => {
                 let level = hashes.length;
                 return `<h${level}>${text}</h${level}>`;
               });
-
-              let isStartTag = true;
-bot.message = bot.message.replace(/\*\*/g, () => {
-  let replacement = isStartTag ? "<strong>" : "</strong>";
-  isStartTag = !isStartTag; // Toggle the flag
-  return replacement;
-});
+                let isStartTag = true;
+                bot.message = bot.message.replace(/\*\*/g, () => {
+                let replacement = isStartTag ? "<strong>" : "</strong>";
+                isStartTag = !isStartTag; // Toggle the flag
+                return replacement;
+              });
               h_data.push(user);
               h_data.push(bot);
             }
@@ -204,7 +203,7 @@ const Sidebar = ({
 };
 
 const NewChat = () => {
-  const chatTitle = "Untitled Chat";
+  const chatTitle = "New Chat";
   const [currentIndex, setCurrentIndex] = useState("");
   const [currentChatTitle, setCurrentChatTitle] = useState(chatTitle);
   const [chatHistory, setChatHistory] = useState([]);
@@ -212,7 +211,8 @@ const NewChat = () => {
   const [titleArray, setTitleArray] = useState([]);
   const [uploadedFile, setUploadedFile] = useState({});
   const [menu, setMenu] = useState(false);
-  const [openUpload, setOpenUpload] = useState(false)
+  const [openUpload, setOpenUpload] = useState(false);
+  const [iSearch, setISearch] = useState(false);
 
 
   //delay function
@@ -271,117 +271,183 @@ const NewChat = () => {
     if (msg.indexOf("?")==msg.length-1){
       msg = msg.replace("?","")
     }
-    // case when new chat
-    if (currentChatTitle === chatTitle) {
-      // case if there is no uploaded file
-      if (uploadedFile[currentIndex]){
-        var namespace = uploadedFile[currentIndex]
-        fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" })
-        .then((res) => {
-          
-          if (!res.ok) {
-            throw new Error("Network response was not ok");
-          }
-          
-          return res.json();
-        })
-        .then((data) => {
-          if (!data) {
-            throw new Error("Response data is undefined");
-          }
-          let user = { type: "user", message: msg +"?" };
-          let bot = { type: "bot", message: data.answer };
-          // delete loading message
-          chatHistory.pop();
-          setChatHistory([...chatHistory, user, bot]);
-          getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
-          setCurrentChatTitle(data.title);
-          setCurrentIndex(data.id);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-      }
-      // case if new chat has uploaded file
-      else {
-        fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: "POST" })
-        .then((res) => {
-          
-          if (!res.ok) {
-            throw new Error("Network response was not ok");
-          }
-          
-          return res.json();
-        })
-        .then((data) => {
-          if (!data) {
-            throw new Error("Response data is undefined");
-          }
-          let user = { type: "user", message: msg +"?" };
-          let bot = { type: "bot", message: data.answer };
-         
-          setChatHistory([...chatHistory, user, bot]);
-          getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
-          setCurrentChatTitle(data.title);
-          setCurrentIndex(data.id);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-      }
-      
-    } 
-    else {
-      var namespace = uploadedFile[currentIndex]
-      if (namespace != 'knowledgebase_consolidated') {
-        fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
-        method: "POST",
-      })
-        .then((res) => {
-          
-          if (!res.ok) {
-            throw new Error("Network response was not ok");
-          }
-          
-          return res.json();
-        })
-        .then((data) => {
-          if (!data) {
-            throw new Error("Response data is undefined");
-          }
-          let user = { type: "user", message: msg +"?" };
-          let bot = { type: "bot", message: data.data };
-          setChatHistory([...chatHistory, user, bot]);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-      }
-      else{
-        fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
-        method: "POST",
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error("Network response was not ok");
-          }
-          
-          return res.json();
-        })
-        .then((data) => {
-          if (!data) {
-            throw new Error("Response data is undefined");
-          }
+    // case if internet search
+    if(iSearch==true){
+      // case if new chat
+      if (currentChatTitle == chatTitle) {
+          fetch(`http://127.1.1.1:4000/internet/${msg}`, { method: "POST" })
+          .then((res) => {
+            
+            if (!res.ok) {
+              throw new Error("Network response was not ok");
+            }
+            
+            return res.json();
+          })
+          .then((data) => {
+            if (!data) {
+              throw new Error("Response data is undefined");
+            }
+            let user = { type: "user", message: msg +"?" };
+            let bot = { type: "bot", message: data.answer };
+            // delete loading message
+            chatHistory.pop();
+            setChatHistory([...chatHistory, user, bot]);
+            getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
+            setCurrentChatTitle(data.title);
+            setCurrentIndex(data.id);
+            getChatHistory(currentIndex, setChatHistory)
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        } else { // case if existing chat
+          fetch(`http://127.1.1.1:4000/internet/question/${currentIndex}/${msg}`, { method: "POST" })
+          .then((res) => {
+            
+            if (!res.ok) {
+              throw new Error("Network response was not ok");
+            }
+            
+            return res.json();
+          })
+          .then((data) => {
+            if (!data) {
+              throw new Error("Response data is undefined");
+            }
+            let user = { type: "user", message: msg +"?" };
+            let bot = { type: "bot", message: data.answer };
+            // delete loading message
+            chatHistory.pop();
+            setChatHistory([...chatHistory, user, bot]);
+            getChatHistory(currentIndex, setChatHistory)
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          }); 
+    }
+    } else{ // case for normal chatbot
+      // case when new chat
+      if (currentChatTitle == chatTitle) {
 
-          let user = { type: "user", message: msg +"?" };
-          let bot = { type: "bot", message: data.data };
-          setChatHistory([...chatHistory, user, bot]);
+        // case if there is no uploaded file
+        if (uploadedFile[currentIndex]){
+          var namespace = uploadedFile[currentIndex]
+          fetch(`http://127.1.1.1:4000/chatbot/${msg}/${namespace}`, { method: "POST" })
+          .then((res) => {
+            
+            if (!res.ok) {
+              throw new Error("Network response was not ok");
+            }
+            
+            return res.json();
+          })
+          .then((data) => {
+            if (!data) {
+              throw new Error("Response data is undefined");
+            }
+            let user = { type: "user", message: msg +"?" };
+            let bot = { type: "bot", message: data.answer };
+            // delete loading message
+            chatHistory.pop();
+            setChatHistory([...chatHistory, user, bot]);
+            getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
+            setCurrentChatTitle(data.title);
+            setCurrentIndex(data.id);
+            getChatHistory(currentIndex, setChatHistory)
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        } else { // case if new chat has uploaded file
+          fetch(`http://127.1.1.1:4000/chatbot/${msg}`, { method: "POST" })
+          .then((res) => {
+            
+            if (!res.ok) {
+              throw new Error("Network response was not ok");
+            }
+            
+            return res.json();
+          })
+          .then((data) => {
+            if (!data) {
+              throw new Error("Response data is undefined");
+            }
+            let user = { type: "user", message: msg +"?" };
+            let bot = { type: "bot", message: data.answer };
+            // delete loading message
+            chatHistory.pop();
+            setChatHistory([...chatHistory, user, bot]);
+            getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
+            setCurrentChatTitle(data.title);
+            setCurrentIndex(data.id);
+            getChatHistory(currentIndex, setChatHistory)
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        }
+        
+      } else { // case for existing chat
+        var namespace = uploadedFile[currentIndex]
+        
+        // case if chat has document uploaded
+        if (namespace != 'knowledgebase_consolidated') {
+          fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
+          method: "POST",
         })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+          .then((res) => {
+            
+            if (!res.ok) {
+              throw new Error("Network response was not ok");
+            }
+            
+            return res.json();
+          })
+          .then((data) => {
+            if (!data) {
+              throw new Error("Response data is undefined");
+            }
+            let user = { type: "user", message: msg +"?" };
+            let bot = { type: "bot", message: data.data };
+            // delete loading message
+            chatHistory.pop();
+            setChatHistory([...chatHistory, user, bot]);
+            getChatHistory(currentIndex, setChatHistory)
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        } else{ // case if no document is uploaded
+          fetch(`http://127.1.1.1:4000/chatbot/question/${currentIndex}/${msg}/${namespace}`, {
+          method: "POST",
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error("Network response was not ok");
+            }
+            
+            return res.json();
+          })
+          .then((data) => {
+            if (!data) {
+              throw new Error("Response data is undefined");
+            }
+
+            let user = { type: "user", message: msg +"?" };
+            let bot = { type: "bot", message: data.data };
+            // delete loading message
+            chatHistory.pop();
+            setChatHistory([...chatHistory, user, bot]);
+            getChatHistory(currentIndex, setChatHistory)
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        }
       }
     }
+    
     
   };
 
@@ -405,7 +471,6 @@ const NewChat = () => {
     }
     fetch(`http://127.1.1.1:4000/upload/${id}/${path}`, { method: "POST" })
         .then((res) => {
-            console.log(res)
             if (!res.ok) {
                 throw new Error("Network response was not ok");
             }
@@ -419,15 +484,17 @@ const NewChat = () => {
             let bot = {'type':'bot', 'message': "Your file has been received and processed! How can I help?"};
 
             setChatHistory([...chatHistory, bot])
-            handleOpenUpload()    
             })
             .catch((error) => {
             console.error("Error:", error);
-            handleOpenUpload()    
             });
   }
   const handleOpenUpload =()=>{
     setOpenUpload(!openUpload)
+  }
+
+  const handleInternetSearch = () => {
+    setISearch(!iSearch)
   }
 
   const OpenUpload = () =>{
@@ -439,22 +506,16 @@ const NewChat = () => {
           <p className="place-self-center mb-3 italic font-thin text-[12px]">*URL cannot have brackets*</p>
         <div className="place-self-center w-[70%] h-[18%]">
           <input
-          className="inline-block rounded w-[90%] h-full text-center text-xs me-1"
+          className="rounded w-full h-full text-center text-xs"
           id="uploadDoc"
           type="text"
           placeholder="Please Enter PDF URL"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              // remove hidden class from svg with loading id
-              document.getElementById("loading").classList.remove("hidden");
+              handleOpenUpload()
               var fpath = e.target.value
               handlePDF(currentIndex,fpath)
-              // handleOpenUpload()
             }}}></input>
-            <svg id="loading" className="inline-block animate-spin h-5 w-5 text-blue-500 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
         </div>
       </div>
     )
@@ -495,7 +556,7 @@ const NewChat = () => {
             </div>
             <div className="mt-[13px] col-end-6 justify-center mx-auto">
               <label className="inline-flex items-center cursor-pointer mx-auto">
-                <input type="checkbox" value="" className="sr-only peer" />
+                <input type="checkbox" value="" onClick={handleInternetSearch} className="sr-only peer" />
                   <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600 right-0"></div>
                 <span className="ms-1 text-gray-900 text-xs hidden md:block mx-auto ">External Search</span>
               </label>
