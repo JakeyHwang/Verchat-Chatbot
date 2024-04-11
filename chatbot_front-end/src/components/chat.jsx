@@ -106,6 +106,7 @@ const ChatBar = ({ sendMsg }) => {
   return (
     <div className="flex flex-1 flex-row w-[100%]bottom-0 justify-center items-center mx-auto">
       <input
+        autocomplete="off"
         id="chat"
         type="text"
         placeholder="Ask me anything..."
@@ -113,6 +114,7 @@ const ChatBar = ({ sendMsg }) => {
         value={message}
         onChange={handleChange}
         onKeyDown={(e) => {if (e.key === "Enter") {handleSend();}}}/>
+
       <button id="sendButton" onClick={handleSend} disabled={!message.trim()}>
         <Image
           alt="send image"
@@ -293,12 +295,12 @@ const NewChat = () => {
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.answer };
             // delete loading message
-            chatHistory.pop();
+            // chatHistory.pop();
             setChatHistory([...chatHistory, user, bot]);
             getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
             setCurrentChatTitle(data.title);
             setCurrentIndex(data.id);
-            getChatHistory(currentIndex, setChatHistory)
+            getChatHistory(data.id, setChatHistory)
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -320,7 +322,7 @@ const NewChat = () => {
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.answer };
             // delete loading message
-            chatHistory.pop();
+            // chatHistory.pop();
             setChatHistory([...chatHistory, user, bot]);
             getChatHistory(currentIndex, setChatHistory)
           })
@@ -351,12 +353,12 @@ const NewChat = () => {
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.answer };
             // delete loading message
-            chatHistory.pop();
+            // chatHistory.pop();
             setChatHistory([...chatHistory, user, bot]);
             getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
             setCurrentChatTitle(data.title);
             setCurrentIndex(data.id);
-            getChatHistory(currentIndex, setChatHistory)
+            getChatHistory(data.id, setChatHistory)
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -378,12 +380,12 @@ const NewChat = () => {
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.answer };
             // delete loading message
-            chatHistory.pop();
+            // chatHistory.pop();
             setChatHistory([...chatHistory, user, bot]);
             getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
             setCurrentChatTitle(data.title);
             setCurrentIndex(data.id);
-            getChatHistory(currentIndex, setChatHistory)
+            getChatHistory(data.id, setChatHistory)
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -413,7 +415,7 @@ const NewChat = () => {
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.data };
             // delete loading message
-            chatHistory.pop();
+            // chatHistory.pop();
             setChatHistory([...chatHistory, user, bot]);
             getChatHistory(currentIndex, setChatHistory)
           })
@@ -439,7 +441,7 @@ const NewChat = () => {
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.data };
             // delete loading message
-            chatHistory.pop();
+            // chatHistory.pop();
             setChatHistory([...chatHistory, user, bot]);
             getChatHistory(currentIndex, setChatHistory)
           })
@@ -487,7 +489,7 @@ const NewChat = () => {
                 throw new Error("Response data is undefined");
             }
             setUploadedFile({ [currentIndex]: data.namespace })
-            chatHistory.pop();
+            // chatHistory.pop();
             let bot = {'type':'bot', 'message': "Your file has been received and processed! How can I help?"};
             setChatHistory([...chatHistory, bot])
             })
