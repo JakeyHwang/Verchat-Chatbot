@@ -469,6 +469,10 @@ const NewChat = () => {
     if(path.includes("/")){
       path = path.replaceAll("/","_")
     }
+    // add loading msg while waiting for response
+    const loadingMessage = { type: "bot", message: "loading" };
+    setChatHistory(prevChatHistory => [...prevChatHistory, loadingMessage]);
+
     fetch(`http://127.1.1.1:4000/upload/${id}/${path}`, { method: "POST" })
         .then((res) => {
             if (!res.ok) {
@@ -481,8 +485,8 @@ const NewChat = () => {
                 throw new Error("Response data is undefined");
             }
             setUploadedFile({ [currentIndex]: data.namespace })
+            chatHistory.pop();
             let bot = {'type':'bot', 'message': "Your file has been received and processed! How can I help?"};
-
             setChatHistory([...chatHistory, bot])
             })
             .catch((error) => {
