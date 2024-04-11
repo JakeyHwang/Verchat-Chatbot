@@ -57,7 +57,9 @@ const getChatHistory = (id, setChatHistory) => {
               let user = { type: "user", message: item[0] };
               let bot = { type: "bot", message: item[1].replace(/(\.)(\s)- /g, "$1<br>- ")};
               bot.message = bot.message.replace(/(\])\s*-\s*/g, "$1<br>- ")
-              bot.message = bot.message.replace(/(\w)\s*-\s*/g, "$1<br>- ")
+              bot.message = bot.message.replace(/(\w)(\s)-\s*/g, "$1<br>- ")
+              bot.message = bot.message.replace(/(\:)(\s)-\s*/g, "$1<br>- ")
+              bot.message = bot.message.replace(/(\%)(\s)-\s*/g, "$1<br>- ")
               bot.message = bot.message.replace(/(\d+\.) /g, "<br>$1 ");
               bot.message = bot.message.replace(/^(#{1,6}) (.*)$/gm, (match, hashes, text) => {
                 let level = hashes.length;
