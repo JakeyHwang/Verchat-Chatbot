@@ -22,9 +22,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 os.environ["OPENAI_API_KEY"] = os.getenv("openai_api_key")
+os.environ["PINECONE_API_KEY"] = os.getenv("PINECONE_API_KEY")
 
-os.environ["PINECONE_API_KEY"]="c87398b9-af2b-4dad-af19-18c87b85fae6"
-
+# function to load vector from pinecone vectorstore
 def load_vectorstore(
     embedding,
     environment="gcp-starter",
@@ -41,23 +41,22 @@ def load_vectorstore(
         print(E)
         return E
 
-def download_file(source):
-    return 'source'
-
+# function to split pdf into chunks
 def PDFtoChunks(destination_file_name):
     loader = PyPDFLoader(destination_file_name)
     data = loader.load()
     text_chunks = chunk_text(data)
     return text_chunks
 
+# helper function to split text into chunks
 def chunk_text(data):
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1500, chunk_overlap=150, length_function=len
     )
     text_chunks = text_splitter.split_documents(data)
-    # print(len(text_chunks))
     return text_chunks
 
+# function to update chat history's namespace
 def put_new_namespace(id,namespace):
     try :
         cred = credentials.Certificate("./firebase_keys.json")
@@ -66,7 +65,7 @@ def put_new_namespace(id,namespace):
         collection_name = "Verchat"
         doc_ref = db.collection(collection_name)
         doc = doc_ref.document(id)
-        update = {"edited" :datetime.now(pytz.utc)  , "pinecone_namespace":namespace  }#New
+        update = {"edited" :datetime.now(pytz.utc)  , "pinecone_namespace":namespace  }
         doc.update(update)
         firebase_admin.delete_app(app)
         return 'Updated'
@@ -75,6 +74,7 @@ def put_new_namespace(id,namespace):
         firebase_admin.delete_app(app)
         return E
 
+# function to vectorize uploaded pdf
 def vectorise_pdf(id,fpath):
     namespace = fpath.replace(" ","_")
     path_url = fpath.replace("_","/")
@@ -93,7 +93,8 @@ def vectorise_pdf(id,fpath):
     except Exception as E:
         print(E)
 
-def get_all_titles():#Provides all Titles and ID
+# function to retrieve all titles and ID from firebase firestore
+def get_all_titles():
     try:
         cred = credentials.Certificate("./firebase_keys.json")
         app = firebase_admin.initialize_app(cred)
@@ -105,38 +106,40 @@ def get_all_titles():#Provides all Titles and ID
         for doc in docs:  
             doc_id = doc.id
             doc = doc.to_dict()
-            # print(doc)
             if ('pinecone_namespace' in doc.keys()):
-                documents_data.append((doc_id , doc['title'] , doc['edited'], doc['pinecone_namespace']))#New
+                documents_data.append((doc_id , doc['title'] , doc['edited'], doc['pinecone_namespace']))
             else:
                 documents_data.append((doc_id , doc['title'] , doc['edited']))
-        sorted_data = sorted(documents_data, key=lambda x: x[2])#New
-        firebase_admin.delete_app(app)#New
+        sorted_data = sorted(documents_data, key=lambda x: x[2])
+        firebase_admin.delete_app(app)
         return sorted_data
     except Exception as E:
         print(E)
         firebase_admin.delete_app(app)
         return E
-    
+
+# function to retrieve chat history based on unique ID
 def get_history(id):
-    # print(os.listdir())
-    cred = credentials.Certificate("./firebase_keys.json")
-    app = firebase_admin.initialize_app(cred)
-    db = firestore.client()
-    collection_name = "Verchat"
-    doc_ref = db.collection(collection_name).document(id)
-    doc = doc_ref.get().to_dict()
-    mem = doc['memory']
-    id_memory = []
-    for i in mem:
-        id_memory.append((i['Human'] , i['AI']))
-    firebase_admin.delete_app(app)
     try:
+        cred = credentials.Certificate("./firebase_keys.json")
+        app = firebase_admin.initialize_app(cred)
+        db = firestore.client()
+        collection_name = "Verchat"
+        doc_ref = db.collection(collection_name).document(id)
+        doc = doc_ref.get().to_dict()
+        mem = doc['memory']
+        id_memory = []
+        for i in mem:
+            id_memory.append((i['Human'] , i['AI']))
+        firebase_admin.delete_app(app)
+    
         return id_memory
     except Exception as E :
         print(E)
+        firebase_admin.delete_app(app)
         return E
-    
+
+# function to update chat history
 def put_history_old_pdf(id,human,ai):
     try :
         cred = credentials.Certificate("./firebase_keys.json")
@@ -145,7 +148,7 @@ def put_history_old_pdf(id,human,ai):
         doc_ref = db.collection("Verchat").document(id)
         doc = doc_ref.get()
         doc = doc.to_dict()
-        update = {'memory': ArrayUnion([{'Human':human , "AI":ai ,  'edited' : datetime.now(pytz.utc) }])}#New
+        update = {'memory': ArrayUnion([{'Human':human , "AI":ai ,  'edited' : datetime.now(pytz.utc) }])}
         doc_ref.update(update)
         firebase_admin.delete_app(app)
         return 'Updated'
@@ -153,6 +156,7 @@ def put_history_old_pdf(id,human,ai):
         firebase_admin.delete_app(app)
         return E
 
+# function to add new message after uploading new PDF
 def add_history_upload_pdf(id):
     try :
         cred = credentials.Certificate("./firebase_keys.json")
@@ -161,37 +165,37 @@ def add_history_upload_pdf(id):
         collection_name = "Verchat"
         doc_ref = db.collection(collection_name)
         doc = doc_ref.document(id)
-        toAdd = {"memory": ArrayUnion([{'Human': " " , "AI": "Your file has been received and processed! How can I help?" ,  'edited' : datetime.now(pytz.utc) }]), "edited" :datetime.now(pytz.utc)}#New
+        toAdd = {"memory": ArrayUnion([{'Human': " " , "AI": "Your file has been received and processed! How can I help?" ,  'edited' : datetime.now(pytz.utc) }]), "edited" :datetime.now(pytz.utc)}
         doc.update(toAdd)
         firebase_admin.delete_app(app)
-        
         return 'Updated'
     except Exception as E :
         print(E)
         firebase_admin.delete_app(app)
         return E
 
+# function to update chat history and namespace
 def put_history_new_pdf(title , human,ai , namespace):
     try :
         cred = credentials.Certificate("./firebase_keys.json")
         app = firebase_admin.initialize_app(cred)
         db = firestore.client()
         memory_dict = [{'Human':human , "AI":ai}]
-        doc_ref = db.collection("Verchat").add({  'title' : title , 'memory': memory_dict  , 'edited' :datetime.now(pytz.utc)  , "pinecone_namespace":namespace  })#New
-        firebase_admin.delete_app(app)#New
-        return doc_ref[1].id#New
+        doc_ref = db.collection("Verchat").add({  'title' : title , 'memory': memory_dict  , 'edited' :datetime.now(pytz.utc)  , "pinecone_namespace":namespace  })
+        firebase_admin.delete_app(app)
+        return doc_ref[1].id
         
     except Exception as E:
         firebase_admin.delete_app(app)
         return E
 
+# function to create new chat
 def query_pdf_new(question , namespace=None):
     if namespace is None:
         namespace = 'knowledgebase_consolidated'
     else:
         namespace = namespace
     vectordb = load_vectorstore(OpenAIEmbeddings(), namespace=namespace)
-
 
     QA_PROMPT_DOCUMENT_CHAT = """
     Background: 
@@ -240,7 +244,7 @@ def query_pdf_new(question , namespace=None):
     
     Chat History:
     {chat_history}
-
+    
     {context}
     Question: {question}
     Answer in markdown format:
@@ -292,8 +296,6 @@ def query_pdf_new(question , namespace=None):
     You should strive to write the report as long as you can using all relevant and necessary information provided.
     You must write the report with markdown syntax.
     You MUST determine your own concrete and valid opinion based on the given information. Do NOT deter to general and meaningless conclusions."""
-
-    
 
     # Define your template with the system instruction
     template = (
@@ -457,11 +459,9 @@ def query_pdf(id, question, namespace=None):
             raw_history.append(HumanMessage(content=i[0]))
             raw_history.append(AIMessage(content=i[1]) )
         
-        # history = history[-3:]#New
         ans = qa_chain.invoke({"question": question, "chat_history": raw_history})
-        # print(ans["answer"])
         id = put_history_old_pdf(id=id, human=question , ai=ans["answer"])
         
         return ans["answer"]
     except Exception as E:
-        print(E , 'hi')
+        print(E)

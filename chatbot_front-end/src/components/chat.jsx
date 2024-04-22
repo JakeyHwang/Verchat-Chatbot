@@ -42,7 +42,7 @@ const getChatTitles = (setChatTitles, setTitleArray, setUploadedFile) => {
 const getChatHistory = (id, setChatHistory) => {
   let h_data = [];
 
-  if (id !== undefined && id !=123) {
+  if (id != undefined && id !=123) {
     fetch(`http://127.1.1.1:4000/${id}`)
       .then((res) => {
         if (!res.ok) {
@@ -106,7 +106,7 @@ const ChatBar = ({ sendMsg }) => {
   return (
     <div className="flex flex-1 flex-row w-[100%]bottom-0 justify-center items-center mx-auto">
       <input
-        autocomplete="off"
+        autoComplete="off"
         id="chat"
         type="text"
         placeholder="Ask me anything..."
@@ -294,13 +294,17 @@ const NewChat = () => {
             }
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.answer };
-            // delete loading message
-            // chatHistory.pop();
+
             setChatHistory([...chatHistory, user, bot]);
             getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
             setCurrentChatTitle(data.title);
             setCurrentIndex(data.id);
-            getChatHistory(data.id, setChatHistory)
+            
+          })
+          .then((data)=>{
+            if (!data){
+              getChatHistory(data.id, setChatHistory)
+            }
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -321,8 +325,7 @@ const NewChat = () => {
             }
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.answer };
-            // delete loading message
-            // chatHistory.pop();
+
             setChatHistory([...chatHistory, user, bot]);
             getChatHistory(currentIndex, setChatHistory)
           })
@@ -352,13 +355,16 @@ const NewChat = () => {
             }
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.answer };
-            // delete loading message
-            // chatHistory.pop();
+
             setChatHistory([...chatHistory, user, bot]);
             getChatTitles(setChatTitles, setTitleArray ,setUploadedFile);
             setCurrentChatTitle(data.title);
             setCurrentIndex(data.id);
-            getChatHistory(data.id, setChatHistory)
+          })
+          .then((data)=>{
+            if (!data){
+              getChatHistory(data.id, setChatHistory)
+            }
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -379,13 +385,16 @@ const NewChat = () => {
             }
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.answer };
-            // delete loading message
-            // chatHistory.pop();
+
             setChatHistory([...chatHistory, user, bot]);
             getChatTitles(setChatTitles, setTitleArray,setUploadedFile);
             setCurrentChatTitle(data.title);
             setCurrentIndex(data.id);
-            getChatHistory(data.id, setChatHistory)
+          })
+          .then((data)=>{
+            if (!data){
+              getChatHistory(data.id, setChatHistory)
+            }
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -414,8 +423,7 @@ const NewChat = () => {
             }
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.data };
-            // delete loading message
-            // chatHistory.pop();
+
             setChatHistory([...chatHistory, user, bot]);
             getChatHistory(currentIndex, setChatHistory)
           })
@@ -440,8 +448,7 @@ const NewChat = () => {
 
             let user = { type: "user", message: msg +"?" };
             let bot = { type: "bot", message: data.data };
-            // delete loading message
-            // chatHistory.pop();
+
             setChatHistory([...chatHistory, user, bot]);
             getChatHistory(currentIndex, setChatHistory)
           })

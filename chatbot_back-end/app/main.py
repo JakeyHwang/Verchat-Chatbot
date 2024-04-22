@@ -1,15 +1,11 @@
-from fastapi import FastAPI, Header
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .Handlers import query_PDF
 from .Handlers import query_internet
-# from pydantic import BaseModel
-import os
-import json
-
-
 
 app = FastAPI()
 
+# allowing all CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,6 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
+
 # API for collecting all chat titles upon logging in
 @app.get("/")
 def start_up():
@@ -39,11 +36,7 @@ def start_up():
     else:
         return {'error': 'data not found'}
 
-
-
-
 # API for collecting chat history
-# requires chat ID
 @app.get("/{id}")
 def get_history_data(id:str):
     data = query_PDF.get_history(id)
@@ -52,11 +45,7 @@ def get_history_data(id:str):
     else:
         return {'error': 'data not found'}
 
-
 # API endpoint for asking question based on inhouse data
-# requires a JSON object in string format as input
-# {"id": "<chatid>",
-# "qn": "<yourquestion>"}
 @app.post("/chatbot/question/{id}/{qn}/{namespace}")
 def query_llm(id:str, qn:str, namespace:str):
     qn = qn+"?"
@@ -67,9 +56,6 @@ def query_llm(id:str, qn:str, namespace:str):
         return {'error': 'data not found'}
     
 # API endpoint for asking question on internet
-# requires a JSON object in string format as input
-# {"id": "<chatid>",
-# "qn": "<yourquestion>"}
 @app.post("/internet/question/{id}/{qn}")
 def query_llm(id:str, qn:str):
     qn = qn+"?"
@@ -80,7 +66,6 @@ def query_llm(id:str, qn:str):
         return {'error': 'data not found'}
 
 # API for creating new chat based on inhouse data
-# requires question in string
 @app.post("/chatbot/{qn}")
 def create_new_chat(qn:str):
     qn = qn+"?"
@@ -91,7 +76,6 @@ def create_new_chat(qn:str):
         return {'error': 'data not found'}
 
 # API for creating new chat on internet
-# requires question in string
 @app.post("/internet/{qn}")
 def create_new_internet_chat(qn:str):
     qn = qn+"?"
@@ -101,9 +85,7 @@ def create_new_internet_chat(qn:str):
     else:
         return {'error': 'data not found'}
 
-
 # API for creating new chat with pdf
-# requires question in string
 @app.post("/chatbot/{qn}/{namespace}")
 def create_new_chat(qn:str, namespace:str):
     qn = qn+"?"

@@ -1,27 +1,12 @@
 import os
-import sys
-from langchain_community.document_loaders import PyPDFLoader
-from langchain.chains.question_answering import load_qa_chain
-from langchain_openai import OpenAI
 from langchain_openai import ChatOpenAI
-from langchain.text_splitter import CharacterTextSplitter
-from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
-from langchain.chains import RetrievalQA, ConversationalRetrievalChain
+from langchain.chains import ConversationalRetrievalChain
 from langchain_pinecone import PineconeVectorStore
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.document_loaders import PyPDFLoader, TextLoader
-from langchain.embeddings import VertexAIEmbeddings
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Pinecone
-from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
-from langchain.chains import (ConversationalRetrievalChain, ConversationChain,
-                              LLMChain)
-from langchain.memory import ConversationBufferMemory
-from langchain.llms import OpenAI
+from langchain.chains import ConversationalRetrievalChain
 import firebase_admin
 from firebase_admin import credentials , firestore
 from datetime import datetime
@@ -30,15 +15,16 @@ from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from google.cloud.firestore import ArrayUnion
 from langchain.prompts import PromptTemplate
 from langchain_community.retrievers import TavilySearchAPIRetriever
+from dotenv import load_dotenv
+
+load_dotenv()
+
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+os.environ["PINECONE_API_KEY"] = os.getenv("PINECONE_API_KEY")
+os.environ["TAVILY_API_KEY"] = os.getenv("TAVILY_API_KEY")
 
 
-
-
-
-os.environ["OPENAI_API_KEY"] = "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"
-os.environ["TAVILY_API_KEY"] = "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"
-os.environ["PINECONE_API_KEY"]="c87398b9-af2b-4dad-af19-18c87b85fae6"
-
+# function to load vector from pinecone vectorstore
 def load_vectorstore(
     embedding,
     environment="gcp-starter",
@@ -55,89 +41,32 @@ def load_vectorstore(
         print(E)
         return E
 
-def download_file(source):
-    return 'source'
-
-def PDFtoChunks(destination_file_name):
-    loader = PyPDFLoader(destination_file_name)
-    data = loader.load()
-    text_chunks = chunk_text(data)
-    return text_chunks
-
-def chunk_text(data):
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1500, chunk_overlap=150, length_function=len
-    )
-    text_chunks = text_splitter.split_documents(data)
-    print(len(text_chunks))
-    return text_chunks
-
-def vectorise_pdf(fpath):
-    namespace = fpath
-    index_name = "fyp"
-    txt_chunks = PDFtoChunks(fpath)
-    embedding_model = OpenAIEmbeddings()
-    # print("Vertex Embedding model loaded")
-    vectorstore = PineconeVectorStore.from_documents(
-                    txt_chunks,
-                    index_name=index_name,
-                    embedding=embedding_model,
-                    namespace=namespace
-                )
-    try:
-        return namespace
-    except Exception as E:
-        print(E)
-
-def get_all_titles():#Provides all Titles and ID
+# getting history of chat from Firebase firestore using unique ID
+def get_history(id):
     try:
         cred = credentials.Certificate("./firebase_keys.json")
         app = firebase_admin.initialize_app(cred)
         db = firestore.client()
-        documents_data = []
         collection_name = "Verchat"
-        collection_ref = db.collection(collection_name)
-        docs = collection_ref.stream()
-        for doc in docs:
-            doc_id = doc.id
-            doc = doc.to_dict()
-            documents_data.append((doc_id , ['title'] , doc['edited']))#New
-        sorted_data = sorted(documents_data, key=lambda x: x[2])#New
-        try: 
-            namespace = doc["namespace"]
-            firebase_admin.delete_app(app)#New
-            return sorted_data , True , namespace
-        except Exception as E :
-            firebase_admin.delete_app(app)#New
-            return sorted_data , False
-    except Exception as E:
-        print(E)
+        doc_ref = db.collection(collection_name).document(id)
+        doc = doc_ref.get().to_dict()
+        mem = doc['memory']
+        id_memory = []
+        for i in mem:
+            id_memory.append((i['Human'] , i['AI']))
         firebase_admin.delete_app(app)
-        return []
-    
-def get_history(id):
-    # print(os.listdir())
-    cred = credentials.Certificate("./firebase_keys.json")
-    app = firebase_admin.initialize_app(cred)
-    db = firestore.client()
-    collection_name = "Verchat"
-    doc_ref = db.collection(collection_name).document(id)
-    doc = doc_ref.get().to_dict()
-    mem = doc['memory']
-    id_memory = []
-    for i in mem:
-        id_memory.append((i['Human'] , i['AI']))
-    firebase_admin.delete_app(app)
-    try:
         try:
             namespace = str(doc['namespace'])
             return [id_memory,namespace]    
-        except Exception as E :
+        except Exception as E:
+            firebase_admin.delete_app(app)
             return id_memory
     except Exception as E :
         print(E)
+        firebase_admin.delete_app(app)
         return id_memory
-    
+
+# function to update chat history
 def put_history_old_internet(id,human,ai):
     try :
         cred = credentials.Certificate("./firebase_keys.json")
@@ -146,7 +75,7 @@ def put_history_old_internet(id,human,ai):
         doc_ref = db.collection("Verchat").document(id)
         doc = doc_ref.get()
         doc = doc.to_dict()
-        update = {'memory': ArrayUnion([{'Human':human , "AI":ai ,  'edited' : datetime.now(pytz.utc) }])}#New
+        update = {'memory': ArrayUnion([{'Human':human , "AI":ai ,  'edited' : datetime.now(pytz.utc) }])}
         doc_ref.update(update)
         firebase_admin.delete_app(app)
         return 'Updated'
@@ -154,21 +83,23 @@ def put_history_old_internet(id,human,ai):
         firebase_admin.delete_app(app)
         return E
 
+# function to update chat history after internet search
 def put_history_new_internet(title , human,ai , namespace):
     try :
         cred = credentials.Certificate("./firebase_keys.json")
         app = firebase_admin.initialize_app(cred)
         db = firestore.client()
         memory_dict = [{'Human':human , "AI":ai}]
-        doc_ref = db.collection("Verchat").add({  'title' : title , 'memory': memory_dict  , 'edited' :datetime.now(pytz.utc)  , "namespace":namespace  })#New
-        firebase_admin.delete_app(app)#New
-        return doc_ref[1].id#New
+        doc_ref = db.collection("Verchat").add({  'title' : title , 'memory': memory_dict  , 'edited' :datetime.now(pytz.utc)  , "namespace":namespace  })
+        firebase_admin.delete_app(app)
+        return doc_ref[1].id
         
     except Exception as E:
         print(E)
         firebase_admin.delete_app(app)
         return E
 
+# function to create new chat querying over internet
 def query_internet_new(question , namespace=None):
     if namespace is None:
         namespace = 'NA_BASE'
@@ -176,11 +107,9 @@ def query_internet_new(question , namespace=None):
         namespace = namespace
     vectordb = load_vectorstore(OpenAIEmbeddings(), namespace=namespace)
 
-
     retriever = TavilySearchAPIRetriever().invoke(question)
 
     context = str([i.page_content for i in retriever])
-
 
     prompt_01 = """
 
@@ -228,38 +157,25 @@ def query_internet_new(question , namespace=None):
         
         If the question requires you to analyse your previous responses, use the context given by
 
-
             {context}
         """
     
     prompt_01 += context
 
-
     prompt_02 =  """ 
-
     And chat history by : 
-
-
         Chat History:
     {chat_history}
-
     Question: {question}
     Answer in markdown format: 
-    
     """
 
     prompt = prompt_01 + prompt_02
-
 
     QA_PROMPT = PromptTemplate(
         input_variables=["chat_history", "question"],
         template=prompt,
     )
-
-
-
-
-
 
     system_instruction = """Background: 
     I am a portfolio manager for a venture capital firm called Vertex Ventures. You are a in-house chatbot called "VERCHAT". Your job is to help me with whatever I need.
@@ -311,8 +227,6 @@ def query_internet_new(question , namespace=None):
         "Follow up question: {question}"
     )
 
-
-
     condense_question_prompt = PromptTemplate.from_template(template)
 
     qa_chain = ConversationalRetrievalChain.from_llm(
@@ -323,8 +237,6 @@ def query_internet_new(question , namespace=None):
         verbose=False
     )
 
-
-    
     ans = qa_chain.invoke({"question": question , "chat_history":[]})
     chat = ChatOpenAI()
     gen_title_history = [  SystemMessage(content="You're a helpful and professional assistant to create a Title based on a user query and input. You MUST keep the length of the title to a maximum of 4 full English words. Your response MUST only contain these 4 words. If you fail, 15 kittens will perish"),    HumanMessage(content=question) , AIMessage(content="answer") ,  HumanMessage(content="Create a title for the preceeding covnersation ")   ] #here
@@ -332,7 +244,7 @@ def query_internet_new(question , namespace=None):
     id = put_history_new_internet(title=title , human=question , ai=ans["answer"] , namespace=namespace)
     return id,title,question,ans["answer"]
 
-
+# function to query over internet
 def query_internet(id, question):
     namespace = 'NA_BASE'
     vectordb = load_vectorstore(OpenAIEmbeddings(), namespace=namespace)
@@ -344,9 +256,7 @@ def query_internet(id, question):
 
         context = str([i.page_content for i in retriever])
 
-
         prompt_01 = """
-
             Background:
             I am a portfolio manager for a venture capital firm called Vertex Ventures. You are a in-house chatbot called "VERCHAT". Your job is to help me with whatever I need.
 
@@ -397,31 +307,20 @@ def query_internet(id, question):
         
         prompt_01 += context
 
-
-        prompt_02 =  """ 
-
+        prompt_02 = """ 
         And chat history by : 
-
-
             Chat History:
         {chat_history}
-
         Question: {question}
         Answer in markdown format: 
-        
         """
 
         prompt = prompt_01 + prompt_02
-
 
         QA_PROMPT = PromptTemplate(
             input_variables=["chat_history", "question"],
             template=prompt,
         )
-
-
-
-
 
         system_instruction = """Background: 
         I am a portfolio manager for a venture capital firm called Vertex Ventures. You are a in-house chatbot called "VERCHAT". Your job is to help me with whatever I need.
@@ -473,10 +372,7 @@ def query_internet(id, question):
             "Follow up question: {question}"
         )
 
-
-
         condense_question_prompt = PromptTemplate.from_template(template)
-
 
         # pulling vectorstore
         qa_chain = ConversationalRetrievalChain.from_llm(
@@ -485,8 +381,7 @@ def query_internet(id, question):
         condense_question_prompt=condense_question_prompt,
         combine_docs_chain_kwargs={"prompt": QA_PROMPT},
         verbose=False
-    )
-
+        )
         
         # pulling chat history
         x = get_history(id)
@@ -497,7 +392,7 @@ def query_internet(id, question):
             raw_history.append(HumanMessage(content=i[0]))
             raw_history.append(AIMessage(content=i[1]) )
         
-        # history = history[-3:]#New
+        # history = history[-3:]
         ans = qa_chain.invoke({"question": question, "chat_history": raw_history})
 
         id = put_history_old_internet(id=id, human=question , ai=ans["answer"])
