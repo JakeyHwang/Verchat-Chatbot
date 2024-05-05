@@ -1,1 +1,1 @@
-# IS484-FYP-VC-chatbot
+# Verchat-Chatbot: Investment portfolio manager
