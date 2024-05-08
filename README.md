@@ -52,7 +52,7 @@ This project requires several API keys and accounts to be set up as a pre-requis
 `python -m venv <NameOfVirtualEnvironment>`
 3. To activate the virtual environment:
 `path/to/venv/<NameOfVirtualEnvironment>\Scripts\activate.bat`
-(/assets/Creating a Virtual Environment.png)
+![creating a virtual env](/assets/Creating a Virtual Environment.png "creating a virtual env")
 
 ## Preparing Backend server
 
