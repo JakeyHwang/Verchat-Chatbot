@@ -18,52 +18,39 @@ This project requires several API keys and accounts to be set up as a pre-requis
 - create a new project
 - create a new Firestore Database
 - create a new collection
+- head to "Project settings > Service accounts > Firebase Amin SDK > gnerate new private key" and download "firebase_keys.json"
 
 ## Pulling project from Github
-1. Clone the repository
+1. Clone the repository to your desired location (i.e. C:/path/to/folder/Verchat-Chatbot)
 
 ## Replacing API Keys
-1. Open up the project folder on an editor
-2. Locate the "env.text" file in chatbot_back-end
-3. Fill in the API keys for OPEN AI, TAVILY, PINECONE AND FIREBASE
-4. Rename the "env.text" file to ".env"
+1. Open up the project folder using a code editor
+2. Locate the "env.text" file in "C:/path/to/folder/Verchat-Chatbot/chatbot_back-end"
+3. Fill in the required API keys for OPEN AI, TAVILY, PINECONE.
+4. Rename file "env.text" to ".env"
 
 ## Creating a Virtual Environment
 1. Open Command Prompt
-2. Navigate to a directory of your choice (for example Desktop)
-3. Create the virtual environment called "verchat_venv" by keying in:
-   python -m venv verchat_venv
+2. To create the virtual environment:
+   python -m venv <NameOfVirtualEnvironment>
+3. To activate the virtual environment:
+   path/to/venv/<NameOfVirtualEnvironment>/Scripts/activate.bat
 
-## Starting up the Backend 
-1. In Command Prompt, ensure that you are in the same directory as the virtual environment file you have just created.
-2. Start up the virtual environment by keying in:
-   verchat_venv\Scripts\activate.bat
-3. Navigate to the dependencies folder located in the project folder. For example:
-   cd "C:\Users\User\OneDrive\Documents\GitHub\IS484-FYP-VC-chatbot\chatbot_back-end\dependencies"
-4. Install requirements:
+## Preparing Backend server
+1. In your command prompt, activate the previously-made virtual environment. This window is the "backend server"
+2. Navigate to the "C:/path/to/folder/Verchat-Chatbot/chatbot_back-end"
+3. Install python requirements found in /depedencies:
    pip install -r requirements.txt
-5. Navigate to the previous folder:
-  cd ../
-6. Run the backend program:
+
+## Preparing Frontend server
+1. Open a new window of command prompt and activate the same virtual environment. This window is the "frontend server"
+2. Navigate to the "C:/path/to/folder/Verchat-Chatbot/chatbot_front-end"
+3. Install node.js packages:
+   npm install
+
+## Running the servers and chatbot
+1. To run the backend, run the code below in the "backend server":
    uvicorn app.main:app --host 127.1.1.1 --port 4000 --reload
-
-## Starting up the Frontend
-1. Open another Command Prompt window and navigate to the same directory as the virtual environment file.
-2.Start up the virtual environment by keying in:
-   verchat_venv\Scripts\activate.bat
-3. Navigate to the "chatbot_front-end" folder located in the project folder. For example:
-   cd "C:\Users\User\OneDrive\Documents\GitHub\IS484-FYP-VC-chatbot\chatbot_front-end"
-4. Install node modules:
-  npm install   
-6. Install python:
-   npm install python -r
-7. Run the fronend program:
+2. To run the frontend, run the code below in the "frontend server":
    npm run dev
-8. Once it initialises you will see a link that states "http://localhost:3000"
-9. Press "Ctrl" + click that link to open the web app up on your web browser
-
-## Shutting down the frontend and backend
-1. In their respective windows press "Ctrl + C" to exit the processes
-2. Deactivate the respective virtual environments by keying in:
-   deactivate
-3. You may close the Command Prompt windows
+3. Once both servers have fully and successfully initiated, open up any internet browser to "http://localhost:3000" to view the chatbot
