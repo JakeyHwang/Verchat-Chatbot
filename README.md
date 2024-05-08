@@ -52,7 +52,7 @@ This project requires several API keys and accounts to be set up as a pre-requis
 `python -m venv <NameOfVirtualEnvironment>`
 3. To activate the virtual environment:
 `path/to/venv/<NameOfVirtualEnvironment>\Scripts\activate.bat`
-![creating a virtual env](/assets/Creating a Virtual Environment.png "creating a virtual env")
+(/assets/create_venv.png)
 
 ## Preparing Backend server
 
@@ -60,14 +60,14 @@ This project requires several API keys and accounts to be set up as a pre-requis
 2. Navigate to the "C:/path/to/folder/Verchat-Chatbot/chatbot_back-end/dependencies"
 3. Install python requirements found in /depedencies:
 `pip install -r requirements.txt`
-(/assets/Installing Backend Requirements.png)
+(/assets/prepare_backend.png)
 ## Preparing Frontend server
 
 1. Open a new window of command prompt and activate the same virtual environment. This window is the "frontend server"
 2. Navigate to the "C:/path/to/folder/Verchat-Chatbot/chatbot_front-end"
 3. Install node.js packages:
 `npm install`
-(/assets/Preparing frontend.png)
+(/assets/prepare_frontend.png)
 
 ## Running the servers and chatbot
 
@@ -75,10 +75,10 @@ This project requires several API keys and accounts to be set up as a pre-requis
    `../`
 2. Then run the code below in the "backend server":
 `uvicorn app.main:app --host 127.1.1.1 --port 4000 --reload`
-(/assets/Running Backend.png)
+(/assets/run_backend.png)
 
 4. To run the frontend, run the code below in the "frontend server":
 `npm run dev`
-(/assets/Running Frontend.png)
+(/assets/run_frontend.png)
 
 5. Once both servers have fully and successfully initiated, open up any internet browser to "http://localhost:3000" to view the chatbot
