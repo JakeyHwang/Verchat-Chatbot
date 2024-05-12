@@ -64,6 +64,7 @@ This project requires several API keys and accounts to be set up as a pre-requis
 2. Navigate to the "C:/path/to/folder/Verchat-Chatbot/chatbot_back-end"
 3. Install python requirements found in /depedencies:
 `pip install -r dependencies/requirements.txt`
+![preparing backend](/assets/prepare_backend.png "preparing backend")
 
 ## Frontend server package installation
 
