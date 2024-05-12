@@ -42,8 +42,10 @@ This project requires several API keys and accounts to be set up as a pre-requis
 1. Open up the project folder using a code editor
 2. Locate the "env.text" file in "C:/path/to/folder/Verchat-Chatbot/chatbot_back-end"
 3. Fill in the required API keys for OPEN AI, TAVILY, PINECONE.
+
 4. Rename file "env.text" to ".env"
-5. Place "firebase_keys.json" into this directory
+
+6. Place "firebase_keys.json" into this directory
 
 ## Creating a Virtual Environment
 
@@ -52,33 +54,31 @@ This project requires several API keys and accounts to be set up as a pre-requis
 `python -m venv <NameOfVirtualEnvironment>`
 3. To activate the virtual environment:
 `path/to/venv/<NameOfVirtualEnvironment>\Scripts\activate.bat`
-(/assets/create_venv.png)
+![creating venv](/assets/create_venv.png "creating venv")
 
-## Preparing Backend server
+## Backend server package installation
 
 1. In your command prompt, activate the previously-made virtual environment. This window is the "backend server"
-2. Navigate to the "C:/path/to/folder/Verchat-Chatbot/chatbot_back-end/dependencies"
+2. Navigate to the "C:/path/to/folder/Verchat-Chatbot/chatbot_back-end"
 3. Install python requirements found in /depedencies:
-`pip install -r requirements.txt`
-(/assets/prepare_backend.png)
-## Preparing Frontend server
+`pip install -r dependencies/requirements.txt`
+
+## Frontend server package installation
 
 1. Open a new window of command prompt and activate the same virtual environment. This window is the "frontend server"
 2. Navigate to the "C:/path/to/folder/Verchat-Chatbot/chatbot_front-end"
 3. Install node.js packages:
 `npm install`
-(/assets/prepare_frontend.png)
+![preparing frontend](/assets/prepare_frontend.png "preparing frontend")
 
 ## Running the servers and chatbot
 
-1. To run the backend, navigate to the parent folder using:
-   `../`
-2. Then run the code below in the "backend server":
+1. In the "backend server" run:
 `uvicorn app.main:app --host 127.1.1.1 --port 4000 --reload`
-(/assets/run_backend.png)
+![running backend](/assets/run_backend.png "running backend")
 
-4. To run the frontend, run the code below in the "frontend server":
+2. In the "frontend server" run:
 `npm run dev`
-(/assets/run_frontend.png)
+![running frontend](/assets/run_frontend.png "running frontend")
 
-5. Once both servers have fully and successfully initiated, open up any internet browser to "http://localhost:3000" to view the chatbot
+3. Once both servers have fully and successfully initiated, open up any internet browser to "http://localhost:3000" to view the chatbot
