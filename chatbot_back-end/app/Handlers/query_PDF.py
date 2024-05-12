@@ -24,12 +24,16 @@ load_dotenv()
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 os.environ["PINECONE_API_KEY"] = os.getenv("PINECONE_API_KEY")
 
+# replace your index name and variable names here
+true_index_name = "fyp"
+true_namespace = "ss"
+
 # function to load vector from pinecone vectorstore
 def load_vectorstore(
     embedding,
     environment="gcp-starter",
-    index_name="fyp",
-    namespace="ss",
+    index_name=true_index_name,
+    namespace=true_namespace,
 ):
     try:
         embedding = OpenAIEmbeddings()
@@ -78,7 +82,7 @@ def put_new_namespace(id,namespace):
 def vectorise_pdf(id,fpath):
     namespace = fpath.replace(" ","_")
     path_url = fpath.replace("_","/")
-    index_name = "fyp"
+    index_name = true_index_name
     txt_chunks = PDFtoChunks(path_url)
     embedding_model = OpenAIEmbeddings()
     result = put_new_namespace(id,namespace)
