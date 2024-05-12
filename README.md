@@ -42,10 +42,12 @@ This project requires several API keys and accounts to be set up as a pre-requis
 1. Open up the project folder using a code editor
 2. Locate the "env.text" file in "C:/path/to/folder/Verchat-Chatbot/chatbot_back-end"
 3. Fill in the required API keys for OPEN AI, TAVILY, PINECONE.
+![Editting env file](/assets/env_file_edit.png "Editting env file")
 
-4. Rename file "env.text" to ".env"
+5. Rename file "env.text" to ".env"
+![Editting env file](/assets/env_file_rename.png "Editting env filee")
 
-6. Place "firebase_keys.json" into this directory
+7. Place "firebase_keys.json" into this directory
 
 ## Creating a Virtual Environment
 
