@@ -30,7 +30,7 @@ This project requires several API keys and accounts to be set up as a pre-requis
 - create a new project
 - create a new Firestore Database
 - create a new collection
-- head to "Project settings > Service accounts > Firebase Amin SDK > gnerate new private key" and download "firebase_keys.json"
+- head to "Project settings > Service accounts > Firebase Admin SDK > Generate new private key" and download "firebase_keys.json"
 ![Firebase keys download page](/assets/firestore_json_downlload.png "Firebase keys download page")
 
 ## Pulling project from Github
