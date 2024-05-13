@@ -45,9 +45,15 @@ This project requires several API keys and accounts to be set up as a pre-requis
 ![Editting env file](/assets/env_file_edit.png "Editting env file")
 
 5. Rename file "env.text" to ".env"
-![Editting env file](/assets/env_file_rename.png "Editting env filee")
+![Editting env file](/assets/env_file_rename.png "Editting env file")
 
 7. Place "firebase_keys.json" into this directory
+
+## Replacing Code Variables
+
+1. In query_PDF.py and query_internet.py, insert your Pinecone index name.
+2. Namespace can be changed to desired name
+![Replacing code](/assets/replace_index.png "Replacing code")
 
 ## Creating a Virtual Environment
 
