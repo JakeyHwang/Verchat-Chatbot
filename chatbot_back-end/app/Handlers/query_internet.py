@@ -24,9 +24,8 @@ os.environ["PINECONE_API_KEY"] = os.getenv("PINECONE_API_KEY")
 os.environ["TAVILY_API_KEY"] = os.getenv("TAVILY_API_KEY")
 
 # replace your index name and variable names here
-true_index_name = "fyp"
-true_namespace = "ss"
-
+true_index_name = "<your index name here>"
+true_namespace = "<your namespace here>"
 
 
 # function to load vector from pinecone vectorstore
